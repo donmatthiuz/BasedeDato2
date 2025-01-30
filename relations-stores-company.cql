@@ -46,6 +46,12 @@ SET r.exclusiveRights = false
 RETURN c, p, r
 
 
+MATCH (c:Company {name: 'Yacht Club Games'}), (p:Platform {name: 'Nintendo 3DS'})
+CREATE (c)-[r:PUBLISHES_ON]->(p)
+SET r.exclusiveRights = false
+RETURN c, p, r
+
+
 MATCH (c:Company {name: 'Square Enix'})
 WITH c
 MATCH (p:Platform {name: 'Playstation 3'})
@@ -75,4 +81,48 @@ MATCH (c:Company {name: 'Naughty Dog'}), (p:Platform {name: 'Playstation 3'})
 CREATE (c)-[r:PUBLISHES_ON]->(p)
 SET r.exclusiveRights = false
 RETURN c, p, r
+
+// Relaciones en company y store.
+
+MATCH (c:Company {name: 'Naughty Dog'}), (s:Store {name: 'Amazon'})
+CREATE (c)-[r:PARTNERSHIP]->(s)
+SET r.contractType = 'NON EXCLUSIVE',
+    r.revenueShare = 0.08
+RETURN c, s, r
+
+
+MATCH (c:Company {name: 'Naughty Dog'}), (s:Store {name: 'Ebay'})
+CREATE (c)-[r:PARTNERSHIP]->(s)
+SET r.contractType = 'NON EXCLUSIVE',
+    r.revenueShare = 0.12
+RETURN c, s, r
+
+
+MATCH (c:Company {name: 'Naughty Dog'}), (s:Store {name: 'Steam'})
+CREATE (c)-[r:PARTNERSHIP]->(s)
+SET r.contractType = 'NON EXCLUSIVE',
+    r.revenueShare = 0.30
+RETURN c, s, r
+
+
+MATCH (c:Company {name: 'Naughty Dog'}), (s:Store {name: 'PlayStation Plus'})
+CREATE (c)-[r:PARTNERSHIP]->(s)
+SET r.contractType = 'NON EXCLUSIVE',
+    r.revenueShare = 0.5
+RETURN c, s, r
+
+
+MATCH (c:Company {name: 'Namco'}), (s:Store {name: 'PlayStation Plus'})
+CREATE (c)-[r:PARTNERSHIP]->(s)
+SET r.contractType = 'NON EXCLUSIVE',
+    r.revenueShare = 0.5
+RETURN c, s, r
+
+
+MATCH (c:Company {name: 'Namco'}), (s:Store {name: 'Steam'})
+CREATE (c)-[r:PARTNERSHIP]->(s)
+SET r.contractType = 'NON EXCLUSIVE',
+    r.revenueShare = 0.3
+RETURN c, s, r
+
 
