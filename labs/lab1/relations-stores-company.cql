@@ -217,3 +217,56 @@ MATCH (c:Company {name: 'Square Enix'}), (g:Game {gameName: "Final Fantasy"})
 CREATE (c)-[r:MAKES]->(g)
 SET r.directorName = 'Hironobu Sakaguchi'
 RETURN c, g, r
+
+
+// SELL GAME
+
+MATCH (s:Store {name: 'Amazon'}), (g:Game {gameName: "Pacman"})
+CREATE (s)-[r:SELL_GAME]->(g)
+SET r.price = 500.00,
+    r.sales= 184,
+    r.format = 'PHYSICAL'
+RETURN s, g, r
+
+MATCH (s:Store {name: 'Steam'}), (g:Game {gameName: "Blasphemous"})
+CREATE (s)-[r:SELL_GAME]->(g)
+SET r.price = 24.99,
+    r.sales= 25000,
+    r.format = 'DIGITAL'
+RETURN s, g, r
+
+
+MATCH (s:Store {name: "PlayStation Plus"}), (g:Game {gameName: "The Last Of Us"})
+CREATE (s)-[r:SELL_GAME]->(g)
+SET r.price = 69.99,
+    r.sales= 37000000,
+    r.format = 'DIGITAL'
+RETURN s, g, r
+
+
+MATCH (s:Store {name: "Amazon"}), (g:Game {gameName: "Final Fantasy"})
+CREATE (g)-[r:AVAILABLE]->(s)
+RETURN s, g, r
+
+MATCH (s:Store {name: "Microsoft Store"}), (g:Game {gameName: "Final Fantasy"})
+CREATE (s)-[r:SELL_GAME]->(g)
+SET r.price = 74.99,
+    r.sales= 190,
+    r.format = 'DIGITAL'
+RETURN s, g, r
+
+
+MATCH (s:Store {name: "Amazon"}), (g:Game {gameName: "Final Fantasy"})
+CREATE (s)-[r:SELL_GAME]->(g)
+SET r.price = 74.20,
+    r.sales= 192,
+    r.format = 'PHYSICAL'
+RETURN s, g, r
+
+
+MATCH (s:Store {name: "Nintendo eShop"}), (g:Game {gameName: "Shovel Knignt"})
+CREATE (s)-[r:SELL_GAME]->(g)
+SET r.price = 49.99,
+    r.sales= 700000,
+    r.format = 'DIGITAL'
+RETURN s, g, r
