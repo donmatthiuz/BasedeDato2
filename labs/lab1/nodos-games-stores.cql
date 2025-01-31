@@ -18,14 +18,11 @@ CREATE (g1)-[r1:AVAILABLE]->(s1)
 MATCH (g2:Game), (s2: Store)
 WHERE g2.gameName = 'Blasphemous' AND s2.name = 'Steam'
 CREATE (g2)-[r2:AVAILABLE]->(s2)
-RETURN type(r2)
 
 MATCH (g3:Game), (s3: Store)
 WHERE g3.gameName = 'Final Fantasy' AND s3.name = 'Microsoft Store'
 CREATE (g3)-[r3:AVAILABLE]->(s3)
-RETURN type(r3)
 
 MATCH (g4:Game), (s4: Store)
 WHERE g4.gameName = 'Shovel Knignt' AND s4.name = 'Nintendo eShop'
 CREATE (g4)-[r4:AVAILABLE]->(s4)
-RETURN type(r4)
