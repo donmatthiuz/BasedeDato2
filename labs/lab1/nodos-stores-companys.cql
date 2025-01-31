@@ -25,7 +25,7 @@ RETURN s
 MERGE (s:Store {name: 'Steam', mobileApp: true, userCount: 39200000 , url: 'https://store.steampowered.com'})
 RETURN s
 
-MERGE (s:Store {name: 'Ebay', mobileApp: true, userCount: 132000000 , url: 'https://mx.ebay.com'})
+MERGE (s:Store {name: 'Microsoft Store', mobileApp: true, userCount: 132000000 , url: 'https://apps.microsoft.com/home?hl=es-es&gl=ES'})
 RETURN s
 
 MERGE (s:Store {name: 'Nintendo eShop', mobileApp: false, userCount: 146000000 , url: 'https://www.nintendo.com/es-es/Nintendo-eShop/Nintendo-eShop-1806894.html?srsltid=AfmBOoo_rFZakbNIJko3Xo_9qD61F7lQpoocjeJyfTopKhroYGlHJRCq'})
