@@ -1,5 +1,8 @@
 // Inciso 1
 
+MERGE (p:Person {name: "Michael Caine", born: 1933})
+RETURN p
+
 // Inciso 2
 
 // Inciso 3
