@@ -10,5 +10,5 @@
 - **Nodo Relacion de Chadwick Boseman y Black Panther**  
 ![Relacion Creada](./images/parte2_nodo3.jpg)
 
-- **Nodo Relacion de Emily Blunt y A Quiet Place**
+- **Nodo Relacion de Emily Blunt y A Quiet Place**     
 ![Relacion Creada](./images/parte2_nodo4.jpg)
