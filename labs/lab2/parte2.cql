@@ -16,6 +16,13 @@ RETURN p, m
 
 // Inciso 4
 
+MATCH (p:Person {name: 'Michael Caine'})
+MATCH (m:Movie {title: 'The Dark Knight'})
+MERGE (p)-[r:ACTED_IN]->(m)
+SET r.roles = 'Alfred Pennyworth'
+RETURN p, m, r
+
+
 // Inciso 5
 
 // Inciso 6
