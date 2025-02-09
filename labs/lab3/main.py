@@ -1,6 +1,6 @@
 from conn import connection
 from queries_inciso2 import create_user, create_movie, rating_relation
-from search import search, MODE_MOVIE, MODE_RELATION, MODE_USER
+from search import search, MODE_NODE, MODE_RELATION
 from Graficar import GraficarGrafo
 
 #Conf conexion
@@ -153,8 +153,19 @@ def create_database():
 if __name__ == "__main__":
     #create_database()
     driver = connection(URI,AUTH)
-    resultado = search(driver=driver, search_mode=MODE_USER, name= 'Juan Perez')
+    # resultado = search(driver=driver, search_mode=MODE_USER, name= 'Juan Perez')
+    # print(resultado.obtener_atributos())
+    # grafo = GraficarGrafo()
+    # grafo.agregar_nodo(resultado.nombre_clase, propiedades=resultado.obtener_atributos())
+    # grafo.graficar()
+
+    resultado = search(driver=driver, 
+                       search_mode=MODE_NODE, 
+                       parametro= 'Juan Perez',  
+                       clase='User', propiedad= 'name')
     print(resultado.obtener_atributos())
     grafo = GraficarGrafo()
     grafo.agregar_nodo(resultado.nombre_clase, propiedades=resultado.obtener_atributos())
     grafo.graficar()
+
+

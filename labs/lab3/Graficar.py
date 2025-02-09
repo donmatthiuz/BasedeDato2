@@ -2,14 +2,12 @@ from graphviz import Digraph
 
 class GraficarGrafo:
     def __init__(self):
-        # Inicializamos el grafo como un digrafo (dirigido)
         self.grafo = Digraph(comment='Grafo')
 
     def agregar_nodo(self, nodo, propiedades=None):
         """Agrega un nodo al grafo con propiedades opcionales."""
         label_text = nodo
         if propiedades:
-            # Concatenamos las propiedades de cada nodo, separadas por saltos de línea
             label_text += '\n' + '\n'.join(propiedades)
         self.grafo.node(nodo, label=label_text)
 
@@ -17,16 +15,14 @@ class GraficarGrafo:
         """Agrega una arista entre dos nodos con una etiqueta y propiedades opcionales."""
         label_text = etiqueta if etiqueta else ""
         if propiedades:
-            # Agregamos las propiedades debajo de la etiqueta
             label_text += '\n' + '\n'.join(propiedades)
         self.grafo.edge(nodo1, nodo2, label=label_text)
 
     def graficar(self):
         """Genera una visualización del grafo con etiquetas y propiedades en nodos y aristas."""
-        # Generar el grafo en formato PNG (o cualquier otro formato soportado)
         self.grafo.render('grafo', format='png', view=True)
 
-# Ejemplo de uso
+
 if __name__ == "__main__":
     grafo = GraficarGrafo()
 
