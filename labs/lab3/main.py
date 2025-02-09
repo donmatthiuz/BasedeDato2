@@ -1,6 +1,7 @@
 from conn import connection
 from queries_inciso2 import create_user, create_movie, rating_relation
-
+from search import search, MODE_MOVIE, MODE_RELATION, MODE_USER
+from Graficar import GraficarGrafo
 
 #Conf conexion
 # URI examples: "neo4j://localhost", "neo4j+s://xxx.databases.neo4j.io"
@@ -8,7 +9,7 @@ URI = "neo4j+s://d75b418a.databases.neo4j.io"
 # Instancia Abby
 AUTH = ("neo4j", "jQAeKwuVMjIOOtDwpRjfs4RjfrMHXdPhzUzKmJramRw")
 
-def main():
+def create_database():
     #creacion del driver
     driver = connection(URI,AUTH)
     #creacion nodos
@@ -150,4 +151,10 @@ def main():
     driver.close()
 
 if __name__ == "__main__":
-    main()
+    #create_database()
+    driver = connection(URI,AUTH)
+    resultado = search(driver=driver, search_mode=MODE_USER, name= 'Juan Perez')
+    print(resultado.obtener_atributos())
+    grafo = GraficarGrafo()
+    grafo.agregar_nodo(resultado.nombre_clase, propiedades=resultado.obtener_atributos())
+    grafo.graficar()
