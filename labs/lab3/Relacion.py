@@ -29,6 +29,11 @@ class DIRECTED(Relacion):
         super().__init__(nodo_a, nodo_b,role=role, **kwargs)
 
 
+class ACTED_IN(Relacion):
+    def __init__(self, nodo_a, nodo_b,role, **kwargs):
+        super().__init__(nodo_a, nodo_b,role=role, **kwargs)
+
+
 # # Ejemplo de uso
 # usuario = User(name="Juan", userId="123")
 # pelicula = Movie(title="Inception", movieId=1, year=2010, plot="Dream invasion.")

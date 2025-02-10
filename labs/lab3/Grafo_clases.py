@@ -49,6 +49,22 @@ class Person_Director(Nodo):
                          bornIn=bornIn, url=url, imdbId=imdbId, bio=bio, poster=poster)
 
 
+class Person_Actor(Nodo):
+    def __init__(self, name: str, tmdbId: int, born: str = None, died: str = None, 
+                 bornIn: str = None, url: str = None, imdbId: int = None, 
+                 bio: str = None, poster: str = None):
+        super().__init__(name=name, tmdbId=tmdbId, born=born, died=died, 
+                         bornIn=bornIn, url=url, imdbId=imdbId, bio=bio, poster=poster)
+
+
+class Person_Actor_Director(Nodo):
+    def __init__(self, name: str, tmdbId: int, born: str = None, died: str = None, 
+                 bornIn: str = None, url: str = None, imdbId: int = None, 
+                 bio: str = None, poster: str = None):
+        super().__init__(name=name, tmdbId=tmdbId, born=born, died=died, 
+                         bornIn=bornIn, url=url, imdbId=imdbId, bio=bio, poster=poster)
+
+
 class Movie(Nodo):
     def __init__(self, title: str, movieId: int, year: int, plot: str, 
                  tmdbId: int = None, released: str = None, imdbRating: float = None, 
