@@ -14,6 +14,11 @@ class Nodo:
             valor = getattr(self, atributo)
             resultado.append(f"{atributo}: {valor}")
         return resultado
+    def obtener_primer_parametro(self):
+        """Devuelve el valor del primer atributo del nodo."""
+        if self.atributos:
+            return getattr(self, self.atributos[0])
+        return None
 
 
 class User(Nodo):

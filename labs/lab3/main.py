@@ -153,19 +153,33 @@ def create_database():
 if __name__ == "__main__":
     #create_database()
     driver = connection(URI,AUTH)
-    # resultado = search(driver=driver, search_mode=MODE_USER, name= 'Juan Perez')
-    # print(resultado.obtener_atributos())
+    # resultado = search(driver=driver, 
+    #                    search_mode=MODE_NODE, 
+    #                    clase='User', propiedad= 'name',
+    #                    parametro= 'Fula Nito')
     # grafo = GraficarGrafo()
     # grafo.agregar_nodo(resultado.nombre_clase, propiedades=resultado.obtener_atributos())
     # grafo.graficar()
 
     resultado = search(driver=driver, 
-                       search_mode=MODE_NODE, 
-                       parametro= 'Juan Perez',  
-                       clase='User', propiedad= 'name')
-    print(resultado.obtener_atributos())
+                        search_mode=MODE_RELATION, 
+                        clase='User', propiedad= 'name',
+                        parametro= 'Fula Nito', relacion= 'RATED',
+                        clase_relacionada= 'Movie')
+    
+    print(resultado)
     grafo = GraficarGrafo()
-    grafo.agregar_nodo(resultado.nombre_clase, propiedades=resultado.obtener_atributos())
+    for r in resultado:
+        grafo.agregar_nodo(r.nodo_a.nombre_clase, r.nodo_a.obtener_atributos())
+        grafo.agregar_nodo(f"{r.nodo_b.nombre_clase} - {r.nodo_b.obtener_primer_parametro()}", r.nodo_b.obtener_atributos())
+        grafo.agregar_arista(nodo1=r.nodo_a.nombre_clase, 
+                             nodo2=f"{r.nodo_b.nombre_clase} - {r.nodo_b.obtener_primer_parametro()}",
+                             etiqueta=r.nombre_clase,
+                             propiedades=r.obtener_propiedades())
     grafo.graficar()
+
+
+
+
 
 
