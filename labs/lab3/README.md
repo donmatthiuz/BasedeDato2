@@ -1,5 +1,17 @@
 # Neo4j & Python
 
+## Instrucciones
+- Instala los requirements
+  # Código en Python para un menú interactivo en consola
+
+```python
+pip install -r requirements.txt
+```
+- Ejecuta el codigo con python
+```python
+python main.py
+```
+
 ![Arquitectura de Grafo](./images/arquitectura_grafo.png "Arquitectura de Grafo")
 
 1. En el lenguaje de programación de su preferencia, implementar funciones para crear el grafo (la idea es que el grafo se cree a partir de funciones que reciban parámetros)
