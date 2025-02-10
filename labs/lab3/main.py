@@ -2,7 +2,9 @@ from conn import connection
 from queries_inciso2 import create_user, create_movie, rating_relation
 from search import search, MODE_NODE, MODE_RELATION
 from Graficar import GraficarGrafo
-
+from Neo4j_methods import *
+from Grafo_clases import *
+from Relacion import *
 #Conf conexion
 # URI examples: "neo4j://localhost", "neo4j+s://xxx.databases.neo4j.io"
 URI = "neo4j+s://d75b418a.databases.neo4j.io"
@@ -150,33 +152,110 @@ def create_database():
      
     driver.close()
 
+def crear_grafo2():
+    pass
+
 if __name__ == "__main__":
     #create_database()
     driver = connection(URI,AUTH)
-    # resultado = search(driver=driver, 
-    #                    search_mode=MODE_NODE, 
-    #                    clase='User', propiedad= 'name',
-    #                    parametro= 'Fula Nito')
+    # # resultado = search(driver=driver, 
+    # #                    search_mode=MODE_NODE, 
+    # #                    clase='User', propiedad= 'name',
+    # #                    parametro= 'Fula Nito')
     # grafo = GraficarGrafo()
     # grafo.agregar_nodo(resultado.nombre_clase, propiedades=resultado.obtener_atributos())
     # grafo.graficar()
 
-    resultado = search(driver=driver, 
-                        search_mode=MODE_RELATION, 
-                        clase='User', propiedad= 'name',
-                        parametro= 'Fula Nito', relacion= 'RATED',
-                        clase_relacionada= 'Movie')
+    # resultado = search(driver=driver, 
+    #                     search_mode=MODE_RELATION, 
+    #                     clase='User', propiedad= 'name',
+    #                     parametro= 'Fula Nito', relacion= 'RATED',
+    #                     clase_relacionada= 'Movie')
     
-    print(resultado)
-    grafo = GraficarGrafo()
-    for r in resultado:
-        grafo.agregar_nodo(r.nodo_a.nombre_clase, r.nodo_a.obtener_atributos())
-        grafo.agregar_nodo(f"{r.nodo_b.nombre_clase} - {r.nodo_b.obtener_primer_parametro()}", r.nodo_b.obtener_atributos())
-        grafo.agregar_arista(nodo1=r.nodo_a.nombre_clase, 
-                             nodo2=f"{r.nodo_b.nombre_clase} - {r.nodo_b.obtener_primer_parametro()}",
-                             etiqueta=r.nombre_clase,
-                             propiedades=r.obtener_propiedades())
-    grafo.graficar()
+    # print(resultado)
+    # grafo = GraficarGrafo()
+    # for r in resultado:
+    #     parametrob, valorb = r.nodo_b.obtener_primer_parametro()
+    #     parametroa, valora = r.nodo_a.obtener_primer_parametro()
+    #     grafo.agregar_nodo(f"{r.nodo_a.nombre_clase} - {valora}", r.nodo_a.obtener_atributos())
+    #     grafo.agregar_nodo(f"{r.nodo_b.nombre_clase} - {valorb}", r.nodo_b.obtener_atributos())
+    #     grafo.agregar_arista(nodo1=f"{r.nodo_a.nombre_clase} - {valora}", 
+    #                          nodo2=f"{r.nodo_b.nombre_clase} - {valorb}",
+    #                          etiqueta=r.nombre_clase,
+    #                          propiedades=r.obtener_propiedades())
+    #     print(r.propiedades)
+    # grafo.graficar()
+
+    clean_db(driver=driver)
+    #create_database()
+
+    nodos = []
+
+    #Nodos
+    usuario = User(name='Alvaro Diaz', userId=1)
+    pelicula = Movie(
+        title="Inception",
+        movieId=1,
+        year=2010,
+        plot="A thief who enters the dreams of others to steal secrets.",
+        tmdbId=12345,
+        released="2010-07-16",
+        imdbRating=8.8,
+        imdbId=1375666,
+        runtime=148,
+        countries=["USA", "UK"],
+        imdbVotes=2100000,
+        url="https://www.imdb.com/title/tt1375666/",
+        revenue=829895144,
+        poster="https://play-lh.googleusercontent.com/buKf27Hxendp3tLNpNtP3E-amP0o4yYV-SGKyS2u-Y3GdGRTyfNCIT5WAVs2OudOz6so5K1jtYdAUKI9nw8",
+        budget=160000000,
+        languages=["English", "Japanese", "French"]
+    )
+    genero = Genre(name='Thriller')
+    director = Person_Director(name="Christopher Nolan", tmdbId=525, born="1970-07-30",
+                           bornIn="London, UK", url="https://www.imdb.com/name/nm0634240/",
+                           imdbId=634240, bio="British-American director known for Inception.", 
+                           poster="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Christopher_Nolan_Cannes_2018.jpg/640px-Christopher_Nolan_Cannes_2018.jpg")
+
+    
+
+    nodos.append(usuario)
+    nodos.append(pelicula)
+    nodos.append(genero)
+    nodos.append(director)
+
+
+    for n in nodos:
+        crear_nodo_en_db(driver=driver, nodo=n)
+
+    #Relaciones
+    relaciones = []
+    rated = RATED(nodo_a=usuario, nodo_b=pelicula,
+                  rating=5, timestamp='2024-02-09T12:34:56Z')
+    in_genere = IN_GENRE(nodo_a= pelicula, nodo_b=genero)
+    directed = DIRECTED(director, pelicula, 'Director')
+
+    relaciones.append(in_genere)
+    relaciones.append(rated)
+    relaciones.append(directed)
+
+    for r in relaciones:
+        crear_relacion_en_db(driver=driver, relacion=r)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
 
 

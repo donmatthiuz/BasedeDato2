@@ -1,4 +1,4 @@
-from Grafo_clases import Movie, User
+
 
 class Relacion:
     def __init__(self, nodo_a, nodo_b, **kwargs):
@@ -18,6 +18,15 @@ class Relacion:
 class RATED(Relacion):
     def __init__(self, nodo_a, nodo_b, rating, timestamp, **kwargs):
         super().__init__(nodo_a, nodo_b, rating=rating, timestamp=timestamp, **kwargs)
+
+
+class IN_GENRE(Relacion):
+    def __init__(self, nodo_a, nodo_b,**kwargs):
+        super().__init__(nodo_a, nodo_b, **kwargs)
+
+class DIRECTED(Relacion):
+    def __init__(self, nodo_a, nodo_b,role, **kwargs):
+        super().__init__(nodo_a, nodo_b,role=role, **kwargs)
 
 
 # # Ejemplo de uso

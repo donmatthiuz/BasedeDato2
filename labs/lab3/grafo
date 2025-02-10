@@ -1,6 +1,6 @@
 // Grafo
 digraph {
-	User [label="User
+	"User - Fula Nito" [label="User - Fula Nito
 name: Fula Nito
 userId: 1"]
 	"Movie - Spirited Away" [label="Movie - Spirited Away
@@ -8,10 +8,10 @@ title: Spirited Away
 movieId: 2
 year: 2001
 plot: During her family's move..."]
-	User -> "Movie - Spirited Away" [label="RATED
+	"User - Fula Nito" -> "Movie - Spirited Away" [label="RATED
 rating: 4
 timestamp: 2024-02-09T12:34:56..."]
-	User [label="User
+	"User - Fula Nito" [label="User - Fula Nito
 name: Fula Nito
 userId: 1"]
 	"Movie - Gladiator" [label="Movie - Gladiator
@@ -19,10 +19,10 @@ title: Gladiator
 movieId: 4
 year: 2000
 plot: A former Roman General s..."]
-	User -> "Movie - Gladiator" [label="RATED
+	"User - Fula Nito" -> "Movie - Gladiator" [label="RATED
 rating: 5
 timestamp: 2024-02-09T12:34:56..."]
-	User [label="User
+	"User - Fula Nito" [label="User - Fula Nito
 name: Fula Nito
 userId: 1"]
 	"Movie - Forrest Gump" [label="Movie - Forrest Gump
@@ -30,7 +30,7 @@ title: Forrest Gump
 movieId: 12
 year: 1994
 plot: The history of the Unite..."]
-	User -> "Movie - Forrest Gump" [label="RATED
+	"User - Fula Nito" -> "Movie - Forrest Gump" [label="RATED
 rating: 3
 timestamp: 2024-02-09T12:34:56..."]
 }
