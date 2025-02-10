@@ -3,17 +3,6 @@ digraph {
 	"User - Fula Nito" [label="User - Fula Nito
 name: Fula Nito
 userId: 1"]
-	"Movie - Spirited Away" [label="Movie - Spirited Away
-title: Spirited Away
-movieId: 2
-year: 2001
-plot: During her family's move..."]
-	"User - Fula Nito" -> "Movie - Spirited Away" [label="RATED
-rating: 4
-timestamp: 2024-02-09T12:34:56..."]
-	"User - Fula Nito" [label="User - Fula Nito
-name: Fula Nito
-userId: 1"]
 	"Movie - Gladiator" [label="Movie - Gladiator
 title: Gladiator
 movieId: 4
@@ -32,5 +21,16 @@ year: 1994
 plot: The history of the Unite..."]
 	"User - Fula Nito" -> "Movie - Forrest Gump" [label="RATED
 rating: 3
+timestamp: 2024-02-09T12:34:56..."]
+	"User - Fula Nito" [label="User - Fula Nito
+name: Fula Nito
+userId: 1"]
+	"Movie - Spirited Away" [label="Movie - Spirited Away
+title: Spirited Away
+movieId: 2
+year: 2001
+plot: During her family's move..."]
+	"User - Fula Nito" -> "Movie - Spirited Away" [label="RATED
+rating: 4
 timestamp: 2024-02-09T12:34:56..."]
 }

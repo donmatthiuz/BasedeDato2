@@ -14,6 +14,7 @@ AUTH = ("neo4j", "jQAeKwuVMjIOOtDwpRjfs4RjfrMHXdPhzUzKmJramRw")
 def create_database():
     #creacion del driver
     driver = connection(URI,AUTH)
+    clean_db(driver=driver)
     #creacion nodos
     create_user(driver, 
                 name="Fula Nito", 
@@ -242,6 +243,9 @@ def crear_grafo2():
 
     for r in relaciones:
         crear_relacion_en_db(driver=driver, relacion=r)
+
+
+    
     driver.close()
 
 
@@ -315,6 +319,7 @@ def opcion_4():
 
 def opcion_5():
     crear_grafo2()
+    
 
 def main():
     while True:
