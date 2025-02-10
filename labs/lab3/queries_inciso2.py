@@ -10,6 +10,7 @@ def create_user(driver, name:str, userId: int):
         userId=userId
     ).summary
     print(f"Se ha creado {summary.counters.nodes_created} nodos de usuarios")
+
 #Creacion de peliculas
 def create_movie(driver, title: str, movieId: int, year:int, plot: str):
     query = """
@@ -24,6 +25,7 @@ def create_movie(driver, title: str, movieId: int, year:int, plot: str):
         plot=plot
     ).summary
     print(f"Se ha creado {summary.counters.nodes_created} nodos de peliculas")
+
 #Creacion relaciones RATED
 def rating_relation(driver, name: str, title: str, rating: int):
     query = """

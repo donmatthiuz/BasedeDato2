@@ -15,11 +15,9 @@ class Nodo:
             resultado.append(f"{atributo}: {valor}")
         return resultado
 
-
 class User(Nodo):
     def __init__(self, name: str, userId: str):
         super().__init__(name=name, userId=userId)
-
 
 class Movie(Nodo):
     def __init__(self, title: str, movieId: int, year: int, plot: str):

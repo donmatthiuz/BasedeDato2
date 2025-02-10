@@ -22,7 +22,6 @@ class GraficarGrafo:
         """Genera una visualización del grafo con etiquetas y propiedades en nodos y aristas."""
         self.grafo.render('grafo', format='png', view=True)
 
-
 if __name__ == "__main__":
     grafo = GraficarGrafo()
 

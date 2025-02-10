@@ -1,6 +1,0 @@
-// Grafo
-digraph {
-	User [label="User
-name: Juan Perez
-userId: 2"]
-}
