@@ -2,8 +2,6 @@
 
 ## Instrucciones
 - Instala los requirements
-  # Código en Python para un menú interactivo en consola
-
 ```python
 pip install -r requirements.txt
 ```
