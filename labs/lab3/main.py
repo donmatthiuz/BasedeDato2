@@ -153,42 +153,8 @@ def create_database():
     driver.close()
 
 def crear_grafo2():
-    pass
-
-if __name__ == "__main__":
-    #create_database()
     driver = connection(URI,AUTH)
-    # # resultado = search(driver=driver, 
-    # #                    search_mode=MODE_NODE, 
-    # #                    clase='User', propiedad= 'name',
-    # #                    parametro= 'Fula Nito')
-    # grafo = GraficarGrafo()
-    # grafo.agregar_nodo(resultado.nombre_clase, propiedades=resultado.obtener_atributos())
-    # grafo.graficar()
-
-    # resultado = search(driver=driver, 
-    #                     search_mode=MODE_RELATION, 
-    #                     clase='User', propiedad= 'name',
-    #                     parametro= 'Fula Nito', relacion= 'RATED',
-    #                     clase_relacionada= 'Movie')
-    
-    # print(resultado)
-    # grafo = GraficarGrafo()
-    # for r in resultado:
-    #     parametrob, valorb = r.nodo_b.obtener_primer_parametro()
-    #     parametroa, valora = r.nodo_a.obtener_primer_parametro()
-    #     grafo.agregar_nodo(f"{r.nodo_a.nombre_clase} - {valora}", r.nodo_a.obtener_atributos())
-    #     grafo.agregar_nodo(f"{r.nodo_b.nombre_clase} - {valorb}", r.nodo_b.obtener_atributos())
-    #     grafo.agregar_arista(nodo1=f"{r.nodo_a.nombre_clase} - {valora}", 
-    #                          nodo2=f"{r.nodo_b.nombre_clase} - {valorb}",
-    #                          etiqueta=r.nombre_clase,
-    #                          propiedades=r.obtener_propiedades())
-    #     print(r.propiedades)
-    # grafo.graficar()
-
     clean_db(driver=driver)
-    #create_database()
-
     nodos = []
 
     #Nodos
@@ -276,6 +242,105 @@ if __name__ == "__main__":
 
     for r in relaciones:
         crear_relacion_en_db(driver=driver, relacion=r)
+    driver.close()
+
+
+def search_user():
+    driver = connection(URI,AUTH)
+    resultado = search(driver=driver, 
+                        search_mode=MODE_NODE, 
+                        clase='User', propiedad= 'name',
+                        parametro= 'Fula Nito')
+    grafo = GraficarGrafo()
+    grafo.agregar_nodo(resultado.nombre_clase, propiedades=resultado.obtener_atributos())
+    grafo.graficar()
+    driver.close()
+
+def search_pelicula():
+    driver = connection(URI,AUTH)
+    resultado = search(driver=driver, 
+                        search_mode=MODE_NODE, 
+                        clase='Movie', propiedad= 'title',
+                        parametro= 'Forrest Gump')
+    grafo = GraficarGrafo()
+    grafo.agregar_nodo(resultado.nombre_clase, propiedades=resultado.obtener_atributos())
+    grafo.graficar()
+    driver.close()
+
+def search_relation():
+    driver = connection(URI,AUTH)
+    resultado = search(driver=driver, 
+                        search_mode=MODE_RELATION, 
+                        clase='User', propiedad= 'name',
+                        parametro= 'Fula Nito', relacion= 'RATED',
+                        clase_relacionada= 'Movie')
+
+    grafo = GraficarGrafo()
+    for r in resultado:
+        parametrob, valorb = r.nodo_b.obtener_primer_parametro()
+        parametroa, valora = r.nodo_a.obtener_primer_parametro()
+        grafo.agregar_nodo(f"{r.nodo_a.nombre_clase} - {valora}", r.nodo_a.obtener_atributos())
+        grafo.agregar_nodo(f"{r.nodo_b.nombre_clase} - {valorb}", r.nodo_b.obtener_atributos())
+        grafo.agregar_arista(nodo1=f"{r.nodo_a.nombre_clase} - {valora}", 
+                             nodo2=f"{r.nodo_b.nombre_clase} - {valorb}",
+                             etiqueta=r.nombre_clase,
+                             propiedades=r.obtener_propiedades())
+        print(r.propiedades)
+    grafo.graficar()
+
+    driver.close()
+
+
+def mostrar_menu():
+    print("==== Menú ====")
+    print("1. Poblar Grafico")
+    print("2. Buscar Usuario")
+    print("3. Buscar Pelicula")
+    print("4. Buscar Relacion Ranqueo")
+    print("5. Poblar Grafo 2")
+    print("0. Salir")
+    print("=================")
+
+def opcion_1():
+    create_database()
+
+def opcion_2():
+    search_user()
+
+def opcion_3():
+    search_pelicula()
+
+def opcion_4():
+    search_relation()
+
+def opcion_5():
+    crear_grafo2()
+
+def main():
+    while True:
+        mostrar_menu()
+        try:
+            eleccion = int(input("Selecciona una opción: "))
+            if eleccion == 1:
+                opcion_1()
+            elif eleccion == 2:
+                opcion_2()
+            elif eleccion == 3:
+                opcion_3()
+            elif eleccion == 4:
+                opcion_4()
+            elif eleccion == 5:
+                opcion_5()
+            elif eleccion == 0:
+                print("Saliendo...")
+                break
+            else:
+                print("Opción inválida. Por favor, selecciona un número entre 0 y 5.")
+        except ValueError:
+            print("Por favor ingresa un número válido.")
+
+if __name__ == "__main__":
+    main()
 
 
 
