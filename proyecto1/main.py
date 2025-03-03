@@ -2,9 +2,9 @@ from conn import connection
 from baseMethods import clean_db, create_nodo, create_relation
 
 
-URI = "neo4j+s://9ade8666.databases.neo4j.io"
+URI = "neo4j+s://3b37977c.databases.neo4j.io"
 #Instancia
-AUTH = ("neo4j", "AnkA4l4xf8uyVAAqRUtIbhUfY5FYB8UhxDzwB3sZJ00")
+AUTH = ("neo4j", "W_m4ObG8GYoBCCcUVjQTBJlGj44enIFNCPVgvR8GEb4")
 
 def create_db():
     driver = connection(URI,AUTH)

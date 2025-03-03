@@ -4,5 +4,5 @@ from neo4j import GraphDatabase
 def connection(uri: str, auth: tuple)-> GraphDatabase.driver:
     driver = GraphDatabase.driver(uri, auth=auth)
     driver.verify_connectivity()
-    print("Connection established.")
+    print("Conexion Exitosa.")
     return driver
