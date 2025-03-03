@@ -51,7 +51,7 @@ import Icon from "@mui/material/Icon";
 const routes = [
   {
     type: "collapse",
-    name: "Dashboard",
+    name: "Reporte de Transacciones",
     key: "dashboard",
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/dashboard",
@@ -59,7 +59,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Tables",
+    name: "Transacciones Fraudulentas",
     key: "tables",
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/tables",
@@ -67,7 +67,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Billing",
+    name: "Insertar Nueva Transaccion",
     key: "billing",
     icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/billing",
