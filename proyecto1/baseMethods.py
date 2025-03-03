@@ -42,3 +42,34 @@ def transaction_record(driver, nodo):
     RETURN n
     """
     driver.execute_query(query, propiedad_transaccion)
+
+def get_all(driver, nodo_name, limitation=25):
+    query = f"MATCH (n:{nodo_name}) RETURN n LIMIT {limitation}"
+    
+    result, summary, _ = driver.execute_query(query, graph_objects=True)  # 🔥 Extraer solo el resultado
+
+    nodo_clases = {
+        "Customer": Customer,
+        "Merchant": Merchant,
+        "Bank_Account": Bank_Account,
+        "Device": Device,
+        "Transaction": Transactiones
+    }
+
+    nodos = []
+
+    for record in result:  # Iterar sobre los registros devueltos
+        node = record["n"]  # 🔥 Acceder correctamente al nodo
+
+        
+        clase = list(node.labels)[0]  # Obtener el primer label
+        propiedades = node._properties  # Extraer propiedades del nodo
+      
+
+        if clase in nodo_clases:
+            print(propiedades)
+            nodo_obj = nodo_clases[clase](**propiedades)  # Crear instancia de la clase correspondiente
+            nodos.append(nodo_obj)
+
+    driver.close()
+    return nodos

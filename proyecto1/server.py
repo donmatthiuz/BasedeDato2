@@ -14,7 +14,7 @@ URI = "neo4j+s://3b37977c.databases.neo4j.io"
 AUTH = ("neo4j", "W_m4ObG8GYoBCCcUVjQTBJlGj44enIFNCPVgvR8GEb4")
 
 app = Flask(__name__)
-driver = connection(URI,AUTH)
+driver = connection()
 
 CORS(app, origins=["http://localhost:3000"])
 
