@@ -153,6 +153,29 @@ MATCH (c:Customer {customerId: '123'})-[r:PERFORMS]->(t:Transaction)
 DETACH DELETE c, t
 ```
 
+### **🔹 Ediciones Adicionales Relaciones**
+
+#### **🔹 1. Actualizar `INVOLVES` con `transaction_count`**
+
+📌 **Objetivo**: Contar el número de transacciones que involucran un comercio y agregar la propiedad `transaction_count` en la relación.
+
+```cypher
+MATCH (m:Merchant)<-[r:INVOLVES]-(t:Transaction)
+WITH m, r, COUNT(t) AS tx_count
+SET r.transaction_count = tx_count
+RETURN m.merchantName, r.transaction_count
+```
+
+#### **🔹 2. Actualizar `HAPPENED_AT` con `balance_before`**
+
+📌 **Objetivo**: Calcular el saldo antes de la transacción (`balance_before = accountBalance + transactionAmount`) y asignarlo a la relación.
+
+```cypher
+MATCH (b:Bank_Account)<-[r:HAPPENED_AT]-(t:Transaction)
+SET r.balance_before = b.accountBalance + t.transactionAmount
+RETURN b.accountType, r.balance_before
+```
+
 ### **🔹 Consideraciones sobre la Hora en Neo4j**
 
 - Neo4j almacena **`datetime`** en formato ISO 8601 (`YYYY-MM-DDTHH:MM:SS±hh:mm`).

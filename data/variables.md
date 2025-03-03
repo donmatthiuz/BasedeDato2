@@ -112,8 +112,8 @@ Dado esto, podemos hacer una estimación general:
 **Propósito:** Representa la relación de propiedad entre un cliente y su cuenta bancaria.  
 **Propiedades:**
 
-- `since*` (Date) → Fecha en la que se abrió la cuenta.
-- `account_status*` (String) → Estado de la cuenta (Ejemplo: "Activa", "Cerrada", "Congelada").
+<!-- - `since*` (Date) → Fecha en la que se abrió la cuenta.
+- `account_status*` (String) → Estado de la cuenta (Ejemplo: "Activa", "Cerrada", "Congelada"). -->
 
 #### **2. `PERFORMS` (Customer → Transaction)**
 
@@ -122,7 +122,7 @@ Dado esto, podemos hacer una estimación general:
 
 - `channel` (String) → Medio por el cual se realizó la transacción (Ejemplo: "Cajero Automático", "Banca Móvil") (Transaction_Device).
 - `device_used` (String) → Tipo de dispositivo usado (Ejemplo: "POS", "Navegador Web") (Device_Type).
-- `location_mismatch` (Boolean) → Indica si la ubicación de la transacción es inusual para el cliente.
+<!-- - `location_mismatch` (Boolean) → Indica si la ubicación de la transacción es inusual para el cliente. -->
 
 *Ejemplo:*  
 Si un cliente suele realizar transacciones en un país pero de repente hace una compra en otro pais sin historial de viajes, esto podría indicar un fraude.
@@ -153,7 +153,7 @@ Si un comercio tiene un alto `merchant_risk_score`, significa que ha estado invo
 **Propósito:** Representa en qué cuenta bancaria ocurrió la transacción.  
 **Propiedades:**
 
-- `balance_before` (Float) → Saldo de la cuenta antesde la transacción.
+- `balance_before` (Float) → Saldo de la cuenta antes de la transacción.
 - `balance_after` (Float) → Saldo de la cuenta después de la transacción.
 
 *Ejemplo:*  
@@ -161,6 +161,6 @@ Si una cuenta tiene múltiples transacciones en un corto período de tiempo con 
 
 ### Diagrama de Modelo de Datos
 
-![Modelación de Datos](../images/grafo.png "Modelación de Datos")
+![Modelación de Datos](../images/grafo2.png "Modelación de Datos")
 
 > **Nota:** Se descartará la columna con el atributo `Is_Fraud` para hacer la exploración sin tener conocimientos del veredicto de la transacción y utilizar las herramientas propuestas para determinar si es o no una transacción fraudulenta.
