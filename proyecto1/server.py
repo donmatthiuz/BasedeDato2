@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from dotenv import load_dotenv
 from conn import connection
 from baseMethods import *
+from flask_cors import CORS
 
 import os
 
@@ -9,6 +10,8 @@ import os
 load_dotenv()
 
 app = Flask(__name__)
+
+CORS(app, origins=["http://localhost:3000"])
 
 # Configuración de Flask con variables de entorno
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -19,7 +22,7 @@ def home():
     return f"Flask está corriendo en modo: {os.getenv('FLASK_ENV')}"
 
 
-@app.route('/get_customers')
+
 @app.route('/get_customers')
 def customers():
     driver = connection()

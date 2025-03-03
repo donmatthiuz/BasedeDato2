@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 const useApi = (link) => {
   const [error, setError] = useState(null);
@@ -9,7 +9,7 @@ const useApi = (link) => {
         method: metodo,
         body: JSON.stringify(body),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       };
       const response = await fetch(link, fetchOptions);
@@ -42,7 +42,7 @@ const useApi = (link) => {
         method: metodo,
         body: JSON.stringify(body),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...Object.fromEntries(headers.map((header) => [header.title, header.value])),
         },
       };
@@ -65,7 +65,7 @@ const useApi = (link) => {
       const fetchOptions = {
         method: metodo,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...Object.fromEntries(headers.map((header) => [header.title, header.value])),
         },
       };
@@ -88,7 +88,7 @@ const useApi = (link) => {
       const fetchOptions = {
         method: metodo,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       };
       const response = await fetch(link, fetchOptions);
@@ -108,7 +108,7 @@ const useApi = (link) => {
   const llamadowithFileAndBody = async (file, body, metodo) => {
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
       // Append body fields to FormData
       Object.entries(body).forEach(([key, value]) => {
