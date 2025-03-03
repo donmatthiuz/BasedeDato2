@@ -50,6 +50,15 @@ import Icon from "@mui/material/Icon";
 import Customer from "layouts/customers";
 
 const routes = [
+
+  {
+    type: "collapse",
+    name: "Transacciones",
+    key: "dashboard",
+    icon: <Icon fontSize="small">assessment_icon</Icon>,
+    route: "/dashboard",
+    component: <Tables />,
+  },
   {
     type: "collapse",
     name: "Customers",
@@ -58,22 +67,14 @@ const routes = [
     route: "/customers",
     component: <Customer />,
   },
-  {
-    type: "collapse",
-    name: "Transacciones",
-    key: "dashboard",
-    icon: <Icon fontSize="small">assessment_icon</Icon>,
-    route: "/dashboard",
-    component: <Dashboard />,
-  },
-  {
-    type: "collapse",
-    name: "Transacciones Fraudulentas",
-    key: "tables",
-    icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/tables",
-    component: <Tables />,
-  },
+  // {
+  //   type: "collapse",
+  //   name: "Transacciones Fraudulentas",
+  //   key: "tables",
+  //   icon: <Icon fontSize="small">table_view</Icon>,
+  //   route: "/tables",
+  //   component: <Tables />,
+  // },
   // {
   //   type: "collapse",
   //   name: "RTL",
