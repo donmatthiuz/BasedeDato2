@@ -1,5 +1,8 @@
-from flask import Flask
+from flask import Flask, jsonify
 from dotenv import load_dotenv
+from conn import connection
+from baseMethods import *
+
 import os
 
 # Cargar variables de entorno desde .env
@@ -15,5 +18,19 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 def home():
     return f"Flask está corriendo en modo: {os.getenv('FLASK_ENV')}"
 
+
+@app.route('/get_customers')
+@app.route('/get_customers')
+def customers():
+    driver = connection()
+    nodos = get_all(driver, 'Customer', limitation=200)
+    
+    # Convertir cada objeto a diccionario
+    nodos_dict = [n.ge_propiedades_dic() for n in nodos]
+
+    driver.close()
+    
+    # Retornar JSON con los nodos
+    return jsonify(nodos_dict)
 if __name__ == '__main__':
     app.run(debug=True)

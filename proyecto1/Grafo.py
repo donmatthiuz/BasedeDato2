@@ -1,3 +1,5 @@
+import json
+
 class Nodo:
     def __init__(self, **kwargs):
         self.atributos = list(kwargs.keys())
@@ -30,8 +32,11 @@ class Nodo:
                     propiedades[k] = list(valor)  # Convertir explícitamente a lista (Neo4j acepta listas)
                 else:
                     propiedades[k] = valor
-        return propiedades
+        return propiedades  
 
+    def to_json(self):
+        """Devuelve los atributos del nodo en formato JSON."""
+        return json.dumps(self.ge_propiedades_dic(), indent=4, ensure_ascii=False)
 
 
 class Customer(Nodo):
@@ -57,11 +62,11 @@ class Bank_Account(Nodo):
                          accountBalance=accountBalance, currency=currency,
                          openDate=openDate, status=status)
 
-
 class Device(Nodo):
-    def __init__(self, deviceType: str, deviceLocation: str, transactionDevice: str):
+    def __init__(self, deviceType: str, transactionDevice: str, deviceLocation: str = "No tiene"):
         super().__init__(deviceType=deviceType, deviceLocation=deviceLocation, 
                          transactionDevice=transactionDevice)
+
 
 
 class Transaction(Nodo):

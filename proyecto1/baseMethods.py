@@ -1,3 +1,5 @@
+from Grafo import *
+from neo4j import *
 #Borrar todos los conteidos de la base de datos
 def clean_db(driver):
     query = """
@@ -36,3 +38,34 @@ def create_relation(driver, relacion):
     print(f"Se ha creado la relación {relacion.nombre_clase} entre {relacion.nodo_a.nombre_clase} y {relacion.nodo_b.nombre_clase}")
 
     driver.close()
+
+def get_all(driver, nodo_name, limitation=25):
+    query = f"MATCH (n:{nodo_name}) RETURN n LIMIT {limitation}"
+    
+    result, summary, _ = driver.execute_query(query, graph_objects=True)  # 🔥 Extraer solo el resultado
+
+    nodo_clases = {
+        "Customer": Customer,
+        "Merchant": Merchant,
+        "Bank_Account": Bank_Account,
+        "Device": Device,
+        "Transaction": Transaction
+    }
+
+    nodos = []
+
+    for record in result:  # Iterar sobre los registros devueltos
+        node = record["n"]  # 🔥 Acceder correctamente al nodo
+
+        
+        clase = list(node.labels)[0]  # Obtener el primer label
+        propiedades = node._properties  # Extraer propiedades del nodo
+      
+
+        if clase in nodo_clases:
+            nodo_obj = nodo_clases[clase](**propiedades)  # Crear instancia de la clase correspondiente
+            nodos.append(nodo_obj)
+
+    driver.close()
+    return nodos
+
