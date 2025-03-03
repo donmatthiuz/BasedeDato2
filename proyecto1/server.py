@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-from flask import Flask, request, jsonify
-from dotenv import load_dotenv
-from conn import connection
-from baseMethods import clean_db, create_nodo, create_relation, transaction_record
-=======
 from flask import Flask, jsonify
 from dotenv import load_dotenv
 from conn import connection
 from baseMethods import *
 from flask_cors import CORS
 
->>>>>>> e665323c5e0ea49cab4cb1b5fb1489c10fe63986
 import os
 
 # Cargar variables de entorno desde .env
@@ -33,7 +26,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 def home():
     return f"Flask está corriendo en modo: {os.getenv('FLASK_ENV')}"
 
-<<<<<<< HEAD
 @app.route('/clean_db', methods=['DELETE'])
 def clean_database():
     clean_db(driver)
@@ -62,7 +54,6 @@ def transaction_registration():
         return jsonify({'error': 'No se han encontrado datos'}), 400
     transaction_record(driver, data)
     return jsonify({'message':'Transaccion registrada'})
-=======
 
 
 @app.route('/get_customers')
@@ -132,7 +123,6 @@ def transacciones():
     # Retornar JSON con los nodos
     return jsonify(nodos_dict)
 
->>>>>>> e665323c5e0ea49cab4cb1b5fb1489c10fe63986
 
 if __name__ == '__main__':
     app.run(debug=True)
