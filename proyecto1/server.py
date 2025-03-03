@@ -35,5 +35,61 @@ def customers():
     
     # Retornar JSON con los nodos
     return jsonify(nodos_dict)
+
+
+@app.route('/get_devices')
+def devices():
+    driver = connection()
+    nodos = get_all(driver, 'Device', limitation=10)
+    
+    # Convertir cada objeto a diccionario
+    nodos_dict = [n.ge_propiedades_dic() for n in nodos]
+
+    driver.close()
+    
+    # Retornar JSON con los nodos
+    return jsonify(nodos_dict)
+
+@app.route('/get_accounts')
+def accounts():
+    driver = connection()
+    nodos = get_all(driver, 'Bank_Account', limitation=10)
+    
+    # Convertir cada objeto a diccionario
+    nodos_dict = [n.ge_propiedades_dic() for n in nodos]
+
+    driver.close()
+    
+    # Retornar JSON con los nodos
+    return jsonify(nodos_dict)
+
+@app.route('/get_comerciantes')
+def merchants():
+    driver = connection()
+    nodos = get_all(driver, 'Merchant', limitation=2000)
+    
+    # Convertir cada objeto a diccionario
+    nodos_dict = [n.ge_propiedades_dic() for n in nodos]
+
+    driver.close()
+    
+    # Retornar JSON con los nodos
+    return jsonify(nodos_dict)
+
+
+@app.route('/get_transaction')
+def transacciones():
+    driver = connection()
+    nodos = get_all(driver, 'Transaction', limitation=2000)
+    
+    # Convertir cada objeto a diccionario
+    nodos_dict = [n.ge_propiedades_dic() for n in nodos]
+
+    driver.close()
+    
+    # Retornar JSON con los nodos
+    return jsonify(nodos_dict)
+
+
 if __name__ == '__main__':
     app.run(debug=True)

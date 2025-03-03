@@ -49,7 +49,7 @@ def get_all(driver, nodo_name, limitation=25):
         "Merchant": Merchant,
         "Bank_Account": Bank_Account,
         "Device": Device,
-        "Transaction": Transaction
+        "Transaction": Transactiones
     }
 
     nodos = []
@@ -63,6 +63,7 @@ def get_all(driver, nodo_name, limitation=25):
       
 
         if clase in nodo_clases:
+            print(propiedades)
             nodo_obj = nodo_clases[clase](**propiedades)  # Crear instancia de la clase correspondiente
             nodos.append(nodo_obj)
 

@@ -1,5 +1,5 @@
 import json
-
+from neo4j import time as tm
 class Nodo:
     def __init__(self, **kwargs):
         self.atributos = list(kwargs.keys())
@@ -48,16 +48,16 @@ class Customer(Nodo):
 
 
 class Merchant(Nodo):
-    def __init__(self, merchantId: str, merchantCategory: str, riskLevel: int,
-                 merchantLocation: str, merchantName: str):
+    def __init__(self, merchantId: str, merchantCategory: str, riskLevel: int = 1,
+                 merchantLocation: str = "No tiene", merchantName: str = ""):
         super().__init__(merchantId=merchantId, merchantCategory=merchantCategory,
                          riskLevel=riskLevel, merchantLocation=merchantLocation, 
-                         merchantName=merchantName)
+                         merchantName=merchantId)
 
 
 class Bank_Account(Nodo):
     def __init__(self, accountType: str, bankBranch: str, accountBalance: float,
-                 currency: str, openDate: str, status: str):
+                 currency: str, openDate: str = "2000-01-01", status: str = "Activa"):
         super().__init__(accountType=accountType, bankBranch=bankBranch,
                          accountBalance=accountBalance, currency=currency,
                          openDate=openDate, status=status)
@@ -68,11 +68,15 @@ class Device(Nodo):
                          transactionDevice=transactionDevice)
 
 
-
-class Transaction(Nodo):
-    def __init__(self, transactionId: str, transactionDate: str, transactionAmount: float,
+class Transactiones(Nodo):
+    def __init__(self, transactionId: str, transactionDate, transactionAmount: float,
                  transactionType: str, transactionDescription: str, transactionCurrency: str,
                  transactionLocation: str, isFraudTeoric: bool):
+        
+        # Convertir transactionDate a string si es un objeto DateTime
+        if isinstance(transactionDate, tm.DateTime):
+            transactionDate = transactionDate.isoformat()
+
         super().__init__(transactionId=transactionId, transactionDate=transactionDate,
                          transactionAmount=transactionAmount, transactionType=transactionType,
                          transactionDescription=transactionDescription, transactionCurrency=transactionCurrency,

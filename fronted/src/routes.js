@@ -53,9 +53,9 @@ const routes = [
   {
     type: "collapse",
     name: "Customers",
-    key: "notifications",
+    key: "customers",
     icon: <Icon fontSize="small">person_icon</Icon>,
-    route: "/notifications",
+    route: "/customers",
     component: <Customer />,
   },
   {
