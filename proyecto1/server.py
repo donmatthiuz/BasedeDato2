@@ -109,7 +109,6 @@ def merchants():
     # Retornar JSON con los nodos
     return jsonify(nodos_dict)
 
-
 @app.route('/get_transaction')
 def transacciones():
     driver = connection()
