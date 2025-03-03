@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 from conn import connection
 from baseMethods import *
@@ -26,12 +26,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 def home():
     return f"Flask está corriendo en modo: {os.getenv('FLASK_ENV')}"
 
-@app.route('/clean_db', methods=['DELETE'])
+@app.route('/clean_db')
 def clean_database():
     clean_db(driver)
     return jsonify ({"Se ha limpiado la base de datos."})
 
-@app.route('/create_nodo', methods=['POST'])
+@app.route('/create_nodo')
 def creating_node():
     data = request.get_json()
     if not data:
@@ -39,7 +39,7 @@ def creating_node():
     create_nodo(driver, data)
     return jsonify({"message": "Nodo creado exitosamente"})
 
-@app.route('/create_relationship', methods=['POST'])
+@app.route('/create_relationship')
 def creating_relationship():
     data = request.get_json()
     if not data:
@@ -47,7 +47,7 @@ def creating_relationship():
     create_relation(driver, data)
     return jsonify({'message': 'Relacion creada exitosamente'})
 
-@app.route('/transaction_log', method=['POST'])
+@app.route('/transaction_log')
 def transaction_registration():
     data = request.get_json()
     if not data:
