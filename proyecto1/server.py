@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from conn import connection
 from baseMethods import *
 from flask_cors import CORS
+from fraud_detection import *
 
 import os
 
@@ -122,6 +123,10 @@ def transacciones():
     # Retornar JSON con los nodos
     return jsonify(nodos_dict)
 
+@app.route('/detect_frauds')
+def detect_frauds():
+    fraud_cases = fraud_detection(driver)
+    return jsonify({"casos de fraude": fraud_cases})
 
 if __name__ == '__main__':
     app.run(debug=True)
