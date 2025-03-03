@@ -17,7 +17,6 @@ export default function Data2() {
   useEffect(() => {
     const fetchTransactions = async () => {
       const data = await llamadowithoutbody("GET");
-      console.log(data);
       if (data) {
         setComerciantes(data); // Si solo tienes un objeto, conviértelo en un array
       }

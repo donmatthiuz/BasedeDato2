@@ -17,7 +17,7 @@ export default function Data() {
   useEffect(() => {
     const fetchTransactions = async () => {
       const data = await llamadowithoutbody("GET");
-      console.log(data);
+      
       if (data) {
         setTransactions(data); // Si solo tienes un objeto, conviértelo en un array
       }
