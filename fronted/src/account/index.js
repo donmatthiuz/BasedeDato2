@@ -37,16 +37,16 @@ import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
 import Projects from "layouts/dashboard/components/Projects";
 import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
 
-function Devices() {
-  const { llamadowithoutbody } = useApi("http://127.0.0.1:5000/get_devices");
-    const [devices, setDevices] = useState([]); // Estado para almacenar las transacciones
+function Account() {
+  const { llamadowithoutbody } = useApi("http://127.0.0.1:5000/get_accounts");
+    const [accounts, setAccounts] = useState([]); // Estado para almacenar las transacciones
   
     useEffect(() => {
       const fetchTransactions = async () => {
         const data = await llamadowithoutbody("GET");
        
         if (data) {
-          setDevices(data); // Si solo tienes un objeto, conviértelo en un array
+          setAccounts(data); // Si solo tienes un objeto, conviértelo en un array
         }
       };
       fetchTransactions();
@@ -58,19 +58,20 @@ function Devices() {
       <MDBox py={3}>
         <Grid container spacing={3}>
 
-          {devices.length > 0 ? (
-                      devices.map((device) => (
+          {accounts.length > 0 ? (
+                      accounts.map((acc) => (
                         <Grid item xs={12} md={6} lg={3}>
                           <MDBox mb={1.5}>
                             <ComplexStatisticsCard
-                              color="dark"
-                              icon="devices_icon"
-                              
-                              count={device.deviceType}
+                             color="success"
+
+                              icon="account_balance_wallet_icon"
+                              title={acc.bankBranch}
+                              count={acc.accountBalance}
                               percentage={{
                                 color: "success",
-                               
-                                label: device.transactionDevice,
+                                amount: acc.status,
+                                label: acc.accountType,
                               }}
                             />
                           </MDBox>
@@ -93,4 +94,4 @@ function Devices() {
   );
 }
 
-export default Devices;
+export default Account;

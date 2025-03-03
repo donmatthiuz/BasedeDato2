@@ -49,6 +49,9 @@ import SignUp from "layouts/authentication/sign-up";
 import Icon from "@mui/material/Icon";
 import Customer from "layouts/customers";
 import Devices from "layouts/devices";
+import Account from "account";
+import Transaction from "layouts/billing/components/Transaction";
+import Merchant from "layouts/merchas";
 
 const routes = [
 
@@ -75,6 +78,22 @@ const routes = [
     icon: <Icon fontSize="small">devices_icon</Icon>,
     route: "/devices",
     component: <Devices />,
+  },
+  {
+    type: "collapse",
+    name: "Accounts",
+    key: "accounts",
+    icon: <Icon fontSize="small">account_balance_wallet_icon</Icon>,
+    route: "/accounts",
+    component: <Account />,
+  },
+  {
+    type: "collapse",
+    name: "Merchant",
+    key: "merchant",
+    icon: <Icon fontSize="small">business_icon</Icon>,
+    route: "/merchant",
+    component: <Merchant />,
   },
   // {
   //   type: "collapse",
