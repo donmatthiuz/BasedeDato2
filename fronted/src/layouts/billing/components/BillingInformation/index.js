@@ -13,7 +13,7 @@ function BillingInformation() {
   useEffect(() => {
     const fetchCustomers = async () => {
       const data = await llamadowithoutbody("GET");
-      console.log(data)
+      
       if (data) {
         setCustomers(data);
       }
