@@ -35,4 +35,10 @@ def create_relation(driver, relacion):
     driver.execute_query(query)
     print(f"Se ha creado la relación {relacion.nombre_clase} entre {relacion.nodo_a.nombre_clase} y {relacion.nodo_b.nombre_clase}")
 
-    driver.close()
+def transaction_record(driver, nodo):
+    propiedad_transaccion = nodo.prop_tran()
+    query = f"""
+    CREATE (n:Transaction {{ {", ".join(f"{k}: ${k}" for k in propiedad_transaccion)} }})
+    RETURN n
+    """
+    driver.execute_query(query, propiedad_transaccion)
