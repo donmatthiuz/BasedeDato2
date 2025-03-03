@@ -28,12 +28,11 @@ import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
 // Data
-import authorsTableData from "layouts/tables/data/authorsTableData";
-import projectsTableData from "layouts/tables/data/projectsTableData";
+import authorsTableData from "layouts/merchas/data/authorsTableData2";
 
-function Tables() {
+function Merchant() {
   const { columns, rows } = authorsTableData();
-  const { columns: pColumns, rows: pRows } = projectsTableData();
+ 
 
   return (
     <DashboardLayout>
@@ -53,7 +52,7 @@ function Tables() {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                 Transacciones
+                Merchant
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>
@@ -75,4 +74,4 @@ function Tables() {
   );
 }
 
-export default Tables;
+export default Merchant;

@@ -10,16 +10,16 @@ import team2 from "assets/images/team-2.jpg";
 import team3 from "assets/images/team-3.jpg";
 import team4 from "assets/images/team-4.jpg";
 
-export default function Data() {
-  const { llamadowithoutbody } = useApi("http://127.0.0.1:5000/get_transaction");
-  const [transactions, setTransactions] = useState([]); // Estado para almacenar las transacciones
+export default function Data2() {
+  const { llamadowithoutbody } = useApi("http://127.0.0.1:5000/get_comerciantes");
+  const [comerciantes, setComerciantes] = useState([]); // Estado para almacenar las transacciones
 
   useEffect(() => {
     const fetchTransactions = async () => {
       const data = await llamadowithoutbody("GET");
       console.log(data);
       if (data) {
-        setTransactions(data); // Si solo tienes un objeto, conviértelo en un array
+        setComerciantes(data); // Si solo tienes un objeto, conviértelo en un array
       }
     };
     fetchTransactions();
@@ -48,43 +48,34 @@ export default function Data() {
 
   return {
     columns: [
-      { Header: "Transaccion", accessor: "author", width: "35%", align: "left" },
-      { Header: "Descripcion Transaccion", accessor: "function", align: "left" },
-      { Header: "Es Fraudulenta", accessor: "status", align: "center" },
-      { Header: "Fecha", accessor: "employed", align: "center" },
-      { Header: "Eliminar", accessor: "action", align: "center" },
+      { Header: "Comerciantes", accessor: "author", width: "35%", align: "left" },
+      { Header: "Categoria", accessor: "function", align: "left" },
+      { Header: "riskLevel", accessor: "status", align: "center" },
+      
     ],
 
-    rows: transactions.map((transaction) => ({
+    rows: comerciantes.map((comer) => ({
       author: (
         <Author
-        name={`Precio ${transaction.transactionAmount}`}
-          email={`ID Transacción: ${transaction.transactionId}`} // Puedes añadir el ID aquí también
+        name={`ID Comerciante: ${comer.merchantId}`}
+          email={`Localizacion: ${comer.merchantLocation}`} // Puedes añadir el ID aquí también
 
           image={team2} // Asegúrate de que la imagen de autor esté configurada
         />
       ),
-      function: <Job title={transaction.transactionType} description={transaction.transactionDescription} />,
+      function: <Job title={comer.merchantCategory} />,
       status: (
         <MDBox ml={-1}>
           <MDBadge
-            badgeContent={transaction.isFraudTeoric ? "Fraudulenta" : "No Fraudulenta"}
-            color={transaction.isFraudTeoric ? "danger" : "success"}
+            badgeContent={comer.riskLevel}
+            color="success"
             variant="gradient"
             size="sm"
           />
         </MDBox>
       ),
-      employed: (
-        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {new Date(transaction.transactionDate).toLocaleDateString()}
-        </MDTypography>
-      ),
-      action: (
-        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          Edit
-        </MDTypography>
-      ),
+      
+     
     })),
   };
 }

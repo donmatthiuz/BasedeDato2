@@ -1,3 +1,5 @@
+from Grafo import *
+from neo4j import *
 #Borrar todos los conteidos de la base de datos
 def clean_db(driver):
     query = """
@@ -33,12 +35,4 @@ def create_relation(driver, relacion):
     driver.execute_query(query)
     print(f"Se ha creado la relación {relacion.nombre_clase} entre {relacion.nodo_a.nombre_clase} y {relacion.nodo_b.nombre_clase}")
 
-#registro de transaccion
-def transaction_record(driver, nodo):
-    propiedad_transaccion = nodo.prop_tran()
-    query = f"""
-    CREATE (n:Transaction {{ {", ".join(f"{k}: ${k}" for k in propiedad_transaccion)} }})
-    RETURN n
-    """
-    driver.execute_query(query, propiedad_transaccion)
-    print(f"Transaccion registrada")
+    driver.close()
