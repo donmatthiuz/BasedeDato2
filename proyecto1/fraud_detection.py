@@ -12,7 +12,8 @@ def unusual_spending(driver):
       WHERE m2.merchantCategory = m.merchantCategory
       AND t0.transactionDate > date()-duration({months: 4})
    }
-   RETURN c.customerName AS Name, t.transactionId AS ID, t.transactionDescription AS Description, t.transactionAmount AS Amount, m.merchantCategory AS Category
+   AND t.isFraudTeoric = TRUE
+   RETURN c.customerName AS Name, t.transactionId AS ID, t.transactionDescription AS Description, m.merchantCategory AS Category, t.transactionAmount AS Amount, t.isFraudTeoric AS isFraud
    ORDER BY Amount DESC
     """
    result, _, _ = driver.execute_query(query)
