@@ -53,6 +53,22 @@ def creating_relationship():
     create_relation(driver, data)
     return jsonify({'message': 'Relacion creada exitosamente'})
 
+
+@app.route('/get_customer_data', methods=['POST'])
+def get_customer_data():
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No se han encontrado datos'}), 400
+    
+    node = get_node(driver=driver, class_name="Customer", param_name="customerId", param_value=data["customerId"])
+
+    return jsonify(node.ge_propiedades_dic()), 200
+
+
+
+
+
+
 @app.route('/transaction_log', methods=['POST'])
 def transaction_registration():
     data = request.get_json()
@@ -254,6 +270,57 @@ def detect_frauds():
     transaction_id = request.args.get('transaction_id')
     fraud_cases = fraud_detection(driver, transaction_id)
     return jsonify({"casos de fraude": fraud_cases})
+
+
+
+@app.route('/delete_prop_customer', methods=['POST'])
+def delete_customer_property():
+    data = request.get_json()  # Recibe los datos en formato JSON
+    print(data)
+    if not data:
+        return jsonify({'error': 'No se han encontrado datos'}), 400
+    remove_property(driver=driver, node_class="Customer", param_name="customerId", param_value=data["customerId"], property_name=data["property_name"])
+
+    return jsonify({"Se elimino con exito": True}), 200
+
+
+
+## UPDATE CUSTOMERS
+
+
+@app.route('/update_customer', methods=['POST'])
+def update_customer():
+    data = request.get_json()  # Recibe los datos en formato JSON
+    print(data)
+    if not data:
+        return jsonify({'error': 'No se han encontrado datos'}), 400
+    print("Siguiente")
+    # Crear una instancia de Customer con los datos recibidos
+    try:
+        customer = Customer(
+            customerId=data["customerId"],
+            customerName=data["customerName"],
+            gender=data["gender"],
+            age=data["age"],
+            customerContact=data["customerContact"],
+            customerEmail=data["customerEmail"],
+            state=data["state"],
+            city=data["city"]
+        )
+    except KeyError as e:
+        return jsonify({'error': f"Falta el campo {str(e)} en los datos"}), 400
+    
+    # Ahora actualizamos las propiedades del nodo Customer con la instancia creada
+    update_nodo_properties(driver, customer)  # Llamar a la función que actualiza el nodo
+    
+    # Recuperamos el nodo actualizado para devolverlo en la respuesta
+    updated_node = get_node(driver=driver, class_name="Customer", param_name="customerId", param_value=data["customerId"])
+    
+    if updated_node:
+        return jsonify(updated_node.ge_propiedades_dic()), 200
+    else:
+        return jsonify({'error': 'Error al actualizar el cliente'}), 500
+
 
 
 
