@@ -10,6 +10,7 @@ from Relacion import *
 import uuid
 import os
 from datetime import date
+from extras import *
 
 # Cargar variables de entorno desde .env
 load_dotenv()
@@ -113,14 +114,25 @@ def transaction_registration():
         usedAt=neo4j.time.Date.from_iso_format(date.today().isoformat())
     )
 
-    
+
+    extra_transaction, extra_customers, extra_accounts = detect_extra_properties(data)
+        
     #Operacion para agregar una relacion
-    create_relation(driver=driver, relacion=relacion)
+    create_relation_extraproperties(driver=driver, relacion=relacion, extra_properties=extra_customers[0])
     create_relation(driver=driver, relacion=happenat)
     create_relation(driver=driver, relacion=involves)
     create_relation(driver=driver, relacion=uses)
 
 
+
+
+    add_more_node_properties(driver=driver,
+                             class_name="Transaction", 
+                             param_name="transactionId", 
+                             param_value=id_unico, 
+                             extra_properties=extra_transaction)
+    
+    
 
     return jsonify({'message':'Transaccion registrada'}), 200
 

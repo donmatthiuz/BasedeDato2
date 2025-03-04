@@ -77,6 +77,11 @@ def get_all(driver, nodo_name, limitation=25):
 
 
 
+
+    
+
+
+
 def get_node(driver, class_name, param_name, param_value):
     try:
         query = f"""
@@ -117,3 +122,57 @@ def get_node(driver, class_name, param_name, param_value):
     except Exception as e:
         print(f"Error al obtener el nodo {class_name}: {e}")
         return None
+
+
+
+
+def add_more_node_properties(driver, class_name, param_name, param_value, extra_properties={}):
+    try:
+        set_clause = ", ".join([f"n.{key} = ${key}" for key in extra_properties])
+
+        query = f"""
+        MATCH (n:{class_name} {{ {param_name}: $param_value }})
+        SET {set_clause}
+        RETURN n
+        """
+
+        params = {"param_value": param_value, **extra_properties}
+
+        driver.execute_query(query, params)
+
+        print(f"Nodo {class_name} con {param_name}={param_value} actualizado con nuevas propiedades: {extra_properties}")
+
+    except Exception as e:
+        print(f"Error al actualizar el nodo {class_name}: {e}")
+
+
+
+def create_relation_extraproperties(driver, relacion, extra_properties={}):
+    try:
+
+        atributos = relacion.propiedades
+        propiedades_base = ", ".join([f"{k}: '{v}'" for k, v in atributos.items()])
+
+
+        propiedades_extra = ", ".join([f"{k}: ${k}" for k in extra_properties])
+        propiedades_finales = f"{propiedades_base}, {propiedades_extra}" if propiedades_extra else propiedades_base
+
+
+        prop_nodoa, valora = relacion.nodo_a.obtener_primer_parametro()
+        prop_nodob, valorb = relacion.nodo_b.obtener_primer_parametro()
+
+
+        query = f"""
+        MATCH (a:{relacion.nodo_a.nombre_clase} {{{prop_nodoa}: '{valora}'}}), 
+              (b:{relacion.nodo_b.nombre_clase} {{{prop_nodob}: '{valorb}'}})
+        CREATE (a)-[r:{relacion.nombre_clase} {{ {propiedades_finales} }}]->(b)
+        RETURN r
+        """
+
+
+        driver.execute_query(query, extra_properties)
+
+        print(f"✅ Relación {relacion.nombre_clase} creada entre {relacion.nodo_a.nombre_clase} y {relacion.nodo_b.nombre_clase} con propiedades: {extra_properties}")
+
+    except Exception as e:
+        print(f"❌ Error al crear la relación {relacion.nombre_clase}: {e}")

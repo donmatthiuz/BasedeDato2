@@ -76,25 +76,10 @@ function Tables() {
    
     
     const body = {
-        transactionAmount: values.transactionAmount,
-        transactionDescription: values.transactionDescription,
-        transactionLocation: values.transactionLocation,
-        transactionType: values.transactionType,
-        customer: values.customer.map(c => ({
-          customer_name: c.customer_name,
-          channel: c.channel,
-          deviceUsed: c.deviceUsed
-        })),
-        account: values.account.map(a => ({
-          branch_account: a.branch_account,
-          balanceBefore: a.balanceBefore,
-          balanceAfter: a.balanceAfter
-        })),
-        merchant: values.merchant,
-        device: values.device
+      ...values
       };
       console.log(body)
-      console.log(values)
+      
       const response = await insertTransaction(body, 'POST');
       if (response) {
         console.log(response)
