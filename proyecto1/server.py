@@ -97,6 +97,10 @@ def devices():
     # Retornar JSON con los nodos
     return jsonify(nodos_dict)
 
+
+
+
+
 @app.route('/get_accounts')
 def accounts():
     driver = connection()
@@ -117,6 +121,21 @@ def merchants():
     
     # Convertir cada objeto a diccionario
     nodos_dict = [n.ge_propiedades_dic() for n in nodos]
+
+    driver.close()
+    
+    # Retornar JSON con los nodos
+    return jsonify(nodos_dict)
+
+
+
+@app.route('/get_comerciantes_names')
+def merchants_names():
+    driver = connection()
+    nodos = get_all(driver, 'Merchant', limitation=1000)
+    
+    # Convertir cada objeto a diccionario
+    nodos_dict = [n.merchantId for n in nodos]
 
     driver.close()
     
