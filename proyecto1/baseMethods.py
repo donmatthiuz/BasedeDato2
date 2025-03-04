@@ -1,6 +1,7 @@
 import neo4j
 from Grafo import *
 from neo4j import *
+from Relacion import *
 #Borrar todos los conteidos de la base de datos
 def clean_db(driver):
     query = """
@@ -253,3 +254,89 @@ def remove_node(driver, class_name, param_name, param_value):
         session.run(query, param_value=param_value)
         
         return f"El nodo {class_name} con {param_name} = {param_value} y sus relaciones fueron eliminados exitosamente."
+
+
+
+def create_and_get_relation(driver, class_name, param_name, param_value, relation_class, **kwargs):
+    """
+    Crea una relación entre dos nodos obtenidos dinámicamente y devuelve la relación creada,
+    usando las propiedades de la relación (si existen) y las adicionales pasadas como kwargs.
+    
+    :param driver: El controlador de la base de datos Neo4j.
+    :param class_name: El tipo de nodo (como 'Customer').
+    :param param_name: El nombre del parámetro por el cual buscar el nodo (como 'customerId').
+    :param param_value: El valor del parámetro para buscar el nodo.
+    :param relation_class: El tipo de relación que se va a crear (por ejemplo, PERFORMS, INVOLVES, etc.)
+    :param kwargs: Propiedades adicionales que la relación pueda tener.
+    :return: La relación creada.
+    """
+    
+    # Obtener el nodo 'a' usando get_node (esto busca el nodo según la clase y parámetro)
+    nodo_a = get_node(driver, class_name, param_name, param_value)
+    if not nodo_a:
+        print(f"No se encontró el nodo {class_name} con {param_name} = {param_value}")
+        return None
+
+    # Realizar un query para obtener el nodo relacionado (nodo_b)
+    query = f"""
+    MATCH (a:{class_name} {{{param_name}: $param_value}})-[r:{relation_class.__name__.upper()}]->(b)
+    RETURN r, b LIMIT 1
+    """
+    
+    result, _, _ = driver.execute_query(query, {"param_value": param_value}, graph_objects=True)
+    
+    if not result:
+        print(f"No se encontró un nodo relacionado con {param_name} = {param_value} a través de la relación {relation_class.__name__}.")
+        return None
+
+    # Extraer la relación y el nodo_b
+    relacion = result[0]["r"]  # Relación encontrada
+    nodo_b = result[0]["b"]  # Nodo relacionado (b)
+
+    # Obtener las propiedades del nodo_b y de la relación
+    propiedades_b = nodo_b._properties  # Propiedades del nodo relacionado
+    propiedades_relacion = relacion._properties  # Propiedades de la relación
+    
+    # Convertir el nodo_b en un objeto de la clase correspondiente
+    nodo_b_clase = list(nodo_b.labels)[0]  # Obtener la clase del nodo_b
+    
+    # Crear el objeto de nodo_b basado en la clase (esto depende de las clases que tienes definidas)
+    nodo_b_obj = None
+    nodo_clases = {
+        "Customer": Customer,
+        "Merchant": Merchant,
+        "Bank_Account": Bank_Account,
+        "Device": Device,
+        "Transaction": Transactiones
+    }
+
+    if nodo_b_clase in nodo_clases:
+        nodo_b_obj = nodo_clases[nodo_b_clase](**propiedades_b)
+    
+    if not nodo_b_obj:
+        print(f"No se pudo crear el objeto para el nodo relacionado {nodo_b_clase}.")
+        return None
+    
+    # Combinar las propiedades de la relación con las propiedades pasadas en kwargs
+    propiedades_combinadas = {**propiedades_relacion, **kwargs}
+    
+    # Crear la relación con la clase proporcionada y las propiedades combinadas
+    if relation_class == PERFORMS:
+        relacion = PERFORMS(nodo_a, nodo_b_obj, **propiedades_combinadas)
+    elif relation_class == INVOLVES:
+        relacion = INVOLVES(nodo_a, nodo_b_obj, **propiedades_combinadas)
+    elif relation_class == HAPPENED_AT:
+        relacion = HAPPENED_AT(nodo_a, nodo_b_obj, **propiedades_combinadas)
+    elif relation_class == USES:
+        relacion = USES(nodo_a, nodo_b_obj, **propiedades_combinadas)
+    elif relation_class == OWNS:
+        relacion = OWNS(nodo_a, nodo_b_obj, **propiedades_combinadas)
+    else:
+        print(f"Relación {relation_class} no reconocida.")
+        return None
+    
+    # Crear la relación en la base de datos
+
+
+    # Devolver la relación creada
+    return relacion
