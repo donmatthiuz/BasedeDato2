@@ -71,6 +71,42 @@ function Tables() {
   const [merchants_Set, setMerchants] = useState([]); // Estado para almacenar las transacciones
 
   const [confirmedFields, setConfirmedFields] = useState({});
+  
+  const [confirmedFieldsCustom, setConfirmedFieldsCustom] = useState({});
+
+  const [transactionFields, setTransactionFields] = useState([]);
+
+  const handleAddTransactionField = () => {
+    const newField = {
+      name: `customTransactionField_${transactionFields.length + 1}`,
+      value: "",
+    };
+  
+    setTransactionFields([...transactionFields, newField]);
+  
+    // Agregar el campo en useForm
+    setValue(newField.name, "");
+  };
+
+  const handleTransactionFieldChange = (index, field, newValue) => {
+    setTransactionFields((prevFields) =>
+      prevFields.map((item, i) => (i === index ? { ...item, [field]: newValue } : item))
+    );
+  
+    if (field === "value") {
+      setValue(transactionFields[index].name, newValue);
+    }
+  };
+
+
+  const handleCustomFieldChange = (index, field, value) => {
+    setCustomFields((prevFields) => {
+      return prevFields.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item
+      );
+    });
+  };
+
 
   const { values, setValue, validate, errors } = useForm(schema, { 
     transactionAmount: '', 
@@ -98,6 +134,14 @@ function Tables() {
 
   const handleAccountFieldChange = (field, value) => {
     setValue("account", { ...values.account, [field]: value });
+  };
+  const handleRemoveTransactionField = (index) => {
+    const updatedFields = transactionFields.filter((_, i) => i !== index);
+    setTransactionFields(updatedFields);
+  
+    // Eliminar la propiedad de useForm
+    const fieldName = transactionFields[index].name;
+    setValue(fieldName, undefined);
   };
   
   const onclick_send = () => {
@@ -179,6 +223,10 @@ function Tables() {
     setCustomerFields([...customerFields, { name: "", value: "" }]);
   };
 
+  const handleAddCustomField = () => {
+    setCustomFields([...customFields, { name: "", value: "" }]);
+  };
+
   // Función para eliminar una propiedad del Customer
   const handleRemoveCustomerField = (index) => {
     const newFields = [...customerFields];
@@ -195,8 +243,35 @@ function Tables() {
     });
   };
   
+
+
   
 
+
+const handleRemoveFieldCustom = (index, name) => {
+    // Eliminar del array de campos personalizados
+    const newFields = [...customFields];
+    newFields.splice(index, 1);
+    setCustomFields(newFields);
+  
+    // Eliminar la propiedad del objeto customer
+    handleRemoveCustomProperty(name);
+  };
+  
+  const handleRemoveCustomProperty = (name) => {
+    if (!name || !(name in values)) return; // Si no existe, no hacer nada
+  
+    // Eliminar la propiedad estableciendo undefined o null
+    setValue(name, undefined); 
+  
+    // Eliminar la confirmación de la propiedad si estaba en confirmedFieldsCustom
+    setConfirmedFieldsCustom((prev) => {
+      const updatedConfirmed = { ...prev };
+      delete updatedConfirmed[name];
+      return updatedConfirmed;
+    });
+  };
+  
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
   const { columns, rows } = authorsTableData();
@@ -260,6 +335,18 @@ function Tables() {
       [name]: true, // Marca este campo como confirmado
     }));
   };
+
+
+  const handleAddCustomProperty = (name, value) => {
+    if (!name || !value) return; // Evita agregar propiedades vacías
+  
+    setValue(name,value);
+  
+    setConfirmedFieldsCustom((prev) => ({
+      ...prev,
+      [name]: true, // Marca este campo como confirmado
+    }));
+  };
   
   const handleRemoveField = (index) => {
     const newFields = [...customFields];
@@ -267,6 +354,9 @@ function Tables() {
     setCustomFields(newFields);
   }; 
 
+
+
+  
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -370,36 +460,50 @@ function Tables() {
 
             
             <br/>
-            {/* Botón para agregar campos personalizados */}
             <MDBox mt={3} textAlign="center">
-              <MDButton variant="gradient" color="success" onClick={handleAddField}>
-                Agregar Campo
+              <MDButton variant="gradient" color="success" onClick={handleAddCustomField}>
+                Agregar Propiedad Transacción
               </MDButton>
             </MDBox>
 
-            {/* Campos personalizados */}
+            {/* Campos personalizados de la Transacción */}
             {customFields.map((field, index) => (
               <MDBox key={index} mt={2} display="flex" alignItems="center">
                 <MDInput
                   type="text"
                   label="Nombre del Campo"
                   value={field.name}
-                  onChange={(e) => handleFieldChange(index, "name", e.target.value)}
+                  onChange={(e) => handleCustomFieldChange(index, "name", e.target.value)}
                   fullWidth
+                  sx={{
+                    backgroundColor: confirmedFieldsCustom[field.name] ? "#e0f7fa" : "white", // Azul claro si está confirmado
+                  }}
                 />
                 <MDInput
                   type="text"
                   label="Valor"
                   value={field.value}
-                  onChange={(e) => handleFieldChange(index, "value", e.target.value)}
+                  onChange={(e) => handleCustomFieldChange(index, "value", e.target.value)}
                   fullWidth
-                  sx={{ ml: 2 }}
+                
+                  sx={{
+                    ml: 2,
+                    backgroundColor: confirmedFieldsCustom[field.name] ? "#e0f7fa" : "white", // Azul claro si está confirmado
+                  }}
                 />
-                <IconButton color="error" onClick={() => handleRemoveField(index)}>
+                <IconButton color="error" onClick={() => handleRemoveFieldCustom(index, field.name)}>
                   <CloseIcon />
+                </IconButton>
+
+                <IconButton
+                  color={confirmedFields[field.name] ? "primary" : "success"} // Azul si ya está agregado
+                  onClick={() => handleAddCustomProperty(field.name, field.value)}
+                >
+                  <CheckIcon />
                 </IconButton>
               </MDBox>
             ))}
+
 
           <MDTypography variant = "h3">Customer</MDTypography>
           <br/>
