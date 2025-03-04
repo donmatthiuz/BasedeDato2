@@ -70,6 +70,19 @@ def customers():
     # Retornar JSON con los nodos
     return jsonify(nodos_dict)
 
+@app.route('/get_customers_names')
+def getnames_customers():
+    driver = connection()
+    nodos = get_all(driver, 'Customer', limitation=200)
+    
+    # Convertir cada objeto a diccionario
+    nodos_dict = [n.customerName for n in nodos]
+
+    driver.close()
+    
+    # Retornar JSON con los nodos
+    return jsonify(nodos_dict)
+
 
 @app.route('/get_devices')
 def devices():

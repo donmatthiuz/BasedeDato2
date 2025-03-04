@@ -12,14 +12,17 @@ import team4 from "assets/images/team-4.jpg";
 
 export default function Data() {
   const { llamadowithoutbody } = useApi("http://127.0.0.1:5000/get_transaction");
+
+
+  
   const [transactions, setTransactions] = useState([]); // Estado para almacenar las transacciones
 
   useEffect(() => {
     const fetchTransactions = async () => {
       const data = await llamadowithoutbody("GET");
-      
       if (data) {
         setTransactions(data); // Si solo tienes un objeto, conviértelo en un array
+
       }
     };
     fetchTransactions();
@@ -27,7 +30,7 @@ export default function Data() {
 
   const Author = ({ name, email, image }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>
-      <MDAvatar src={image} name={name} size="sm" />
+      <MDAvatar  name={name} size="sm" />
       <MDBox ml={2} lineHeight={1}>
         <MDTypography display="block" variant="button" fontWeight="medium">
           {name}

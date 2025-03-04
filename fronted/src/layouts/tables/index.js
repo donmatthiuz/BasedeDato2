@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import useApi from "useApi"; // Asegúrate de que useApi esté bien definido
+
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -31,6 +33,19 @@ import { Select } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 function Tables() {
+  const { llamadowithoutbody:onlynames } = useApi("http://127.0.0.1:5000/get_customers_names");
+  const [onlynames_Set, setOnlyNames] = useState([]); // Estado para almacenar las transacciones
+  useEffect(() => {
+    const fetchTransactions = async () => {
+     
+      const data = await onlynames("GET");
+      if (data) {
+         setOnlyNames(data);
+      }
+    };
+    fetchTransactions();
+  }, []);
+
 
   const [customFields, setCustomFields] = useState([]);
 
@@ -122,7 +137,7 @@ function Tables() {
       <Footer />
 
       {/* Modal */}
-      <Dialog open={openModal} onClose={handleCloseModal}>
+      <Dialog open={openModal} onClose={handleCloseModal} maxWidth="md" fullWidth>
       <Card>
         <MDBox variant="gradient" bgColor="info" borderRadius="lg" coloredShadow="info" mx={2} mt={-3} p={2} textAlign="center">
           <MDTypography variant="h2" fontWeight="medium" color="white">
@@ -130,7 +145,7 @@ function Tables() {
           </MDTypography>
         </MDBox>
 
-        <MDBox pt={4} pb={3} px={3}>
+        <MDBox pt={4} pb={13} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
               <MDInput type="number" label="Monto de Transacción" fullWidth />
@@ -154,6 +169,8 @@ function Tables() {
                 <MenuItem value="Retiro en Efectivo">Effective</MenuItem>
               </Select>
             </FormControl>
+
+            
             <br/>
             {/* Botón para agregar campos personalizados */}
             <MDBox mt={3} textAlign="center">
@@ -185,6 +202,18 @@ function Tables() {
                 </IconButton>
               </MDBox>
             ))}
+
+<FormControl fullWidth>
+              <InputLabel>Customer</InputLabel>
+              <br/>
+              <Select value={transactionType} onChange={handleChange}>
+              {onlynames_Set.map((name, index) => (
+                <MenuItem key={index} value={name}>
+                  {name}
+                </MenuItem>
+              ))}
+              </Select>
+            </FormControl>
 
             <MDBox mt={4} mb={1}>
               <MDButton variant="gradient" color="info" fullWidth>
