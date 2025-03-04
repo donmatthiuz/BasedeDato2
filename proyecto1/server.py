@@ -251,9 +251,9 @@ def transacciones():
 
 @app.route('/detect_frauds')
 def detect_frauds():
-    fraud_cases = fraud_detection(driver)
+    transaction_id = request.args.get('transaction_id')
+    fraud_cases = fraud_detection(driver, transaction_id)
     return jsonify({"casos de fraude": fraud_cases})
-
 
 
 
