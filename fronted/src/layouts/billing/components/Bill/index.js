@@ -34,6 +34,10 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
 
   const { llamado: delete_property } = useApi("http://127.0.0.1:5000/delete_prop_customer");
 
+
+  const { llamado: delete_customer } = useApi("http://127.0.0.1:5000/delete_customer");
+
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -49,7 +53,22 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
 
     setFormData({ ...formData, [field]: "" });
 
+    Swal.fire({
+      icon: "success",
+      title: "Se elimino exitosamente",
+      text: "Se elimino de manera exitosa",
+    });
 
+  };
+
+
+  const handleDeleteCustomer = async (field) => {
+    
+    const body = {
+      customerId,
+    };
+    const response = await delete_customer(body, 'POST');
+    handleClose()
   };
 
   const handle_update = async () => {
@@ -90,7 +109,7 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
             </MDTypography>
             <MDBox display="flex" alignItems="center">
               <MDBox mr={1}>
-                <MDButton variant="text" color="error">
+                <MDButton variant="text" color="error" onClick={handleDeleteCustomer}>
                   <Icon>delete</Icon>&nbsp;Eliminar
                 </MDButton>
               </MDBox>

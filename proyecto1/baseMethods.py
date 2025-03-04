@@ -229,3 +229,27 @@ def remove_property(driver, node_class, param_name, param_value, property_name):
             return f"No se encontró la propiedad {property_name} o el nodo con {param_name} = {param_value}."
         else:
             return f"Propiedad {property_name} eliminada exitosamente del nodo {node_class}."
+        
+
+
+
+def remove_node(driver, class_name, param_name, param_value):
+    """
+    Elimina un nodo y todas sus relaciones en Neo4j basado en una condición específica.
+    
+    :param driver: El controlador de la base de datos Neo4j.
+    :param class_name: El tipo de nodo, por ejemplo, 'Customer'.
+    :param param_name: El nombre del parámetro por el cual buscar el nodo (por ejemplo, 'customerId').
+    :param param_value: El valor del parámetro para buscar el nodo.
+    :return: Mensaje de éxito o error.
+    """
+    with driver.session() as session:
+        query = f"""
+        MATCH (n:{class_name} {{{param_name}: $param_value}})
+        DETACH DELETE n
+        """
+        
+        # Ejecutar la consulta para eliminar el nodo y sus relaciones
+        session.run(query, param_value=param_value)
+        
+        return f"El nodo {class_name} con {param_name} = {param_value} y sus relaciones fueron eliminados exitosamente."

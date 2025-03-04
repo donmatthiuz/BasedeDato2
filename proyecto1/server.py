@@ -283,6 +283,16 @@ def delete_customer_property():
     return jsonify({"Se elimino con exito": True}), 200
 
 
+@app.route('/delete_customer', methods=['POST'])
+def delete_customer():
+    data = request.get_json()  # Recibe los datos en formato JSON
+    print(data)
+    if not data:
+        return jsonify({'error': 'No se han encontrado datos'}), 400
+    remove_node(driver=driver, class_name="Customer", param_name="customerId", param_value=data["customerId"])
+
+    return jsonify({"Se elimino con exito": True}), 200
+
 
 ## UPDATE CUSTOMERS
 
