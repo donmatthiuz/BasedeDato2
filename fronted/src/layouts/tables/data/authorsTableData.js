@@ -3,34 +3,34 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDBadge from "components/MDBadge";
-import useApi from "useApi"; // Asegúrate de que useApi esté bien definido
+import useApi from "useApi";
+import TextField from "@mui/material/TextField"; // Input de búsqueda
 
 // Imágenes
 import team2 from "assets/images/team-2.jpg";
-import team3 from "assets/images/team-3.jpg";
-import team4 from "assets/images/team-4.jpg";
 
 export default function Data() {
   const { llamadowithoutbody } = useApi("http://127.0.0.1:5000/get_transaction");
-
-
-  
-  const [transactions, setTransactions] = useState([]); // Estado para almacenar las transacciones
+  const [transactions, setTransactions] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro
 
   useEffect(() => {
     const fetchTransactions = async () => {
       const data = await llamadowithoutbody("GET");
       if (data) {
-        setTransactions(data); // Si solo tienes un objeto, conviértelo en un array
-
+        setTransactions(data);
       }
     };
     fetchTransactions();
   }, []);
 
+  const filteredTransactions = transactions.filter((transaction) =>
+    transaction.transactionId.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const Author = ({ name, email, image }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>
-      <MDAvatar  name={name} size="sm" />
+      <MDAvatar name={name} size="sm" />
       <MDBox ml={2} lineHeight={1}>
         <MDTypography display="block" variant="button" fontWeight="medium">
           {name}
@@ -50,24 +50,32 @@ export default function Data() {
   );
 
   return {
+    searchInput: (
+      <TextField
+        label="Buscar por id"
+        variant="outlined"
+        fullWidth
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ marginBottom: "10px" }}
+      />
+    ),
     columns: [
-      { Header: "Transaccion", accessor: "author", width: "35%", align: "left" },
-      { Header: "Descripcion Transaccion", accessor: "function", align: "left" },
+      { Header: "Transacción", accessor: "author", width: "35%", align: "left" },
+      { Header: "Descripción", accessor: "function", align: "left" },
       { Header: "Es Fraudulenta", accessor: "status", align: "center" },
       { Header: "Fecha", accessor: "employed", align: "center" },
       { Header: "Eliminar", accessor: "action", align: "center" },
     ],
-
-    rows: transactions.map((transaction) => ({
+    rows: filteredTransactions.map((transaction) => ({
       author: (
         <Author
-        name={`Precio ${transaction.transactionAmount}`}
-          email={`ID Transacción: ${transaction.transactionId}`} // Puedes añadir el ID aquí también
-
-          image={team2} // Asegúrate de que la imagen de autor esté configurada
+          name={`Precio ${transaction.transactionAmount}`}
+          email={`ID Transacción: ${transaction.transactionId}`}
+          image={team2}
         />
       ),
-      function: <Job title={transaction.transactionType} description={transaction.transactionDescription} />,
+      function: <Job title={transaction.transactionType} description={transaction.transactionDescription} />, 
       status: (
         <MDBox ml={-1}>
           <MDBadge

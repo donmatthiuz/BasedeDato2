@@ -81,3 +81,5 @@ class Transactiones(Nodo):
                          transactionAmount=transactionAmount, transactionType=transactionType,
                          transactionDescription=transactionDescription, transactionCurrency=transactionCurrency,
                          transactionLocation=transactionLocation, isFraudTeoric=isFraudTeoric)
+        
+        self.nombre_clase = "Transaction"

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import useApi from "useApi"; // Asegúrate de que useApi esté bien definido
-
+import Swal from "sweetalert2";
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -68,6 +68,64 @@ function Tables() {
   const [onlynames_Set, setOnlyNames] = useState([]); // Estado para almacenar las transacciones
   const { llamadowithoutbody:names_customers } = useApi("http://127.0.0.1:5000/get_comerciantes_names");
 
+  const { llamado: insertTransaction } = useApi("http://127.0.0.1:5000/transaction_log");
+
+
+
+  const handle_InsertTransaction = async() => {
+   
+    
+    const body = {
+        transactionAmount: values.transactionAmount,
+        transactionDescription: values.transactionDescription,
+        transactionLocation: values.transactionLocation,
+        transactionType: values.transactionType,
+        customer: values.customer.map(c => ({
+          customer_name: c.customer_name,
+          channel: c.channel,
+          deviceUsed: c.deviceUsed
+        })),
+        account: values.account.map(a => ({
+          branch_account: a.branch_account,
+          balanceBefore: a.balanceBefore,
+          balanceAfter: a.balanceAfter
+        })),
+        merchant: values.merchant,
+        device: values.device
+      };
+      console.log(body)
+      console.log(values)
+      const response = await insertTransaction(body, 'POST');
+      if (response) {
+        console.log(response)
+        if (response.message === "Transaccion registrada"){
+          
+          Swal.fire({
+            icon: "success",
+            title: "Insertado Correctamente",
+            text: "Se inserto de manera correcta",
+          });
+          setOpenModal(false)
+      }else{
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se conoce el error",
+        });
+      }
+      
+      
+      
+    }
+  } 
+
+
+
+
+
+  
+
+
   const [merchants_Set, setMerchants] = useState([]); // Estado para almacenar las transacciones
 
   const [confirmedFields, setConfirmedFields] = useState({});
@@ -97,6 +155,7 @@ function Tables() {
       setValue(transactionFields[index].name, newValue);
     }
   };
+
 
 
   const handleCustomFieldChange = (index, field, value) => {
@@ -274,7 +333,7 @@ const handleRemoveFieldCustom = (index, name) => {
   
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
-  const { columns, rows } = authorsTableData();
+  const { columns, rows,  searchInput } = authorsTableData();
   const { columns: pColumns, rows: pRows } = projectsTableData();
 
   // Estado para manejar la apertura del modal
@@ -393,6 +452,7 @@ const handleRemoveFieldCustom = (index, name) => {
               </MDBox>
 
               <MDBox pt={3}>
+                {searchInput}
                 <DataTable
                   table={{ columns, rows }}
                   isSorted={false}
@@ -408,7 +468,10 @@ const handleRemoveFieldCustom = (index, name) => {
       <Footer />
 
       {/* Modal */}
-      <Dialog open={openModal} onClose={handleCloseModal} maxWidth="md" fullWidth>
+      <Dialog 
+        open={openModal} onClose={handleCloseModal} maxWidth="md" fullWidth
+        aria-labelledby="dialog-title"
+  aria-describedby="dialog-description">
       <Card>
         <MDBox variant="gradient" bgColor="info" borderRadius="lg" coloredShadow="info" mx={2} mt={-3} p={2} textAlign="center">
           <MDTypography variant="h2" fontWeight="medium" color="white">
@@ -667,7 +730,7 @@ const handleRemoveFieldCustom = (index, name) => {
             <br/>
 
               <MDButton variant="gradient" color="info" fullWidth
-              onClick={onclick_send}>
+              onClick={handle_InsertTransaction}>
                 Ingresar Transacción
               </MDButton>
 
