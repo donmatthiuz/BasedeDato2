@@ -40,11 +40,13 @@ class Nodo:
 
 
 class Customer(Nodo):
-    def __init__(self, customerId: str, customerName: str, gender: str, age: int,
-                 customerContact: str, customerEmail: str, state: str, city: str):
+    def __init__(self, customerId: str = "", customerName: str = "", gender: str = "No especificado", 
+                 age: int = 0, customerContact: str = "", customerEmail: str = "", 
+                 city: str = "No especificado", state: str = "No tiene"):
         super().__init__(customerId=customerId, customerName=customerName, gender=gender,
                          age=age, customerContact=customerContact, customerEmail=customerEmail,
                          state=state, city=city)
+
 
 
 class Merchant(Nodo):

@@ -176,3 +176,56 @@ def create_relation_extraproperties(driver, relacion, extra_properties={}):
 
     except Exception as e:
         print(f"❌ Error al crear la relación {relacion.nombre_clase}: {e}")
+
+
+
+def update_nodo_properties(driver, nodo):
+    """
+    Actualiza las propiedades de un nodo existente en la base de datos.
+    La clave para identificar el nodo será el primer parámetro del nodo.
+    """
+    propiedades = nodo.ge_propiedades_dic()  # Obtener las propiedades del nodo.
+    param_name, param_value = nodo.obtener_primer_parametro()  # Obtener el primer parámetro (clave) para identificar el nodo.
+
+    # Construir la consulta SET para actualizar las propiedades del nodo
+    set_clause = ", ".join([f"n.{k} = ${k}" for k in propiedades])  # Para cada propiedad, se genera la sintaxis SET.
+
+    query = f"""
+    MATCH (n:{nodo.nombre_clase} {{ {param_name}: $param_value }})
+    SET {set_clause}
+    RETURN n
+    """
+
+    params = {"param_value": param_value, **propiedades}  # Parametros para la consulta (valor del parámetro y las nuevas propiedades).
+    
+    try:
+        driver.execute_query(query, params)  # Ejecutar la consulta.
+        print(f"Se ha actualizado el nodo {nodo.nombre_clase} con las propiedades: {propiedades}")
+    except Exception as e:
+        print(f"Error al actualizar el nodo {nodo.nombre_clase}: {e}")
+
+
+
+def remove_property(driver, node_class, param_name, param_value, property_name):
+    """
+    Elimina una propiedad de un nodo en Neo4j.
+    
+    :param driver: El controlador de la base de datos Neo4j.
+    :param node_class: El tipo de nodo, por ejemplo, 'Customer'.
+    :param param_name: El nombre del parámetro por el cual buscar el nodo (por ejemplo, 'customerId').
+    :param param_value: El valor del parámetro para buscar el nodo.
+    :param property_name: El nombre de la propiedad que se desea eliminar.
+    :return: Mensaje de éxito o error.
+    """
+    with driver.session() as session:
+        query = f"""
+        MATCH (n:{node_class} {{{param_name}: $param_value}})
+        REMOVE n.{property_name}
+        """
+        result = session.run(query, param_value=param_value)
+        
+        # Verificar si la propiedad se eliminó
+        if result.summary().counters.nodes_deleted == 0:
+            return f"No se encontró la propiedad {property_name} o el nodo con {param_name} = {param_value}."
+        else:
+            return f"Propiedad {property_name} eliminada exitosamente del nodo {node_class}."

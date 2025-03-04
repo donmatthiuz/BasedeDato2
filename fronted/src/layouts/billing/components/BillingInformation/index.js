@@ -34,11 +34,14 @@ function BillingInformation() {
             customers.map((customer) => (
               <Bill
                 key={customer.customerId}
-                name={customer.customerName}
-                company={customer.city} 
-                email={customer.customerEmail}
-                age={customer.age} 
-                cel={customer.customerContact}
+                customerName={customer.customerName}
+                customerEmail={customer.customerEmail}
+                age={customer.age}
+                gender={customer.gender} 
+                customerContact={customer.customerContact}
+                city={customer.city}
+                state={customer.state}
+                customerId={customer.customerId}
               />
             ))
           ) : (
