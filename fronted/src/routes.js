@@ -47,72 +47,94 @@ import SignUp from "layouts/authentication/sign-up";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
+import Customer from "layouts/customers";
+import Devices from "layouts/devices";
+import Account from "account";
+import Transaction from "layouts/billing/components/Transaction";
+import Merchant from "layouts/merchas";
 
 const routes = [
+
   {
     type: "collapse",
-    name: "Reporte de Transacciones",
+    name: "Transacciones",
     key: "dashboard",
-    icon: <Icon fontSize="small">dashboard</Icon>,
+    icon: <Icon fontSize="small">assessment_icon</Icon>,
     route: "/dashboard",
-    component: <Dashboard />,
-  },
-  {
-    type: "collapse",
-    name: "Transacciones Fraudulentas",
-    key: "tables",
-    icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/tables",
     component: <Tables />,
   },
   {
     type: "collapse",
-    name: "Insertar Nueva Transaccion",
-    key: "billing",
-    icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/billing",
-    component: <Billing />,
+    name: "Customers",
+    key: "customers",
+    icon: <Icon fontSize="small">person_icon</Icon>,
+    route: "/customers",
+    component: <Customer />,
   },
   {
     type: "collapse",
-    name: "RTL",
-    key: "rtl",
-    icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
-    route: "/rtl",
-    component: <RTL />,
+    name: "Devices",
+    key: "devices",
+    icon: <Icon fontSize="small">devices_icon</Icon>,
+    route: "/devices",
+    component: <Devices />,
   },
   {
     type: "collapse",
-    name: "Notifications",
-    key: "notifications",
-    icon: <Icon fontSize="small">notifications</Icon>,
-    route: "/notifications",
-    component: <Notifications />,
+    name: "Accounts",
+    key: "accounts",
+    icon: <Icon fontSize="small">account_balance_wallet_icon</Icon>,
+    route: "/accounts",
+    component: <Account />,
   },
   {
     type: "collapse",
-    name: "Profile",
-    key: "profile",
-    icon: <Icon fontSize="small">person</Icon>,
-    route: "/profile",
-    component: <Profile />,
+    name: "Merchant",
+    key: "merchant",
+    icon: <Icon fontSize="small">business_icon</Icon>,
+    route: "/merchant",
+    component: <Merchant />,
   },
-  {
-    type: "collapse",
-    name: "Sign In",
-    key: "sign-in",
-    icon: <Icon fontSize="small">login</Icon>,
-    route: "/authentication/sign-in",
-    component: <SignIn />,
-  },
-  {
-    type: "collapse",
-    name: "Sign Up",
-    key: "sign-up",
-    icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/authentication/sign-up",
-    component: <SignUp />,
-  },
+  // {
+  //   type: "collapse",
+  //   name: "Transacciones Fraudulentas",
+  //   key: "tables",
+  //   icon: <Icon fontSize="small">table_view</Icon>,
+  //   route: "/tables",
+  //   component: <Tables />,
+  // },
+  // {
+  //   type: "collapse",
+  //   name: "RTL",
+  //   key: "rtl",
+  //   icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
+  //   route: "/rtl",
+  //   component: <RTL />,
+  // },
+  // {
+  //   type: "collapse",
+  //   name: "Notifications",
+  //   key: "notifications",
+  //   icon: <Icon fontSize="small">notifications</Icon>,
+  //   route: "/notifications",
+  //   component: <Notifications />,
+  // },
+  // {
+  //   type: "collapse",
+  //   name: "Profile",
+  //   key: "profile",
+  //   icon: <Icon fontSize="small">person</Icon>,
+  //   route: "/profile",
+  //   component: <Profile />,
+  // },
+  // {
+  //   type: "collapse",
+  //   name: "Sign In",
+  //   key: "sign-in",
+  //   icon: <Icon fontSize="small">login</Icon>,
+  //   route: "/authentication/sign-in",
+  //   component: <SignIn />,
+  // },
 ];
 
 export default routes;
