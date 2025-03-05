@@ -117,6 +117,24 @@ MATCH (t:Transaction)-[r:USES]->(d:Device {deviceType: 'Mobile'})
 RETURN t, r.deviceTrustScore
 ```
 
+```cypher
+MATCH (d:Device {type: 'Desktop'})
+SET d.deviceTrustScore = 0.70
+RETURN d.deviceTrustScore AS DeviceTrustScore
+
+MATCH (d:Device {type: 'Mobile'})
+SET d.deviceTrustScore = 0.80
+RETURN d.deviceTrustScore AS DeviceTrustScore
+
+MATCH (d:Device {type: 'POS'})
+SET d.deviceTrustScore = 0.65
+RETURN d.deviceTrustScore AS DeviceTrustScore
+
+MATCH (d:Device {type: 'ATM'})
+SET d.deviceTrustScore = 0.85
+RETURN d.deviceTrustScore AS DeviceTrustScore
+```
+
 ### **4️⃣ Actualización de Datos (Update)**
 
 #### ✅ **Actualizar el saldo de una cuenta bancaria**
