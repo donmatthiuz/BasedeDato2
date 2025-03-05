@@ -76,7 +76,7 @@ def transaction_registration():
         return jsonify({'error': 'No se han encontrado datos'}), 400
     
     id_unico = str(uuid.uuid4())
-    print(data["customer"][0]["customer_name"])
+  
     transaccion = Transactiones(
             transactionId=id_unico,
             transactionDate=neo4j.time.Date.from_iso_format(date.today().isoformat()),
@@ -309,6 +309,33 @@ def get_relation_customer():
     return jsonify({"Relacion": relacion.obtener_propiedades(), "Nodo": relacion.nodo_b.ge_propiedades_dic()})
 
 
+@app.route('/update-relation-properties', methods=['PUT'])
+def update_relation_properties_endpoint():
+    try:
+        # Obtener los datos del cuerpo de la solicitud
+        data = request.json
+
+        # Extraer los parámetros necesarios de la solicitud
+        class_name = data.get('class_name')
+        param_name = data.get('param_name')
+        param_value = data.get('param_value')
+
+        relation_class = data.get('relation_class')  # Relación a actualizar (ej: PERFORMS, INVOLVES)
+        extra_properties = data.get('extra_properties', {})  # Propiedades a actualizar
+
+        # Verificar que todos los campos requeridos estén presentes
+        if not (class_name and relation_class and param_name and param_value):
+            return jsonify({"error": "Faltan parámetros necesarios."}), 400
+
+        # Llamar al método de actualización de la relación
+        update_relation_properties(driver, class_name, param_name, param_value, relation_class, **extra_properties)
+
+        return jsonify({"message": "Relación actualizada exitosamente"}), 200
+
+    except Exception as e:
+        
+        return jsonify({"error": "Ocurrió un error al actualizar la relación."}), 500
+
 
 
 ## UPDATE CUSTOMERS
@@ -317,7 +344,6 @@ def get_relation_customer():
 @app.route('/update_customer', methods=['POST'])
 def update_customer():
     data = request.get_json()  # Recibe los datos en formato JSON
-    print(data)
     if not data:
         return jsonify({'error': 'No se han encontrado datos'}), 400
     print("Siguiente")

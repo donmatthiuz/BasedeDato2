@@ -111,7 +111,7 @@ def get_node(driver, class_name, param_name, param_value):
 
             if clase in nodo_clases:
                 nodo_obj = nodo_clases[clase](**propiedades)
-                print(f"Nodo encontrado y convertido: {nodo_obj}")
+              
                 return nodo_obj
             else:
                 print(f"Advertencia: Nodo '{clase}' no está definido en nodo_clases")
@@ -332,7 +332,7 @@ def create_and_get_relation(driver, class_name, param_name, param_value, relatio
     elif relation_class == OWNS:
         relacion = OWNS(nodo_a, nodo_b_obj, **propiedades_combinadas)
     else:
-        print(f"Relación {relation_class} no reconocida.")
+       
         return None
     
     # Crear la relación en la base de datos
@@ -340,3 +340,54 @@ def create_and_get_relation(driver, class_name, param_name, param_value, relatio
 
     # Devolver la relación creada
     return relacion
+
+
+
+def update_relation_properties(driver, class_name, param_name, param_value, relation_class, **kwargs):
+    try:
+        # Obtener el nodo 'a' utilizando los parámetros proporcionados
+        nodo_a = get_node(driver, class_name, param_name, param_value)
+        if not nodo_a:
+            print(f"No se encontró el nodo {class_name} con {param_name} = {param_value}")
+            return None
+
+        # Realizar un query para obtener la relación entre el nodo_a y cualquier nodo relacionado
+        query = f"""
+        MATCH (a:{class_name} {{{param_name}: $param_value}})-[r:{relation_class.upper()}]->(b)
+        RETURN r, b LIMIT 1
+        """
+        result, _, _ = driver.execute_query(query, {"param_value": param_value}, graph_objects=True)
+
+        if not result:
+            print(f"No se encontró una relación entre {class_name} con {param_name} = {param_value} y {relation_class}")
+            return None
+
+        # Extraer la relación y el nodo B
+        relacion = result[0]["r"]  # Relación encontrada
+        nodo_b = result[0]["b"]  # Nodo relacionado (B)
+
+        # Obtener las propiedades actuales de la relación
+        propiedades_relacion = relacion._properties
+
+        # Combinar las propiedades existentes con las nuevas propiedades proporcionadas en kwargs
+        propiedades_combinadas = {**propiedades_relacion, **kwargs}
+
+        # Actualizar la relación en Neo4j con las propiedades combinadas
+        update_query = f"""
+        MATCH (a:{class_name} {{{param_name}: $param_value}})-[r:{relation_class.upper()}]->(b)
+        SET r = $properties
+        RETURN r
+        """
+        params = {
+            "param_value": param_value,
+            "properties": propiedades_combinadas
+        }
+
+        driver.execute_query(update_query, params)
+
+        print(f"✅ Relación {relation_class} actualizada con nuevas propiedades.")
+        return relacion
+
+    except Exception as e:
+        print(f"❌ Error al actualizar la relación: {e}")
+        return None
