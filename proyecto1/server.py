@@ -296,18 +296,18 @@ def delete_customer():
 
 
 
-@app.route('/get_relation_customer', methods=['GET'])
+
+@app.route('/get_relation_customer', methods=['POST'])
 def get_relation_customer():
-    
-    relacion  = create_and_get_relation(driver=driver, 
+    data = request.get_json()
+    relacion = create_and_get_relation(driver=driver, 
                                         class_name="Customer",
                                         param_name="customerId",
-                                        param_value="01d511dd-afbd-40bf-937e-0d5b0fe38ff2",
+                                        param_value=data["customerId"],
                                         relation_class=PERFORMS)
-    
-
 
     return jsonify({"Relacion": relacion.obtener_propiedades(), "Nodo": relacion.nodo_b.ge_propiedades_dic()})
+
 
 
 

@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useApi from "useApi";
 import Swal from "sweetalert2";
 import Icon from "@mui/material/Icon";
@@ -8,8 +8,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
-import IconButton from "@mui/material/IconButton"; // Importa IconButton para los botones de basura
-import useForm from "useForm";
+import IconButton from "@mui/material/IconButton";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
@@ -31,54 +30,30 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
   });
 
   const { llamado: insertCustomer } = useApi("http://127.0.0.1:5000/update_customer");
+  const { llamado: getRelationCustomer } = useApi("http://127.0.0.1:5000/get_relation_customer");
 
-  const { llamado: delete_property } = useApi("http://127.0.0.1:5000/delete_prop_customer");
+  const [transactionData, setTransactionData] = useState(null);
+  const [relationshipData, setRelationshipData] = useState([]);
 
+  useEffect(() => {
+    const fetchTransactionData = async () => {
+      const response = await getRelationCustomer({ customerId }, 'POST');
+      if (response) {
+        setTransactionData(response.Nodo);
+        setRelationshipData(response.Relacion);
+      }
+    };
 
-  const { llamado: delete_customer } = useApi("http://127.0.0.1:5000/delete_customer");
-
+    fetchTransactionData();
+  }, [customerId]);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleDeleteField = async (field) => {
-    
-    const body = {
-      customerId,
-      property_name: field
-    };
-
-    const response = await delete_property(body, 'POST');
-
-    setFormData({ ...formData, [field]: "" });
-
-    Swal.fire({
-      icon: "success",
-      title: "Se elimino exitosamente",
-      text: "Se elimino de manera exitosa",
-    });
-
-  };
-
-
-  const handleDeleteCustomer = async (field) => {
-    
-    const body = {
-      customerId,
-    };
-    const response = await delete_customer(body, 'POST');
-    handleClose()
-  };
-
   const handle_update = async () => {
-    const body = {
-      ...formData
-    };
-
-    console.log(body);
+    const body = { ...formData };
     const response = await insertCustomer(body, 'POST');
-
     if (response) {
       handleClose();
       Swal.fire({
@@ -109,7 +84,7 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
             </MDTypography>
             <MDBox display="flex" alignItems="center">
               <MDBox mr={1}>
-                <MDButton variant="text" color="error" onClick={handleDeleteCustomer}>
+                <MDButton variant="text" color="error">
                   <Icon>delete</Icon>&nbsp;Eliminar
                 </MDButton>
               </MDBox>
@@ -125,6 +100,38 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
           <MDTypography variant="caption" color="text">State: {state}</MDTypography>
           <MDTypography variant="caption" color="text">Customer ID: {customerId}</MDTypography>
           <MDTypography variant="caption" color="text">Gender: {gender}</MDTypography>
+
+          {/* Transaction Information */}
+          {transactionData && (
+            <MDBox mt={2}>
+              <MDTypography variant="caption" color="text">Transaction ID: {transactionData.transactionId}</MDTypography>
+              <MDTypography variant="caption" color="text">Transaction Location: {transactionData.transactionLocation}</MDTypography>
+            </MDBox>
+          )}
+
+          {/* Relationship Information (Editable fields) */}
+          {relationshipData.length > 0 && (
+            <MDBox mt={2}>
+              <MDTypography variant="caption" color="text">Relationship Properties:</MDTypography>
+              {relationshipData.map((prop, index) => {
+                const [label, value] = prop.split(":");
+                return (
+                  <TextField
+                    key={index}
+                    fullWidth
+                    margin="dense"
+                    label={label} // Use the property name as the label
+                    value={value} // Use the value of the property
+                    onChange={(e) => {
+                      const updatedProps = [...relationshipData];
+                      updatedProps[index] = `${label}:${e.target.value}`;
+                      setRelationshipData(updatedProps);
+                    }}
+                  />
+                );
+              })}
+            </MDBox>
+          )}
         </MDBox>
       </MDBox>
 
@@ -139,13 +146,6 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
             name="customerName"
             value={formData.customerName}
             onChange={handleChange}
-            InputProps={{
-              endAdornment: (
-                <IconButton onClick={() => handleDeleteField("customerName")}>
-                  <Icon>delete</Icon>
-                </IconButton>
-              ),
-            }}
           />
           <TextField
             fullWidth
@@ -154,13 +154,6 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
             name="city"
             value={formData.city}
             onChange={handleChange}
-            InputProps={{
-              endAdornment: (
-                <IconButton onClick={() => handleDeleteField("city")}>
-                  <Icon>delete</Icon>
-                </IconButton>
-              ),
-            }}
           />
           <TextField
             fullWidth
@@ -169,13 +162,6 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
             name="state"
             value={formData.state}
             onChange={handleChange}
-            InputProps={{
-              endAdornment: (
-                <IconButton onClick={() => handleDeleteField("state")}>
-                  <Icon>delete</Icon>
-                </IconButton>
-              ),
-            }}
           />
           <TextField
             fullWidth
@@ -184,13 +170,6 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
             name="customerId"
             value={formData.customerId}
             onChange={handleChange}
-            InputProps={{
-              endAdornment: (
-                <IconButton onClick={() => handleDeleteField("customerId")}>
-                  <Icon>delete</Icon>
-                </IconButton>
-              ),
-            }}
           />
           <TextField
             fullWidth
@@ -199,13 +178,6 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
             name="customerEmail"
             value={formData.customerEmail}
             onChange={handleChange}
-            InputProps={{
-              endAdornment: (
-                <IconButton onClick={() => handleDeleteField("customerEmail")}>
-                  <Icon>delete</Icon>
-                </IconButton>
-              ),
-            }}
           />
           <TextField
             fullWidth
@@ -215,13 +187,6 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
             type="number"
             value={formData.age}
             onChange={handleChange}
-            InputProps={{
-              endAdornment: (
-                <IconButton onClick={() => handleDeleteField("age")}>
-                  <Icon>delete</Icon>
-                </IconButton>
-              ),
-            }}
           />
           <TextField
             fullWidth
@@ -230,13 +195,6 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
             name="customerContact"
             value={formData.customerContact}
             onChange={handleChange}
-            InputProps={{
-              endAdornment: (
-                <IconButton onClick={() => handleDeleteField("customerContact")}>
-                  <Icon>delete</Icon>
-                </IconButton>
-              ),
-            }}
           />
           <TextField
             fullWidth
@@ -245,13 +203,6 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
             name="gender"
             value={formData.gender}
             onChange={handleChange}
-            InputProps={{
-              endAdornment: (
-                <IconButton onClick={() => handleDeleteField("gender")}>
-                  <Icon>delete</Icon>
-                </IconButton>
-              ),
-            }}
           />
         </DialogContent>
         <DialogActions>
