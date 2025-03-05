@@ -18,6 +18,8 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
   const [controller] = useMaterialUIController();
   const { darkMode } = controller;
   const [open, setOpen] = useState(false);
+  const { llamado: updateRelation } = useApi("http://127.0.0.1:5000/update-relation-properties");
+
   const [formData, setFormData] = useState({
     customerId,
     customerName,
@@ -34,6 +36,38 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
 
   const [transactionData, setTransactionData] = useState(null);
   const [relationshipData, setRelationshipData] = useState([]);
+
+  const handle_update_relation = async () => {
+    const updatedRelationshipData = relationshipData.reduce((acc, prop) => {
+      const [label, value] = prop.split(":");
+      acc[label] = value;
+      return acc;
+    }, {});
+  
+    const body = {
+      class_name: "Customer", // o la clase de tu relación
+      param_name: "customerId", // El campo de referencia
+      param_value: customerId,
+      relation_class: "PERFORMS", // Define tu tipo de relación
+      ...updatedRelationshipData,
+    };
+  
+    const response = await updateRelation(body, 'PUT'); // Usar PUT para actualizar
+    if (response) {
+      Swal.fire({
+        icon: "success",
+        title: "Relación actualizada exitosamente",
+        text: "Las propiedades de la relación se actualizaron correctamente.",
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Ocurrió un error al actualizar la relación.",
+      });
+    }
+  };
+  
 
   useEffect(() => {
     const fetchTransactionData = async () => {
@@ -111,27 +145,34 @@ function Bill({ customerId, customerName, gender, age, customerContact, customer
 
           {/* Relationship Information (Editable fields) */}
           {relationshipData.length > 0 && (
-            <MDBox mt={2}>
-              <MDTypography variant="caption" color="text">Relationship Properties:</MDTypography>
-              {relationshipData.map((prop, index) => {
-                const [label, value] = prop.split(":");
-                return (
-                  <TextField
-                    key={index}
-                    fullWidth
-                    margin="dense"
-                    label={label} // Use the property name as the label
-                    value={value} // Use the value of the property
-                    onChange={(e) => {
-                      const updatedProps = [...relationshipData];
-                      updatedProps[index] = `${label}:${e.target.value}`;
-                      setRelationshipData(updatedProps);
-                    }}
-                  />
-                );
-              })}
-            </MDBox>
-          )}
+  <MDBox mt={2}>
+    <MDTypography variant="caption" color="text">Relationship Properties:</MDTypography>
+    {relationshipData.map((prop, index) => {
+      const [label, value] = prop.split(":");
+      return (
+        <TextField
+          key={index}
+          fullWidth
+          margin="dense"
+          label={label} // Usar el nombre de la propiedad como etiqueta
+          value={value} // Usar el valor de la propiedad
+          onChange={(e) => {
+            const updatedProps = [...relationshipData];
+            updatedProps[index] = `${label}:${e.target.value}`;
+            setRelationshipData(updatedProps); // Actualiza las propiedades de la relación
+          }}
+        />
+      );
+    })}
+  </MDBox>
+)}
+
+<DialogActions>
+  <MDButton onClick={handleClose} color="error">Cancelar</MDButton>
+  <MDButton onClick={handle_update_relation} color="success">Guardar</MDButton>
+</DialogActions>
+
+
         </MDBox>
       </MDBox>
 
