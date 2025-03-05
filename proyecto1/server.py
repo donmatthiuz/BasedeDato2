@@ -265,10 +265,10 @@ def transacciones():
     # Retornar JSON con los nodos
     return jsonify(nodos_dict)
 
-@app.route('/detect_frauds')
+@app.route('/detect_frauds',  methods=['POST'])
 def detect_frauds():
-    transaction_id = request.args.get('transaction_id')
-    fraud_cases = fraud_detection(driver, transaction_id)
+    data = request.get_json()
+    fraud_cases = fraud_detection(driver, data["transaction_id"])
     return jsonify({"casos de fraude": fraud_cases})
 
 

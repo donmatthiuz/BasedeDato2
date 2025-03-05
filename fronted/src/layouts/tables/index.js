@@ -24,7 +24,7 @@ import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import DataTable from "examples/Tables/DataTable";
+import Data from "./data/authorsTableData";
 import Divider from "@mui/material/Divider";
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
@@ -38,6 +38,7 @@ import IconButton from "@mui/material/IconButton";
 
 
 import { object, string, number, array } from 'yup';
+import dialog from "assets/theme/components/dialog";
 
 const schema = object({
   transactionAmount: number().required('El monto es requerido'),
@@ -437,14 +438,7 @@ const handleRemoveFieldCustom = (index, name) => {
               </MDBox>
 
               <MDBox pt={3}>
-                {searchInput}
-                <DataTable
-                  table={{ columns, rows }}
-                  isSorted={false}
-                  entriesPerPage={false}
-                  showTotalEntries={false}
-                  noEndBorder
-                />
+              <Data />
               </MDBox>
             </Card>
           </Grid>
