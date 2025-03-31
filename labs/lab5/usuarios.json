@@ -1,0 +1,67 @@
+[
+  {
+    "_id": "01",
+    "nombre": "Juan Pérez",
+    "correo": "juan.perez@email.com",
+    "edad": { "$numberInt": "30" },
+    "genero": "masculino",
+    "pais": "México",
+    "recetas_favoritas": ["1", "3"],
+    "historial_recetas": [
+      { "receta_id": "2", "fecha": "2025-03-10" },
+      { "receta_id": "4", "fecha": "2025-03-15" }
+    ]
+  },
+  {
+    "_id": "02",
+    "nombre": "Ana Gómez",
+    "correo": "ana.gomez@email.com",
+    "edad": { "$numberInt": "25" },
+    "genero": "femenino",
+    "pais": "Argentina",
+    "recetas_favoritas": ["5", "1"],
+    "historial_recetas": [
+      { "receta_id": "3", "fecha": "2025-03-05" },
+      { "receta_id": "1", "fecha": "2025-03-18" }
+    ]
+  },
+  {
+    "_id": "03",
+    "nombre": "Carlos Rodríguez",
+    "correo": "carlos.rodriguez@email.com",
+    "edad": { "$numberInt": "35" },
+    "genero": "masculino",
+    "pais": "España",
+    "recetas_favoritas": ["2", "4"],
+    "historial_recetas": [
+      { "receta_id": "5", "fecha": "2025-02-20" },
+      { "receta_id": "4", "fecha": "2025-03-12" }
+    ]
+  },
+  {
+    "_id": "04",
+    "nombre": "Laura Martínez",
+    "correo": "laura.martinez@email.com",
+    "edad": { "$numberInt": "28" },
+    "genero": "femenino",
+    "pais": "Colombia",
+    "recetas_favoritas": ["3", "5"],
+    "historial_recetas": [
+      { "receta_id": "2", "fecha": "2025-03-08" },
+      { "receta_id": "1", "fecha": "2025-03-14" }
+    ]
+  },
+  {
+    "_id": "05",
+    "nombre": "Miguel Torres",
+    "correo": "miguel.torres@email.com",
+    "edad": { "$numberInt": "40" },
+    "genero": "masculino",
+    "pais": "Chile",
+    "recetas_favoritas": ["1", "4"],
+    "historial_recetas": [
+      { "receta_id": "3", "fecha": "2025-02-25" },
+      { "receta_id": "5", "fecha": "2025-03-10" }
+    ]
+  }
+]

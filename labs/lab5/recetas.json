@@ -1,0 +1,301 @@
+[
+  {
+    "_id": "1",
+    "nombre": "Sopa de Tomate",
+    "tiempo total minutos": { "$numberInt": "30" },
+    "Porciones": { "$numberInt": "4" },
+    "calorias": "120",
+    "dificultad": "Fácil",
+    "vegetariana": true,
+    "ingredientes": [
+      { "nombre": "tomate", "cantidad": "400 g" },
+      { "nombre": "cebolla", "cantidad": "1/2 unidad" },
+      { "nombre": "ajo", "cantidad": "1 diente" },
+      { "nombre": "pimiento", "cantidad": "1/2 unidad" },
+      { "nombre": "laurel", "cantidad": "1 hoja" },
+      { "nombre": "sal", "cantidad": "1 pizca" },
+      { "nombre": "pimienta", "cantidad": "1 pizca" }
+    ],
+    "preparación": [
+      "Llena una olla con agua y pon los tomates a hervir por 1 minuto, sácalos y mételos en agua fría. Con esto vas a poder quitarles la piel fácilmente.",
+      "Una vez sin piel, pica los tomates en cubos pequeños y reserva.",
+      "Pica la cebolla, pimiento y ajo muy pequeños y sofríelos en una sartén con aceite de oliva hasta que la cebolla y el ajo se doren.",
+      "Añade los tomates picados, la hoja de laurel, y una pizca de sal y pimienta. Agrega 2 vasos de agua o caldo de verduras.",
+      "Baja el fuego a la mitad y deja que hierva durante 30 minutos, revolviendo de vez en cuando.",
+      "Opcional: puedes dejar la sopa con trozos o licuarla. Si la licuas, retira la hoja de laurel primero.",
+      "Sirve caliente y disfruta."
+    ],
+    "ratings": [],
+    "rating_promedio": { "$numberDouble": "3.0" }
+  },
+  {
+    "_id": "2",
+    "nombre": "Pasta Alfredo",
+    "tiempo total minutos": { "$numberInt": "25" },
+    "Porciones": { "$numberInt": "4" },
+    "calorias": "800",
+    "dificultad": "Fácil",
+    "vegetariana": false,
+    "ingredientes": [
+      { "nombre": "pasta fettuccine", "cantidad": "400 g" },
+      { "nombre": "mantequilla", "cantidad": "50 g" },
+      { "nombre": "crema de leche", "cantidad": "200 ml" },
+      { "nombre": "queso parmesano", "cantidad": "100 g" },
+      { "nombre": "ajo", "cantidad": "1 diente" },
+      { "nombre": "sal", "cantidad": "1 pizca" },
+      { "nombre": "pimienta negra", "cantidad": "1 pizca" }
+    ],
+    "preparación": [
+      "Cocina la pasta en agua con sal según las instrucciones del paquete.",
+      "Derrite la mantequilla en una sartén y sofríe el ajo picado.",
+      "Añade la crema de leche y cocina a fuego bajo por 5 minutos.",
+      "Agrega el queso parmesano y mezcla hasta obtener una salsa cremosa.",
+      "Escurre la pasta y agrégala a la sartén con la salsa, mezclando bien.",
+      "Sirve caliente con más queso parmesano por encima."
+    ],
+    "ratings": [],
+    "rating_promedio": { "$numberDouble": "3.0" },
+    "comentarios": ["Deliciosa receta, muy cremosa!"]
+  },
+  {
+    "_id": "3",
+    "nombre": "Ensalada Griega",
+    "tiempo total minutos": { "$numberInt": "15" },
+    "Porciones": { "$numberInt": "2" },
+    "calorias": "350",
+    "dificultad": "Fácil",
+    "vegetariana": true,
+    "ingredientes": [
+      { "nombre": "pepino", "cantidad": "1 unidad" },
+      { "nombre": "tomates cherry", "cantidad": "10 unidades" },
+      { "nombre": "queso feta", "cantidad": "100 g" },
+      { "nombre": "aceitunas negras", "cantidad": "50 g" },
+      { "nombre": "cebolla morada", "cantidad": "1/2 unidad" },
+      { "nombre": "aceite de oliva", "cantidad": "2 cucharadas" },
+      { "nombre": "orégano", "cantidad": "1 pizca" },
+      { "nombre": "sal", "cantidad": "1 pizca" },
+      { "nombre": "pimienta", "cantidad": "1 pizca" }
+    ],
+    "preparación": [
+      "Lava y corta el pepino en rodajas y los tomates cherry por la mitad.",
+      "Corta la cebolla en tiras finas y el queso feta en cubos.",
+      "Mezcla todos los ingredientes en un bol junto con las aceitunas negras.",
+      "Aliña con aceite de oliva, sal, pimienta y orégano al gusto.",
+      "Sirve fresca y disfruta."
+    ],
+    "ratings": [],
+    "rating_promedio": { "$numberDouble": "3.0" },
+    "comentarios": []
+  },
+  {
+    "_id": "4",
+    "nombre": "Pollo al Curry",
+    "tiempo total minutos": { "$numberInt": "40" },
+    "Porciones": { "$numberInt": "4" },
+    "calorias": "600",
+    "dificultad": "Media",
+    "vegetariana": false,
+    "ingredientes": [
+      { "nombre": "pechuga de pollo", "cantidad": "500 g" },
+      { "nombre": "cebolla", "cantidad": "1 unidad" },
+      { "nombre": "ajo", "cantidad": "2 dientes" },
+      { "nombre": "leche de coco", "cantidad": "400 ml" },
+      { "nombre": "curry en polvo", "cantidad": "2 cucharadas" },
+      { "nombre": "aceite de oliva", "cantidad": "2 cucharadas" },
+      { "nombre": "sal", "cantidad": "1 pizca" },
+      { "nombre": "pimienta", "cantidad": "1 pizca" },
+      { "nombre": "cilantro", "cantidad": "1 ramita" }
+    ],
+    "preparación": [
+      "Corta la pechuga de pollo en cubos y sazónalos con sal y pimienta.",
+      "En una sartén, calienta el aceite de oliva y sofríe la cebolla y el ajo picados.",
+      "Añade el curry en polvo y mezcla bien.",
+      "Agrega los trozos de pollo y cocina hasta que estén dorados.",
+      "Vierte la leche de coco y cocina a fuego medio durante 20 minutos.",
+      "Sirve caliente y decora con cilantro picado."
+    ],
+    "ratings": [{ "$numberInt": "5" }, { "$numberInt": "5" }],
+    "rating_promedio": { "$numberDouble": "4.0" }
+  },
+  {
+    "_id": "5",
+    "nombre": "Brownies de Chocolate",
+    "tiempo total minutos": { "$numberInt": "45" },
+    "Porciones": { "$numberInt": "8" },
+    "calorias": "450",
+    "dificultad": "Media",
+    "vegetariana": true,
+    "ingredientes": [
+      { "nombre": "chocolate negro", "cantidad": "200 g" },
+      { "nombre": "mantequilla", "cantidad": "100 g" },
+      { "nombre": "azúcar", "cantidad": "1 taza" },
+      { "nombre": "harina", "cantidad": "1 taza" },
+      { "nombre": "huevos", "cantidad": "3 unidades" },
+      { "nombre": "polvo para hornear", "cantidad": "1 cucharadita" },
+      { "nombre": "sal", "cantidad": "1 pizca" }
+    ],
+    "preparación": [
+      "Derrite el chocolate con la mantequilla a baño maría.",
+      "En un bol, bate los huevos con el azúcar hasta obtener una mezcla espumosa.",
+      "Añade el chocolate derretido y mezcla bien.",
+      "Incorpora la harina, el polvo para hornear y la sal.",
+      "Vierte la mezcla en un molde engrasado y hornea a 180°C por 30 minutos.",
+      "Deja enfriar, corta en cuadros y disfruta."
+    ],
+    "ratings": [],
+    "rating_promedio": { "$numberDouble": "3.0" }
+  },
+  {
+    "_id": "6",
+    "nombre": "Tacos de Carnitas",
+    "descripcion": "Tacos tradicionales mexicanos con carne de cerdo cocida lentamente hasta quedar dorada y jugosa.",
+    "tiempo total minutos": { "$numberInt": "180" },
+    "Porciones": { "$numberInt": "6" },
+    "calorias": "500",
+    "dificultad": "Media",
+    "vegetariana": false,
+    "ingredientes": [
+      { "nombre": "carne de cerdo (pierna o lomo)", "cantidad": "1 kg" },
+      { "nombre": "naranja", "cantidad": "1 unidad (jugo)" },
+      { "nombre": "ajo", "cantidad": "3 dientes" },
+      { "nombre": "hoja de laurel", "cantidad": "1 unidad" },
+      { "nombre": "sal", "cantidad": "1 cucharada" },
+      { "nombre": "pimienta negra", "cantidad": "1 cucharadita" },
+      { "nombre": "comino", "cantidad": "1 cucharadita" },
+      { "nombre": "agua", "cantidad": "500 ml" },
+      { "nombre": "tortillas de maíz", "cantidad": "12 unidades" },
+      { "nombre": "salsa verde o roja", "cantidad": "al gusto" }
+    ],
+    "preparación": [
+      "Corta la carne de cerdo en trozos medianos y colócala en una olla grande.",
+      "Añade el jugo de naranja, los ajos enteros, la hoja de laurel, sal, pimienta y comino.",
+      "Vierte el agua hasta que la carne quede cubierta y cocina a fuego medio hasta que el agua se evapore (aproximadamente 1.5 horas).",
+      "Una vez que el agua se haya evaporado, deja que la carne se dore en su propia grasa hasta que esté bien dorada y crujiente.",
+      "Retira la hoja de laurel y desmenuza ligeramente la carne con un tenedor.",
+      "Calienta las tortillas de maíz en un comal y arma los tacos con la carne de carnitas.",
+      "Decora con cebolla picada, cilantro y salsa al gusto. ¡Disfruta!"
+    ],
+    "ratings": [{ "$numberInt": "5" }, { "$numberInt": "5" }],
+    "rating_promedio": { "$numberDouble": "4.0" }
+  },
+  {
+    "_id": "7",
+    "nombre": "Espagueti a la Carbonara",
+    "descripcion": "Un clásico italiano con pasta, huevo, queso parmesano y panceta.",
+    "tiempo total minutos": { "$numberInt": "25" },
+    "Porciones": { "$numberInt": "4" },
+    "calorias": "650",
+    "dificultad": "Fácil",
+    "vegetariana": false,
+    "ingredientes": [
+      { "nombre": "espagueti", "cantidad": "400 g" },
+      { "nombre": "panceta", "cantidad": "150 g" },
+      { "nombre": "huevo", "cantidad": "3 unidades" },
+      { "nombre": "queso parmesano", "cantidad": "100 g" },
+      { "nombre": "pimienta negra", "cantidad": "al gusto" },
+      { "nombre": "sal", "cantidad": "al gusto" }
+    ],
+    "preparación": [
+      "Cocina el espagueti en agua con sal hasta que esté al dente.",
+      "Mientras tanto, fríe la panceta en una sartén hasta que esté crujiente.",
+      "Bate los huevos con el queso parmesano y la pimienta negra.",
+      "Escurre la pasta y mézclala rápidamente con la mezcla de huevo y la panceta caliente.",
+      "Sirve inmediatamente con más queso parmesano."
+    ],
+    "ratings": [
+      { "$numberInt": "5" },
+      { "$numberInt": "4" },
+      { "$numberInt": "5" },
+      { "$numberInt": "5" }
+    ],
+    "rating_promedio": { "$numberDouble": "4.75" }
+  },
+  {
+    "_id": "8",
+    "nombre": "Ensalada César",
+    "descripcion": "Ensalada clásica con lechuga romana, crutones, queso parmesano y aderezo especial.",
+    "tiempo total minutos": { "$numberInt": "15" },
+    "Porciones": { "$numberInt": "2" },
+    "calorias": "350",
+    "dificultad": "Fácil",
+    "vegetariana": true,
+    "ingredientes": [
+      { "nombre": "lechuga romana", "cantidad": "1 unidad" },
+      { "nombre": "crutones", "cantidad": "1 taza" },
+      { "nombre": "queso parmesano", "cantidad": "50 g" },
+      { "nombre": "aderezo césar", "cantidad": "100 ml" }
+    ],
+    "preparación": [
+      "Lava y corta la lechuga en trozos grandes.",
+      "Mezcla con los crutones y el queso parmesano rallado.",
+      "Añade el aderezo césar y mezcla bien antes de servir."
+    ],
+    "ratings": [
+      { "$numberInt": "5" },
+      { "$numberInt": "4" },
+      { "$numberInt": "3" },
+      { "$numberInt": "4" }
+    ],
+    "rating_promedio": { "$numberInt": "4" }
+  },
+  {
+    "_id": "9",
+    "nombre": "Sopa de Lentejas",
+    "descripcion": "Una sopa reconfortante y nutritiva con lentejas, zanahoria y apio.",
+    "tiempo total minutos": { "$numberInt": "45" },
+    "Porciones": { "$numberInt": "6" },
+    "calorias": "300",
+    "dificultad": "Fácil",
+    "vegetariana": true,
+    "ingredientes": [
+      { "nombre": "lentejas", "cantidad": "1 taza" },
+      { "nombre": "zanahoria", "cantidad": "2 unidades" },
+      { "nombre": "apio", "cantidad": "1 tallo" },
+      { "nombre": "cebolla", "cantidad": "1 unidad" },
+      { "nombre": "caldo de verduras", "cantidad": "1 litro" },
+      { "nombre": "sal y pimienta", "cantidad": "al gusto" }
+    ],
+    "preparación": [
+      "Cocina las lentejas en el caldo de verduras.",
+      "Añade la zanahoria, apio y cebolla picados.",
+      "Cocina a fuego medio hasta que las lentejas estén tiernas.",
+      "Sazona con sal y pimienta antes de servir."
+    ],
+    "ratings": [
+      { "$numberInt": "5" },
+      { "$numberInt": "4" },
+      { "$numberInt": "5" }
+    ],
+    "rating_promedio": { "$numberDouble": "4.67" }
+  },
+  {
+    "_id": "10",
+    "nombre": "Pizza Margarita",
+    "descripcion": "Pizza clásica italiana con salsa de tomate, mozzarella y albahaca fresca.",
+    "tiempo total minutos": { "$numberInt": "30" },
+    "Porciones": { "$numberInt": "4" },
+    "calorias": "700",
+    "dificultad": "Media",
+    "vegetariana": true,
+    "ingredientes": [
+      { "nombre": "masa para pizza", "cantidad": "1 unidad" },
+      { "nombre": "salsa de tomate", "cantidad": "200 ml" },
+      { "nombre": "mozzarella", "cantidad": "200 g" },
+      { "nombre": "albahaca fresca", "cantidad": "al gusto" },
+      { "nombre": "aceite de oliva", "cantidad": "1 cucharada" }
+    ],
+    "preparación": [
+      "Extiende la masa de pizza sobre una bandeja para hornear.",
+      "Cubre con la salsa de tomate y la mozzarella en rodajas.",
+      "Hornea a 220°C durante 15 minutos o hasta que el queso se derrita y burbujee.",
+      "Decora con hojas de albahaca y un chorrito de aceite de oliva antes de servir."
+    ],
+    "ratings": [
+      { "$numberInt": "5" },
+      { "$numberInt": "5" },
+      { "$numberInt": "5" },
+      { "$numberInt": "4" }
+    ],
+    "rating_promedio": { "$numberDouble": "4.75" }
+  }
+]
