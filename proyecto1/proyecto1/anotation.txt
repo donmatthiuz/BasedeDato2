@@ -1,0 +1,144 @@
+
+Operación CREATE que cree un nuevo nodo en la base de datos, el cual
+solamente tenga asignada una label.
+
+- esto al hacer una nueva transaccion
+
+
+
+Creación de nodos con 2+ labels
+Operación CREATE que cree un nuevo nodo en la base de datos, el cual
+tenga 2 o más labels asignadas.
+
+- esto forzar a crear uno sin importancia
+
+
+Creación de nodos con propiedades
+Operación CREATE que cree un nuevo nodo en la base de datos, el cual
+haga la creación con por lo menos 5 propiedades configuradas.
+
+
+- Es lo mismo que la transaccion
+
+
+
+Visualización de Nodos
+● Operación que realice consultas de nodos con base a determinados filtros y se muestre la información de las propiedades de estos.
+- esto lo hacemos con el query de fraude
+
+● Consultar 1 nodo.
+
+- se hace al hacer el query para editar customer
+
+
+● Consultar muchos nodos.
+
+- ya se hizo al llamar a todos los nodos de customer y transacciones
+
+
+
+
+Gestión de propiedades en nodos
+● Operación que permita agregar 1 o más propiedades a un nodo.
+
+- esto al editar customer agregar para agregar una propiedad
+
+● Operación que permita agregar 1 o más propiedades a múltiples nodos
+al mismo tiempo.
+
+- dejar un boton en trasacciones para agregar el motivo de sospecha
+
+● Operación que permita realizar la actualización de 1 o más propiedades
+de un nodo.
+
+- esto se hara en actualizar propiedades de customer
+
+● Operación que permita realizar la actualización de 1 o más propiedades
+de múltiples nodos al mismo tiempo.
+
+- esto se hara de una vez al actualizar para determinar si es frauduelnta la transaccion
+
+
+● Operación que permita eliminar 1 o más propiedades de un nodo.
+
+- esto en editar va a estar disponible en customer
+
+
+● Operación que permita eliminar 1 o más propiedades de múltiples nodos
+al mismo tiempo.
+
+
+- esto en customer vamos a agregar en transacciones para eliminar los motivos de las que eligamos. 
+
+
+
+
+
+
+Creación de relación con propiedades
+● Operación CREATE que cree una relación entre 2 nodos ya existentes.
+● La operación deberá incluir el tipo de la relación y mínimo 3 propiedades.
+
+- se hace al crear una transaccion
+
+
+Gestión de relaciones (dirección, nodos y/o propiedades)
+● Operación que permita agregar 1 o más propiedades a una relación.
+
+- se hace al editar customer dejamos que agreguen mas propiedades 
+
+
+
+● Operación que permita agregar 1 o más propiedades a múltiples
+relaciones al mismo tiempo.
+
+- se hace al colocar en customer que todos los OWNS tengan 
+
+● Operación que permita realizar la actualización de 1 o más propiedades
+de la relación.
+
+- al actualizar customer
+
+
+● Operación que permita realizar la actualización de 1 o más propiedades
+de múltiples relaciones al mismo tiempo.
+
+- esto al agregar un boton para que actualice la propiedad de  OWNS
+
+● Operación que permita eliminar 1 o más propiedades de una relación.
+
+- se hace en el editar del nodo customer
+
+● Operación que permita eliminar 1 o más propiedades de múltiples
+relaciones al mismo tiempo.
+
+- se hace en el editar del nodo customer
+
+
+
+Eliminación de nodos
+● Operación que permita eliminar 1 nodo.
+
+ eliminar un customer y transaccion
+
+
+● Operación que permita eliminar múltiples nodos al mismo tiempo.
+
+eliminar varios customer y transacciones
+
+
+Eliminación de relaciones
+● Operación que permita eliminar 1 relación.
+- en el editar de customer 
+
+● Operación que permita eliminar múltiples relaciones al mismo tiempo.
+- Que te permita eliminar la de motivos de fraude
+
+
+
+
+- OK ENTENDIDO ESTO CUSTOMER TIENE PARA EDITAR, EL RESTO NO
+
+
+
+
