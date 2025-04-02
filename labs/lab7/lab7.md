@@ -1,5 +1,11 @@
 # Laboratorio 7: Integración de Datos y Extracción de Insights
 
+## Integrantes
+
+- Abby Donis - 22440
+- Mathew Cordero - 22982
+- Josué Say - 220801
+
 ## Ejercicio 1 - Integración de datos con una herramienta para procesos de ETL
 
 ### 1.1 Ingesta desde base de datos relacional
@@ -132,7 +138,7 @@ Una vez integrada la información proveniente de la base relacional y no relacio
 
 - **Relevancia:**  
   Este grupo de países representa destinos potencialmente atractivos para:
-  - Jóvenes turistas o nómadas digitales que buscan lugares con **ambiente dinámico y bajo costo de vida**.
+  - Jóvenes turistas que buscan lugares con **ambiente dinámico y bajo costo de vida**.
   - Inversionistas o emprendedores del sector ocio/cultura que deseen ingresar a mercados **menos saturados** pero con buena relación entre infraestructura y costos.
 
 - **Recomendación:**  

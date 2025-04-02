@@ -60,7 +60,7 @@
 
 - **Relevancia:**  
   Este grupo de países representa destinos potencialmente atractivos para:
-  - Jóvenes turistas o nómadas digitales que buscan lugares con **ambiente dinámico y bajo costo de vida**.
+  - Jóvenes turistas que buscan lugares con **ambiente dinámico y bajo costo de vida**.
   - Inversionistas o emprendedores del sector ocio/cultura que deseen ingresar a mercados **menos saturados** pero con buena relación entre infraestructura y costos.
 
 - **Recomendación:**  
