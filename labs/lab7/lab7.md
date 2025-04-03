@@ -46,33 +46,11 @@
 
 ## Ejercicio 2 - Integración de datos con un lenguaje de programación
 
-> **Observación:** Puede utilizar cualquier lenguaje de programación (por ejemplo: Python, Java, Go, Node.js, etc.)
+Se usó python para est parte del ejercicio y la información de como ejecutar el programa se puede ver en el siguiente enlace del **[repositorio](https://github.com/donmatthiuz/BasedeDato2/tree/lab7/labs/lab7/Parte2)**. Dicho ejercicio obtiene este resultado:
 
-### 2.1 Ingesta desde base de datos relacional
+![Resultado Parte 2](./Parte2/images/result_part2.png)
 
-- Utilice un conector adecuado para extraer datos de la base relacional (por ejemplo: `psycopg2` para PostgreSQL, `mysql-connector-python` para MySQL).
-- Realice una revisión de calidad de datos:
-  - Eliminación de duplicados
-  - Conversión de tipos
-  - Limpieza de strings
-
-### 2.2 Ingesta desde base de datos no relacional
-
-- Conecte a la base no relacional usando el driver correspondiente (por ejemplo: `pymongo` para MongoDB).
-- Aplane estructuras anidadas si es necesario.
-- Aplique transformaciones para unificar los datos con los de la fuente relacional.
-
-### 2.3 Integración en memoria
-
-- Combine los datasets extraídos en estructuras de datos (por ejemplo: DataFrames de `pandas` en Python).
-- Realice uniones (joins) por claves comunes.
-- Establezca una estructura final unificada.
-
-### 2.4 Carga en el Data Warehouse
-
-- Conecte a la base destino tipo Data Warehouse.
-- Realice la carga utilizando comandos `INSERT`, `COPY`, o mediante conectores especializados.
-- Opcional: Automatice este paso con un script ejecutable por cron o scheduler.
+También la data csv retornada por el código adjuntada en la entrega o al ejecutar el código de esta parte del ejercicio.
 
 ## Ejercicio 3 - Insights sobre los datos
 
