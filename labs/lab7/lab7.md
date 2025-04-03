@@ -76,7 +76,7 @@
 
 ## Ejercicio 3 - Insights sobre los datos
 
-Una vez integrada la información proveniente de la base relacional y no relacional, se deben extraer conocimientos útiles que impulsen la acción.
+Una vez integrada la información proveniente de la base relacional y no relacional, se deben extraer conocimientos útiles que impulsen la acción. La información de como ejecutar el programa se puede ver en el siguiente enlace del **[repositorio](https://github.com/donmatthiuz/BasedeDato2/tree/lab7/labs/lab7/Parte3)**
 
 ### Insight 1: Países con alta tasa de envejecimiento no necesariamente tienen altos costos turísticos
 
