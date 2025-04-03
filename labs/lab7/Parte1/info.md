@@ -97,6 +97,12 @@ python json_cleaner.py
 
 ## 2.4 Configure la herramienta para que el proceso de ETL se ejecute cada cierto tiempo (la frecuencia de ejecución queda a su criterio)
 
+- Para esto configuramos un looop para un wait se ejecute cada cierto tiempo en KNIME
+![alt text](image-8.png)
+
+## 2.4 Los datos integrados se deberán cargar en la base de datos que hace las veces de data warehouse, sin que se necesite su intervención.
 
 
+Esto se valida y se termina el loop cuando variable condition osea los row de los insertdos son mayores a 0.
+![alt text](image-9.png)
 
