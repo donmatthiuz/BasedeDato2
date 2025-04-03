@@ -8,45 +8,113 @@
 
 ## Ejercicio 1 - Integración de datos con una herramienta para procesos de ETL
 
-### 1.1 Ingesta desde base de datos relacional
+Usamos `Postgres (SQL)`, `Knime (Gestor de conexiones)` y `MongoCompasDB (NoSQL)` para esta parte del ejercicio y la información de como ejecutar el programa se puede ver en el siguiente enlace del **[repositorio](https://github.com/donmatthiuz/BasedeDato2/tree/lab7/labs/lab7/Parte1)**.
 
-- Conecte la herramienta ETL a la base de datos relacional (por ejemplo: MySQL, PostgreSQL, SQL Server).
-- Extraiga las tablas requeridas.
-- Revise si los datos contienen:
-  - Valores nulos o duplicados
-  - Tipos de datos inconsistentes
-  - Codificaciones incorrectas
-- Realice la limpieza necesaria (eliminación de nulos, normalización de campos, etc.).
+### 1.1 Ingeste los datos que se encuentran en la base de datos relacional. Revise si es necesario realizar algún tipo de limpieza sobre los datos
 
-### 1.2 Ingesta desde base de datos no relacional
+#### Limpieza
 
-- Conecte la herramienta ETL a la base de datos no relacional (por ejemplo: MongoDB, Cassandra, Firebase).
-- Extraiga los documentos o colecciones relevantes.
-- Valide:
-  - Estructuras inconsistentes entre documentos
-  - Valores faltantes
-  - Necesidad de aplanar estructuras anidadas
-- Realice la limpieza o transformación necesaria para unificación.
+Para ello si se realizo limpieza con los scripts en la carpeta
 
-### 1.3 Integración de datos
+```bash
+lab7/
+│
+├── DatosSQL/                  # CSVs de población y envejecimiento
+├── DatosNoSQL/                # JSONs con datos turísticos y Big Mac
+├── Parte1/                    # Código ETL e imágenes de resultados
+│   ├── sql_clenaer.py              # Script de limpieza NOSQL
+│  
+```
 
-- Una los datos de ambas fuentes mediante claves comunes (por ejemplo: ID de usuario, correo electrónico, etc.).
-- Diseñe un flujo ETL que fusione ambos conjuntos de datos en un solo modelo consistente.
-- Aplique transformaciones necesarias para compatibilidad entre estructuras y formatos.
+Se ejecuta con python y debe de cambiarse las propiedades
 
-### 1.4 Automatización del proceso ETL
+- Cambio de variables
 
-- Configure la herramienta para que el flujo ETL se ejecute de forma periódica (frecuencia sugerida: cada hora, diario o semanal).
-- Habilite logs de ejecución y alertas ante fallos.
+```python
+DB_HOST = "localhost"  # Cambia si el servidor no está en tu máquina
+DB_PORT = "5432"       # Puerto por defecto de PostgreSQL
+DB_NAME = "nombre_db"
+DB_USER = "usuario_db"
+DB_PASSWORD = "contraseña"
+TABLE_NAME = "nombre_tabla"
+CSV_FILE = "./path_del_csv"
+```
 
-### 1.5 Carga en Data Warehouse
+- Ejecucion
 
-- Configure el flujo para que, una vez integrados los datos, estos se carguen automáticamente en una base de datos destino tipo Data Warehouse (por ejemplo: BigQuery, Redshift, Snowflake, PostgreSQL optimizado para BI).
-- El proceso debe ejecutarse sin intervención manual.
+```bash
+python sql_clenaer.py
+```
+
+- Se limpian los csv y se ingresan de una vez a postgres tambien
+
+  ![Limpieza](./Parte1/images/image-2.png)
+
+- Luego se ingreso en DDL de PgAdmin
+
+  ![Carga de datos](./Parte1/images/image.png)
+
+### 1.2 Ingeste los datos que se encuentran en la base de datos no relacional. Revise si es necesario realizar algún tipo de limpieza sobre los datos
+
+#### Limpieza de datos
+
+Esta en
+
+```bash
+lab7/
+│
+├── DatosSQL/                  # CSVs de población y envejecimiento
+├── DatosNoSQL/                # JSONs con datos turísticos y Big Mac
+├── Parte1/                    # Código ETL e imágenes de resultados
+│   ├── json_cleaner.py              # Script de limpieza NOSQL
+│  
+```
+
+- Cambio de variables
+
+  ```python
+  json_path = "./json_path"
+  ```
+
+- Ejecucion
+
+  ```bash
+  python json_cleaner.py
+  ```
+
+![Limpieza](./Parte1/images/image-3.png)
+
+![Carga de Datos](./Parte1/images/image-4.png)
+
+### 1.3 Integre ambas fuentes de datos por medio de la herramienta de procesos de ETL
+
+- Para esto se uso Knime, con un conector de Postgres y MongoDB
+
+  ![Uso de Knime](./Parte1/images/image-5.png)
+
+- Este fue el diagrama hecho, en knime juntando los json en una sola db y haciendo uso de json to table
+- Luego se hizo un concatenate y un join con las otras base de datos SQL
+
+  ![Uso de Knime 2](./Parte1/images/image-6.png)
+
+- Aqui la salida de la db completamente limpia y junta
+
+  ![Resultados Knime](./Parte1/images/image-7.png)
+
+### 1.4 Configure la herramienta para que el proceso de ETL se ejecute cada cierto tiempo (la frecuencia de ejecución queda a su criterio)
+
+- Para esto configuramos un loop para un wait se ejecute cada cierto tiempo en KNIME
+![Configuración Knime](./Parte1/images/image-8.png)
+
+### 1.4 Los datos integrados se deberán cargar en la base de datos que hace las veces de data warehouse, sin que se necesite su intervención
+
+Esto se valida y se termina el loop cuando variable condition osea los row de los insertdos son mayores a 0.
+
+![Integración Knime](./Parte1/images/image-9.png)
 
 ## Ejercicio 2 - Integración de datos con un lenguaje de programación
 
-Se usó python para est parte del ejercicio y la información de como ejecutar el programa se puede ver en el siguiente enlace del **[repositorio](https://github.com/donmatthiuz/BasedeDato2/tree/lab7/labs/lab7/Parte2)**. Dicho ejercicio obtiene este resultado:
+Se usó python para esta parte del ejercicio y la información de como ejecutar el programa se puede ver en el siguiente enlace del **[repositorio](https://github.com/donmatthiuz/BasedeDato2/tree/lab7/labs/lab7/Parte2)**. Dicho ejercicio obtiene este resultado:
 
 ![Resultado Parte 2](./Parte2/images/result_part2.png)
 
