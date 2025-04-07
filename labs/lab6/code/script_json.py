@@ -56,7 +56,7 @@ def generar_usuarios(cantidad):
     return usuarios
 
 # Generar 99,989 usuarios
-usuarios = generar_usuarios(99989) #cambia el numero por la cantidad de datos que necesites
+usuarios = generar_usuarios(50000) #cambia el numero por la cantidad de datos que necesites
 
 # Guardar en archivo JSON
 with open('usuarios.json', 'w') as f:
