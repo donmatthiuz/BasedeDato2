@@ -103,6 +103,113 @@
 
 ![Resultado Account Summaries](./images/2_8-part2.png)
 
-## 2.9
+## 2.9 - Pipeline de agregación para identificar clientes de alto valor
+
+**Estrategia:**
+
+1. **Hacer un lookup para obtener las transacciones de cada cliente.**  
+   Se utiliza `$lookup` para realizar un "join" entre la colección actual (clientes) y la colección `transactions`.  
+   - **localField:** `accounts`, que contiene los `account_id` asociados al cliente.
+   - **foreignField:** `account_id`, el campo en la colección `transactions`.
+   - **as:** Se almacena el resultado en el nuevo campo `customer_transactions`, que será un arreglo de documentos con las transacciones de cada cuenta.
+
+2. **Calcular el balance total y el número de transacciones por cliente.**  
+   Se aplica `$addFields` para agregar dos nuevos campos:
+   - **total_balance:**  
+     Se calcula sumando los montos de todas las transacciones del cliente.
+     - **$map:** Recorre el arreglo `customer_transactions`.
+     - **input:** Cada elemento del arreglo representa un grupo de transacciones por cuenta.
+     - **as:** Se referencia a cada grupo como `trans`.
+     - **in:**  
+       Para cada grupo `trans`, se suman los valores de `total` de sus transacciones individuales:
+       - Se accede a `trans.transactions`.
+       - Se usa otro `$map` para convertir cada `total` (originalmente string) a decimal usando `$toDecimal`.
+       - Se suman los montos de las transacciones del grupo.
+   - **total_transactions:**  
+     Se calcula sumando el campo `transaction_count` de cada elemento en `customer_transactions`, representando el total de transacciones del cliente.
+
+3. **Filtrar solo clientes de alto valor.**  
+   Se utiliza `$match` para seleccionar únicamente los clientes que cumplen ambos criterios:
+   - **total_balance > 30,000** unidades monetarias.
+   - **total_transactions > 5** transacciones.
+
+4. **Proyectar solo los campos relevantes.**  
+   Con `$project`, se seleccionan los campos que se quieren conservar en el resultado:
+   - `name`
+   - `email`
+   - `total_balance`
+   - `total_transactions`
+
+5. **Guardar el resultado en la colección high_value_customers.**  
+   Finalmente, se usa `$merge` para guardar los resultados en la colección `high_value_customers`.  
+   Esta operación insertará nuevos documentos o actualizará los existentes si es necesario.
+
+```javascript
+[
+  {
+    $lookup: {
+      from: "transactions",
+      localField: "accounts",
+      foreignField: "account_id",
+      as: "customer_transactions",
+    },
+  },
+  {
+    $addFields: {
+      total_balance: {
+        $sum: {
+          $map: {
+            input: "$customer_transactions",
+            as: "trans",
+            in: {
+              $sum: {
+                $map: {
+                  input: "$$trans.transactions",
+                  as: "t",
+                  in: {
+                    $toDecimal: "$$t.total",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      total_transactions: {
+        $sum: "$customer_transactions.transaction_count",
+      },
+    },
+  },
+  {
+    $match: {
+      total_balance: {
+        $gt: 30000,
+      },
+      total_transactions: {
+        $gt: 5,
+      },
+    },
+  },
+  {
+    $project: {
+      name: 1,
+      email: 1,
+      total_balance: 1,
+      total_transactions: 1,
+    },
+  },
+  {
+    $merge: {
+      into: "high_value_customers",
+    },
+  },
+];
+```
+
+### Resultado
+
+![Resultado Ejecución Pipeline](./images/2_9-part1.png)
+
+![Resultado High Value Customers](./images/2_9-part2.png)
 
 ## 2.10
