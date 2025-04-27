@@ -340,7 +340,7 @@ db.transactions.aggregate([
         into: "account_summaries",
       },
   },
-];
+]
 ```
 
 ### Resultado
@@ -449,7 +449,7 @@ db.transactions.aggregate([
       into: "high_value_customers",
     },
   },
-];
+]
 ```
 
 ### Resultado
@@ -459,3 +459,211 @@ db.transactions.aggregate([
 ![Resultado High Value Customers](./images/2_9-part2.png)
 
 ## 2.10 - Clasificación de clientes según promedio mensual de transacciones en el último año
+
+**Estrategia:**
+
+1. **Relacionar clientes con sus transacciones.**  
+   Se usa `$lookup` para unir cada cliente con sus transacciones en la colección `transactions`.  
+   La unión se realiza usando el campo `accounts` del cliente y `account_id` de la transacción. El resultado se guarda en el campo `customer_transactions`.
+
+2. **Desenrollar el array de transacciones.**  
+   Se aplican dos `$unwind`:
+   - Primero en `customer_transactions` para separar cada conjunto de transacciones por cuenta.
+   - Luego en `customer_transactions.transactions` para separar cada transacción individualmente.
+
+3. **Proyectar los campos relevantes.**  
+   Se usa `$project` para quedarse únicamente con los datos importantes:
+   - `name` del cliente.
+   - `transaction_date` (fecha de cada transacción).
+   - `transaction_amount` (monto de cada transacción).
+   - `year` y `month` derivados de `transaction_date`.
+
+4. **Agrupar la información por cliente.**  
+   Con `$group` se agrupa todo por cliente (`_id` del cliente):
+   - Se guarda el primer `name`.
+   - Se acumulan todas las transacciones en `all_transactions`.
+   - Se guarda el conjunto de años (`years`) donde tuvo actividad.
+
+5. **Ordenar las transacciones internamente.**  
+   Se usa `$sortArray` en `$project` para ordenar el array `all_transactions` por `transaction_date` de forma descendente.
+
+6. **Identificar el último año de actividad.**  
+   Se calcula el `last_transaction_year` usando `$max` sobre el arreglo `years`.
+
+7. **Filtrar solo las transacciones del último año.**  
+   Con `$addFields` se usa `$filter` para dejar únicamente las transacciones cuyo `year` sea igual a `last_transaction_year`.
+
+8. **Proyectar los campos finales.**  
+   Se usa `$project` para preparar los datos de salida:
+   - `name`.
+   - `last_transaction_year`.
+   - `transactions` (solo `transaction_date` y `transaction_amount`).
+   - `count_transactions` (número total de transacciones de ese año).
+   - `transactions_average_year_month` (promedio de transacciones por mes, dividiendo entre 12).
+
+9. **Categorizar la frecuencia de las transacciones.**  
+   Finalmente con `$addFields` y `$switch` se asigna una categoría basada en el promedio mensual:
+   - `"infrequent"` si el promedio es menor a 2.
+   - `"regular"` si el promedio está entre 2 y 5.
+   - `"frequent"` si el promedio es mayor a 5.
+
+```javascript
+[
+  {
+    $lookup: {
+      from: "transactions",
+      localField: "accounts",
+      foreignField: "account_id",
+      as: "customer_transactions"
+    }
+  },
+  {
+    $unwind: "$customer_transactions"
+  },
+  {
+    $unwind: "$customer_transactions.transactions"
+  },
+  {
+    $project: {
+      name: 1,
+      transaction_date:
+        "$customer_transactions.transactions.date",
+      transaction_amount:
+        "$customer_transactions.transactions.amount",
+      year: {
+        $year:
+          "$customer_transactions.transactions.date"
+      },
+      month: {
+        $month:
+          "$customer_transactions.transactions.date"
+      }
+    }
+  },
+  {
+    $group: {
+      _id: "$_id",
+      name: {
+        $first: "$name"
+      },
+      all_transactions: {
+        $push: {
+          transaction_date: "$transaction_date",
+          transaction_amount:
+            "$transaction_amount",
+          year: "$year",
+          month: "$month"
+        }
+      },
+      years: {
+        $addToSet: "$year"
+      }
+    }
+  },
+  {
+    $project: {
+      name: 1,
+      all_transactions: {
+        $sortArray: {
+          input: "$all_transactions",
+          sortBy: {
+            transaction_date: -1
+          }
+        }
+      },
+      last_transaction_year: {
+        $max: "$years"
+      }
+    }
+  },
+  {
+    $addFields: {
+      transactions: {
+        $filter: {
+          input: "$all_transactions",
+          as: "tran",
+          cond: {
+            $eq: [
+              "$$tran.year",
+              "$last_transaction_year"
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    $project: {
+      name: 1,
+      last_transaction_year: 1,
+      transactions: {
+        transaction_date: 1,
+        transaction_amount: 1
+      },
+      count_transactions: {
+        $size: "$transactions"
+      },
+      transactions_average_year_month: {
+        $divide: [
+          {
+            $size: "$transactions"
+          },
+          12
+        ]
+      }
+    }
+  },
+  {
+    $addFields: {
+      transaction_frequency_category: {
+        $switch: {
+          branches: [
+            {
+              case: {
+                $lt: [
+                  "$transactions_average_year_month",
+                  2
+                ]
+              },
+              then: "infrequent"
+            },
+            {
+              case: {
+                $and: [
+                  {
+                    $gte: [
+                      "$transactions_average_year_month",
+                      2
+                    ]
+                  },
+                  {
+                    $lte: [
+                      "$transactions_average_year_month",
+                      5
+                    ]
+                  }
+                ]
+              },
+              then: "regular"
+            },
+            {
+              case: {
+                $gt: [
+                  "$transactions_average_year_month",
+                  5
+                ]
+              },
+              then: "frequent"
+            }
+          ],
+          default: "unknown"
+        }
+      }
+    }
+  }
+]
+```
+
+### Resultado
+
+![Resultado Ejecución Pipeline](./images/2_10-part1.png)
