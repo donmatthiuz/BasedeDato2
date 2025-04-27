@@ -256,9 +256,160 @@ db.transactions.aggregate([
 
 ## 2.5 - Variación porcentual entre transacciones más antigua y más reciente por cliente
 
+```javascript
+db.customers.aggregate([
+ 
+  { $unwind: "$accounts" },
+  
+ 
+  { $lookup: {
+      from: "transactions",
+      localField: "accounts",
+      foreignField: "account_id",
+      as: "accountTransactions"
+    }
+  },
+  
+ 
+  { $match: { "accountTransactions": { $ne: [] } } },
+  
+ 
+  { $unwind: "$accountTransactions" },
+  
+ 
+  { $unwind: "$accountTransactions.transactions" },
+  
+ 
+  { $group: {
+      _id: {
+        customer_id: "$_id",
+        customer_name: "$name",
+        username: "$username",
+        account_id: "$accounts"
+      },
+      transactions: { $push: "$accountTransactions.transactions" },
+      oldestTransaction: { $min: "$accountTransactions.transactions.date" },
+      newestTransaction: { $max: "$accountTransactions.transactions.date" }
+    }
+  },
+  
+ 
+  { $project: {
+      _id: 0,
+      customer_id: "$_id.customer_id",
+      customer_name: "$_id.customer_name",
+      username: "$_id.username",
+      account_id: "$_id.account_id",
+      transactions: 1,
+      oldestTransaction: 1,
+      newestTransaction: 1
+    }
+  },
+  
+  
+  { $addFields: {
+      oldestTransactionData: {
+        $filter: {
+          input: "$transactions",
+          as: "t",
+          cond: { $eq: ["$$t.date", "$oldestTransaction"] }
+        }
+      },
+      newestTransactionData: {
+        $filter: {
+          input: "$transactions",
+          as: "t",
+          cond: { $eq: ["$$t.date", "$newestTransaction"] }
+        }
+      }
+    }
+  },
+  
+  
+  { $project: {
+      customer_id: 1,
+      customer_name: 1,
+      username: 1,
+      account_id: 1,
+      oldestDate: "$oldestTransaction",
+      oldestPrice: { $toDouble: { $arrayElemAt: ["$oldestTransactionData.price", 0] } },
+      oldestSymbol: { $arrayElemAt: ["$oldestTransactionData.symbol", 0] },
+      newestDate: "$newestTransaction",
+      newestPrice: { $toDouble: { $arrayElemAt: ["$newestTransactionData.price", 0] } },
+      newestSymbol: { $arrayElemAt: ["$newestTransactionData.symbol", 0] },
+      percentageChange: { 
+        $multiply: [
+          { $divide: [
+              { $subtract: [
+                { $toDouble: { $arrayElemAt: ["$newestTransactionData.price", 0] } }, 
+                { $toDouble: { $arrayElemAt: ["$oldestTransactionData.price", 0] } }
+              ]},
+              { $toDouble: { $arrayElemAt: ["$oldestTransactionData.price", 0] } }
+            ]
+          },
+          100
+        ]
+      }
+    }
+  },
+  
+  
+  { $sort: { "customer_name": 1 } }
+])
+```
+
+### Resultado
+
+![Resultado Ejecución Pipeline](./images/2_5.png)
+
+
 ## 2.6 - Agrupación de transacciones por mes y tipo con totales y promedios
 
+```javascript
+db.transactions.aggregate([
+
+  { $unwind: "$transactions" },
+
+
+  {
+    $addFields: {
+      month: { 
+        $dateToString: { format: "%m", date: "$transactions.date" }
+      }
+    }
+  },
+
+
+  {
+    $group: {
+      _id: {
+        month: "$month",
+        transaction_code: "$transactions.transaction_code"
+      },
+      totalAmount: { $sum: "$transactions.amount" },
+      avgAmount: { $avg: "$transactions.amount" },
+      totalValue: { $sum: { $toDouble: "$transactions.total" } },
+      avgValue: { $avg: { $toDouble: "$transactions.total" } }
+    }
+  },
+
+
+  { 
+    $sort: { "_id.month": 1, "_id.transaction_code": 1 }
+  }
+]);
+
+```
+### Resultado
+![Resultado Ejecución Pipeline](./images/2_6-P1.png)
+![Resultado Ejecución Pipeline](./images/2_6-P2.png)
+![Resultado Ejecución Pipeline](./images/2_6-P3.png)
+
 ## 2.7 - Identificación y almacenamiento de clientes inactivos
+
+```javascript
+```
+### Resultado
 
 ## 2.8 - Pipeline de agregación para crear un resumen de cuentas
 
