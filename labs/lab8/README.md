@@ -407,9 +407,66 @@ db.transactions.aggregate([
 
 ## 2.7 - Identificación y almacenamiento de clientes inactivos
 
+
+Se uso el siguiente script de agregation
+
 ```javascript
+db.customers.aggregate([
+  {
+    $lookup: {
+      from: "transactions",  
+      localField: "accounts", 
+      foreignField: "account_id",  
+      as: "transactions"
+    }
+  },
+  {
+    $project: {
+      _id: 1,
+      username: 1,
+      name: 1,
+      email: 1,
+      accounts: 1,
+      active: 1,
+
+      inactive_accounts: {
+        $setDifference: ["$accounts", { $map: { input: "$transactions", as: "t", in: "$$t.account_id" } }]
+      }
+    }
+  },
+  {
+    $match: {
+      "inactive_accounts": { $ne: [] }  
+    }
+  },
+  {
+    $project: {
+      "_id": 1,
+      "username": 1,
+      "name": 1,
+      "email": 1,
+      "accounts": 1,
+      "active": 1
+    }
+  },
+  {
+    $out: "inactive_customers" 
+  }
+]);
+
 ```
 ### Resultado
+
+
+Devolvio como resultado un [] vacio de customers asi que se probo agregando un account nuevo sin ninguna transaccion y agregandolo en el customer lo que devolvio fue algo como
+
+![alt text](./images/2_7_1.png)
+
+
+Y aqui la evidencia que se guardo en una coleccion nueva
+
+![alt text](./images/2_7_2.png)
+
 
 ## 2.8 - Pipeline de agregación para crear un resumen de cuentas
 
