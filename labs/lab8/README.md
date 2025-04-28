@@ -1,4 +1,37 @@
+<!-- ---
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{amssymb}
+  - \usepackage{fontspec}
+  - \setmainfont{FiraCode Nerd Font}
+  - \setmonofont{FiraCode Nerd Font Mono}
+  - \usepackage{setspace}
+  - \setstretch{1.5}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+geometry: top=0.67in, bottom=0.67in, left=0.85in, right=0.85in
+--- -->
+
 # Lab 8 - Aggregations - Pipelines
+
+## Integrantes
+
+- Abby Donis - 22440
+- Mathew Cordero - 22982
+- Josué Say - 220801
+
+## Índice
+
+1. [Inciso 2.1](#21---resumen-de-transacciones-por-cuenta)
+2. [Inciso 2.2](#22---clasificación-de-cuentas-por-balance)
+3. [Inciso 2.3](#23---balance-máximo-por-ciudad)
+4. [Inciso 2.4](#24---top-10-transacciones-recientes-y-grandes)
+5. [Inciso 2.5](#25---variación-porcentual-entre-transacciones-más-antigua-y-más-reciente-por-cliente)
+6. [Inciso 2.6](#26---agrupación-de-transacciones-por-mes-y-tipo-con-totales-y-promedios)
+7. [Inciso 2.7](#27---identificación-y-almacenamiento-de-clientes-inactivos)
+8. [Inciso 2.8](#28---pipeline-de-agregación-para-crear-un-resumen-de-cuentas)
+9. [Inciso 2.9](#29---pipeline-de-agregación-para-identificar-clientes-de-alto-valor)
+10. [Inciso 2.10](#210---clasificación-de-clientes-según-promedio-mensual-de-transacciones-en-el-último-año)
 
 ## 2.1 - Resumen de transacciones por cuenta
 
@@ -362,7 +395,6 @@ db.customers.aggregate([
 
 ![Resultado Ejecución Pipeline](./images/2_5.png)
 
-
 ## 2.6 - Agrupación de transacciones por mes y tipo con totales y promedios
 
 ```javascript
@@ -400,13 +432,16 @@ db.transactions.aggregate([
 ]);
 
 ```
+
 ### Resultado
+
 ![Resultado Ejecución Pipeline](./images/2_6-P1.png)
+
 ![Resultado Ejecución Pipeline](./images/2_6-P2.png)
+
 ![Resultado Ejecución Pipeline](./images/2_6-P3.png)
 
 ## 2.7 - Identificación y almacenamiento de clientes inactivos
-
 
 Se uso el siguiente script de agregation
 
@@ -455,18 +490,16 @@ db.customers.aggregate([
 ]);
 
 ```
-### Resultado
 
+### Resultado
 
 Devolvio como resultado un [] vacio de customers asi que se probo agregando un account nuevo sin ninguna transaccion y agregandolo en el customer lo que devolvio fue algo como
 
 ![alt text](./images/2_7_1.png)
 
-
 Y aqui la evidencia que se guardo en una coleccion nueva
 
 ![alt text](./images/2_7_2.png)
-
 
 ## 2.8 - Pipeline de agregación para crear un resumen de cuentas
 
