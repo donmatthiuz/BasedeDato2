@@ -19,9 +19,9 @@ def generar_nombre_restaurante(categoria):
         "Asiatica": ["Bambú Oriental", "Sakura", "Wok Dynasty", "Dragón Rojo", "Sabores de Oriente"],
         "Italiana": ["Bella Napoli", "Pasta Amore", "Nonno Mario", "Trattoria Romana", "Cucina della Mamma"],
         "Vegetariana": ["Verde Vida", "Raíces", "Jardín Orgánico", "Tierra Verde", "Esencia Vegetal"],
-        "Rápida": ["Rápido y Sabroso", "El Rincón Express", "Sabor Instantáneo", "Comida al Vuelo", "La Esquina Rápida"]
+        "Rápida": ["Rápido y Sabroso", "El Rincón Express", "WacDonalds", "Pizza Queen", "Taco Box"]
     }
-    return random.choice(nombres[categoria]) + " " + fake.city_suffix()
+    return random.choice(nombres[categoria])
 
 def generar_datos():
     # 1. Restaurantes (1 por categoría)
@@ -30,42 +30,76 @@ def generar_datos():
         "nombre": generar_nombre_restaurante(categoria),
         "categoria": categoria,
         "direccion": fake.address(),
-        "telefono": fake.phone_number(),
-        "capacidad": random.randint(20, 100)
+        "telefono": fake.phone_number()
     } for categoria in CATEGORIAS]
 
     # 2. Clientes (8% del total = 4,000)
-    clientes = [{
+    usuarios = [{
         "_id": generar_id(),
         "nombre": fake.name(),
         "email": fake.email(),
+        "direccion": fake.address(),
         "telefono": fake.phone_number(),
-        "fecha_registro": fake.date_time_between(start_date="-1y").strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "frecuencia": random.choice(["ocasional", "regular", "frecuente"])
+        "contra": fake.password(),
+        "fecha_registro": fake.date_time_between(start_date="-1y").strftime("%Y-%m-%dT%H:%M:%SZ")
     } for _ in range(int(TOTAL_DOCS * 0.08))]
 
-    # 3. Órdenes (90% del total = 45,000)
+    # 3. Menú - Asegurando mínimo 5 platillos por categoría
+    platillos_tipicos = {
+        "Parrillada": ["Carne Asada", "Pollo a la Parrilla", "Chuleta", "Costilla", "Lomo", "Punta de Anca"],
+        "Asiatica": ["Sushi", "Dumplings", "Gimbap", "Pad Thai", "Ramen", "Pollo Teriyaki"],
+        "Italiana": ["Pasta Alfredo", "Lasagna", "Pizza Margherita", "Risotto", "Penne Arrabbiata", "Ravioli"],
+        "Vegetariana": ["Ensalada César", "Wrap Vegetal", "Curry de Verduras", "Falafel", "Quinoa Bowl"],
+        "Rápida": ["Hamburguesa", "Hot Dog", "Burrito", "Papas Fritas", "Alitas", "Sandwich"]
+    }
+
+    articulos_menu = []
+    for restaurante in restaurantes:
+        # Seleccionar entre 3-5 platillos (sin exceder el total disponible)
+        num_platillos = random.randint(3, 5)
+        platillos = random.sample(platillos_tipicos[restaurante["categoria"]], k=min(num_platillos, len(platillos_tipicos[restaurante["categoria"]])))
+        
+        for platillo in platillos:
+            articulos_menu.append({
+                "_id": generar_id(),
+                "nombre": platillo,
+                "precio": random.randint(50, 150),
+                "descripcion": f"{platillo} con acompañamientos",
+                "disponible": True,
+                "restaurante_id": restaurante["_id"]
+            })
+
+    # 4. Ordenes (90% del total = 45,000)
     ordenes = []
     for _ in range(int(TOTAL_DOCS * 0.9)):
+        usuario = random.choice(usuarios)
         restaurante = random.choice(restaurantes)
-        cliente = random.choice(clientes)
-        fecha = fake.date_time_between(start_date="-1y").strftime("%Y-%m-%dT%H:%M:%SZ")
+        articulos_rest = [a for a in articulos_menu if a["restaurante_id"] == restaurante["_id"]]
+        
+        if not articulos_rest:
+            continue
+            
+        platillos = []
+        for _ in range(random.randint(1, 4)):  # 1-4 platillos por orden
+            articulo = random.choice(articulos_rest)
+            platillos.append({
+                "menu_item_id": articulo["_id"],
+                "nombre": articulo["nombre"],
+                "cantidad": random.randint(1, 3),
+                "precio_unitario": articulo["precio"]
+            })
         
         ordenes.append({
             "_id": generar_id(),
+            "usuario_id": usuario["_id"],
             "restaurante_id": restaurante["_id"],
-            "usuario_id": cliente["_id"],
-            "fecha": fecha,
-            "total": round(random.uniform(80, 400), 2),
-            "estado": random.choices(
-                ["completada", "cancelada", "en_proceso"],
-                weights=[0.85, 0.10, 0.05],
-                k=1
-            )[0],
-            "metodo_pago": random.choice(["efectivo", "tarjeta", "transferencia"])
+            "fecha": fake.date_time_between(start_date="-1y").strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "estado": random.choices(["completada", "cancelada", "preparando"], weights=[0.8, 0.1, 0.1])[0],
+            "platillos": platillos,
+            "total": sum(p["precio_unitario"] * p["cantidad"] for p in platillos)
         })
 
-    # 4. Reseñas (2% del total = 1,000, solo para órdenes completadas)
+    # 5. Reseñas (2% del total = 1,000)
     ordenes_completadas = [o for o in ordenes if o["estado"] == "completada"]
     resenas = []
     for _ in range(int(TOTAL_DOCS * 0.02)):
@@ -73,25 +107,21 @@ def generar_datos():
             break
             
         orden = random.choice(ordenes_completadas)
-        # Convertir la fecha string a datetime para date_time_between
         fecha_orden = datetime.strptime(orden["fecha"], "%Y-%m-%dT%H:%M:%SZ")
         resenas.append({
             "_id": generar_id(),
             "orden_id": orden["_id"],
             "usuario_id": orden["usuario_id"],
             "restaurante_id": orden["restaurante_id"],
-            "calificacion": random.choices(
-                [1, 2, 3, 4, 5],
-                weights=[0.05, 0.10, 0.15, 0.30, 0.40],
-                k=1
-            )[0],
+            "calificacion": random.randint(1, 5),
             "comentario": fake.paragraph(nb_sentences=2),
             "fecha": fake.date_time_between(start_date=fecha_orden).strftime("%Y-%m-%dT%H:%M:%SZ")
         })
 
     return {
         "restaurantes": restaurantes,
-        "clientes": clientes,
+        "usuarios": usuarios,
+        "articulos_menu": articulos_menu,
         "ordenes": ordenes,
         "resenas": resenas
     }
@@ -101,8 +131,11 @@ def guardar_datos(datos):
     with open('restaurantes.json', 'w', encoding='utf-8') as f:
         json.dump(datos["restaurantes"], f, indent=2, ensure_ascii=False)
     
-    with open('clientes.json', 'w', encoding='utf-8') as f:
-        json.dump(datos["clientes"], f, indent=2, ensure_ascii=False)
+    with open('usuarios.json', 'w', encoding='utf-8') as f:
+        json.dump(datos["usuarios"], f, indent=2, ensure_ascii=False)
+    
+    with open('articulos_menu.json', 'w', encoding='utf-8') as f:
+        json.dump(datos["articulos_menu"], f, indent=2, ensure_ascii=False)
     
     # Dividir órdenes en archivos de 10,000
     for i in range(0, len(datos["ordenes"]), 10000):
@@ -121,7 +154,8 @@ guardar_datos(datos_generados)
 print(f"""
 Generación completada:
 - Restaurantes: {len(datos_generados["restaurantes"])} (1 por categoría)
-- Clientes: {len(datos_generados["clientes"])} (8%)
+- Usuarios: {len(datos_generados["usuarios"])} (8%)
+- Artículos de menú: {len(datos_generados["articulos_menu"])}
 - Órdenes: {len(datos_generados["ordenes"])} (90%)
-- Reseñas: {len(datos_generados["resenas"])} (2% de órdenes)
+- Reseñas: {len(datos_generados["resenas"])} (2% de órdenes completadas)
 """)

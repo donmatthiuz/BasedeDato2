@@ -1,0 +1,170 @@
+[
+  {
+    "_id": "c13f5028-2e79-4d50-b596-585646653d74",
+    "nombre": "Pollo a la Parrilla",
+    "precio": 121,
+    "descripcion": "Pollo a la Parrilla con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "c3f3bb5f-93a2-4bc8-b15f-085b684e6f62"
+  },
+  {
+    "_id": "20b91d35-f4bc-4136-850a-83563845f71e",
+    "nombre": "Chuleta",
+    "precio": 132,
+    "descripcion": "Chuleta con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "c3f3bb5f-93a2-4bc8-b15f-085b684e6f62"
+  },
+  {
+    "_id": "eb1e5b74-87ca-401b-a47d-2154e84d4e95",
+    "nombre": "Carne Asada",
+    "precio": 128,
+    "descripcion": "Carne Asada con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "c3f3bb5f-93a2-4bc8-b15f-085b684e6f62"
+  },
+  {
+    "_id": "57d9f884-7017-4e41-97f6-2be7ac1a7dfc",
+    "nombre": "Punta de Anca",
+    "precio": 78,
+    "descripcion": "Punta de Anca con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "c3f3bb5f-93a2-4bc8-b15f-085b684e6f62"
+  },
+  {
+    "_id": "3cb1c7f8-ccb8-4d1e-bc0b-a8ee48c843f0",
+    "nombre": "Sushi",
+    "precio": 140,
+    "descripcion": "Sushi con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "08b0176d-6ec7-438e-814b-da630b9a34f0"
+  },
+  {
+    "_id": "6eac524f-741c-4e43-ab61-e67b07a88d0e",
+    "nombre": "Pollo Teriyaki",
+    "precio": 102,
+    "descripcion": "Pollo Teriyaki con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "08b0176d-6ec7-438e-814b-da630b9a34f0"
+  },
+  {
+    "_id": "6ac40419-af9c-4f96-9c82-f2bb33063cef",
+    "nombre": "Ramen",
+    "precio": 96,
+    "descripcion": "Ramen con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "08b0176d-6ec7-438e-814b-da630b9a34f0"
+  },
+  {
+    "_id": "07781428-e373-4baa-891b-a33a14db4939",
+    "nombre": "Risotto",
+    "precio": 119,
+    "descripcion": "Risotto con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "fe8b0c30-c333-4a50-a9a6-3823cb041d92"
+  },
+  {
+    "_id": "40d29aff-2275-4127-9ddb-80131a9e590d",
+    "nombre": "Ravioli",
+    "precio": 131,
+    "descripcion": "Ravioli con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "fe8b0c30-c333-4a50-a9a6-3823cb041d92"
+  },
+  {
+    "_id": "721cce8a-16b1-45e8-871b-2c8c15ac1022",
+    "nombre": "Pasta Alfredo",
+    "precio": 123,
+    "descripcion": "Pasta Alfredo con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "fe8b0c30-c333-4a50-a9a6-3823cb041d92"
+  },
+  {
+    "_id": "96f27707-9014-44ad-8a5d-bcd325a19703",
+    "nombre": "Lasagna",
+    "precio": 63,
+    "descripcion": "Lasagna con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "fe8b0c30-c333-4a50-a9a6-3823cb041d92"
+  },
+  {
+    "_id": "9ace3f8d-f256-4072-ac59-7a78e32917b2",
+    "nombre": "Pizza Margherita",
+    "precio": 136,
+    "descripcion": "Pizza Margherita con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "fe8b0c30-c333-4a50-a9a6-3823cb041d92"
+  },
+  {
+    "_id": "c6a9ff85-d1c6-481b-949d-72e7dfc28f9e",
+    "nombre": "Falafel",
+    "precio": 115,
+    "descripcion": "Falafel con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "84862c31-461c-4706-b43d-d60487400588"
+  },
+  {
+    "_id": "ed4c1f1c-86f1-4291-9104-b61408f84172",
+    "nombre": "Curry de Verduras",
+    "precio": 88,
+    "descripcion": "Curry de Verduras con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "84862c31-461c-4706-b43d-d60487400588"
+  },
+  {
+    "_id": "908d1f97-b9f4-487c-a0a5-d819017e6d7f",
+    "nombre": "Wrap Vegetal",
+    "precio": 80,
+    "descripcion": "Wrap Vegetal con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "84862c31-461c-4706-b43d-d60487400588"
+  },
+  {
+    "_id": "96b4ac20-2390-4e9b-adb0-fd8f2f873151",
+    "nombre": "Ensalada César",
+    "precio": 130,
+    "descripcion": "Ensalada César con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "84862c31-461c-4706-b43d-d60487400588"
+  },
+  {
+    "_id": "1d22d4f5-083f-43f6-868b-14e009510ee1",
+    "nombre": "Burrito",
+    "precio": 146,
+    "descripcion": "Burrito con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "22e49f7d-c7d9-42c0-9785-1507f2003c19"
+  },
+  {
+    "_id": "ec6d0854-dae2-4137-990f-d5ce8c12c0c0",
+    "nombre": "Papas Fritas",
+    "precio": 116,
+    "descripcion": "Papas Fritas con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "22e49f7d-c7d9-42c0-9785-1507f2003c19"
+  },
+  {
+    "_id": "770b890b-980e-4c40-a1ca-2cb0e6630d39",
+    "nombre": "Sandwich",
+    "precio": 112,
+    "descripcion": "Sandwich con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "22e49f7d-c7d9-42c0-9785-1507f2003c19"
+  },
+  {
+    "_id": "b5ed66d2-acf5-48c0-b669-6ef6b13c46f0",
+    "nombre": "Hot Dog",
+    "precio": 83,
+    "descripcion": "Hot Dog con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "22e49f7d-c7d9-42c0-9785-1507f2003c19"
+  },
+  {
+    "_id": "e41dc400-375e-4a22-a8c6-0cf951840f51",
+    "nombre": "Hamburguesa",
+    "precio": 112,
+    "descripcion": "Hamburguesa con acompañamientos",
+    "disponible": true,
+    "restaurante_id": "22e49f7d-c7d9-42c0-9785-1507f2003c19"
+  }
+]
