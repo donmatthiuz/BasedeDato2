@@ -9,3 +9,12 @@ db.nombre_coleccion.aggregate([
   { $group: { _id: null, allKeys: { $addToSet: "$keys.k" } } }
 ])
 ```
+
+## Ver los índices
+
+```js
+db.getCollectionNames().forEach(function (col) {
+  print("Índices en la colección: " + col);
+  printjson(db.getCollection(col).getIndexes());
+});
+```

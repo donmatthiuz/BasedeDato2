@@ -33,14 +33,7 @@
        - Identificar usuarios registrados.
        - Obtener actividad de un usuario (órdenes, reseñas).
    - **Índices:**
-      1. **Índice simple:**  
-
-         ```js
-         db.usuario.createIndex({ email: 1 }, { unique: true })
-         ```
-
-         > Para garantizar unicidad del email y búsquedas rápidas.
-      2. **Índice compuesto:**  
+      1. **Índice compuesto:**  
 
          ```js
          db.usuario.createIndex({ nombre: 1, direccion: 1 })
