@@ -3,29 +3,122 @@
 ## Colecciones implementadas
 
 1. **`restaurante`**
-   - Contiene datos básicos del restaurante: nombre, dirección, teléfono y categoría.
+   - Contiene datos del restaurante: nombre, dirección, teléfono y categoría.
    - Usada como referencia en varias otras colecciones (menú, orden, reseña).
-   - **Índices sugeridos**: nombre (texto), categoría (simple).
+   - **Usos y consultas esperadas**
+       - Identificar usuarios registrados.
+       - Obtener restaurantes por nombre o categoría.
+       - Generar reportes de los restaurantes mejor calificados (agregación con `resena`).
+       - Buscar rápidamente un restaurante por texto.
+   - **Índices:**
+        1. **Índice simple:**  
+
+            ```js
+            db.restaurante.createIndex({ nombre: 1 })
+            ```
+
+            > Búsqueda rápida por nombre del restaurante.
+        2. **Índice de texto:**  
+
+            ```js
+            db.restaurante.createIndex({ nombre: "text", categoria: "text" })
+            ```
+
+            > Para búsquedas de texto en nombre y categoría.
 
 2. **`usuario`**
-   - Almacena los datos del cliente: nombre, email, dirección, teléfono, contraseña (enmascarada), y fecha de registro.
+   - Almacena los datos del cliente: nombre, email, dirección, teléfono, contraseña, y fecha de registro.
    - Relacionado con las colecciones de orden y reseña.
-   - **Índices sugeridos**: email (único), fecha_registro (simple).
+   - **Usos y consultas esperadas**
+       - Identificar usuarios registrados.
+       - Obtener actividad de un usuario (órdenes, reseñas).
+   - **Índices:**
+      1. **Índice simple:**  
+
+         ```js
+         db.usuario.createIndex({ email: 1 }, { unique: true })
+         ```
+
+         > Para garantizar unicidad del email y búsquedas rápidas.
+      2. **Índice compuesto:**  
+
+         ```js
+         db.usuario.createIndex({ nombre: 1, direccion: 1 })
+         ```
+
+         > Mejora búsquedas por nombre y ubicación.
 
 3. **`articulo_menu`**
    - Representa los productos del menú ofrecidos por los restaurantes.
    - Incluye nombre, precio, descripción, disponibilidad y `restaurante_id` referenciado.
-   - **Índices sugeridos**: restaurante_id (compuesto con nombre para búsquedas eficientes).
+   - **Usos y consultas esperadas**
+       - Listar el menú de un restaurante.
+       - Filtrar por disponibilidad.
+       - Búsquedas por nombre o descripción del platillo.
+   - **Índices:**
+      1. **Índice compuesto:**  
+
+         ```js
+         db.menu.createIndex({ restaurante_id: 1, disponible: 1 })
+         ```
+
+         > Para listar artículos disponibles por restaurante.
+      2. **Índice de texto:**  
+
+         ```js
+         db.menu.createIndex({ nombre: "text", descripcion: "text" })
+         ```
+
+         > Permite búsquedas por nombre y descripción del platillo.
 
 4. **`orden`**
    - Documento que incluye usuario, restaurante, fecha, estado del pedido y un array de platillos.
-   - Cada platillo contiene `menu_item_id`, cantidad y precio unitario → **documento embebido** dentro de la orden.
-   - **Índices sugeridos**: usuario_id, fecha (compuesto con estado), restaurante_id.
+   - Cada platillo contiene `menu_item_id`, cantidad y precio unitario -> **documento embebido** dentro de la orden.
+   - **Usos y consultas esperadas**
+       - Identificar usuarios registrados.
+       - Listar pedidos por usuario y fecha.
+       - Consultar estado del pedido.
+       - Reportes de platillos más vendidos (con `$unwind` + `$group`).
+       - Consultas por rango de fechas, estados, o totales.
+   - **Índices:**
+      1. **Índice compuesto:**  
+
+         ```js
+         db.orden.createIndex({ usuario_id: 1, fecha: -1 })
+         ```
+
+         > Consultas por órdenes recientes de un usuario.
+      2. **Índice multikey (por array):**  
+
+         ```js
+         db.orden.createIndex({ "platillos.menu_item_id": 1 })
+         ```
+
+         > Mejora consultas por items de menú en pedidos.
 
 5. **`resena`**
    - Contiene calificación y comentario que el usuario deja para un restaurante, vinculado además a una orden específica.
-   - Relación referenciada a `usuario`, `orden` y `restaurante`.
-   - **Índices sugeridos**: restaurante_id (compuesto con calificación), fecha.
+   - Relación referenciada a `usuario`, `orden` y `restaurante`
+   - **Usos y consultas esperadas**
+       - Ver reseñas de un restaurante.
+       - Obtener calificación promedio.
+       - Ver comentarios hechos por un usuario.
+       - Agregaciones por calificación y fecha.
+   - **Índices:**
+      1. **Índice compuesto:**  
+
+         ```js
+         db.resena.createIndex({ restaurante_id: 1, calificacion: -1 })
+         ```
+
+         > Consultas por calificaciones de un restaurante.
+      2. **Índice simple:**  
+
+         ```js
+         db.resena.createIndex({ usuario_id: 1 })
+         ```
+
+         > Para ver reseñas hechas por un usuario.
 
 ![Diagrama de Modelo de Datos NoSQL](../images/diagrama.jpg "Diagrama de Modelo de Datos NoSQL")
 
@@ -45,7 +138,6 @@
 | Pensado para uso de índices                    | Colecciones clave tienen campos claros para crear índices (ver sugerencias arriba)|
 | Compatible con agregaciones                    | Ej. se podrá agregar para ventas por restaurante, calificación promedio, etc.     |
 | Arrays manipulables                            | Array `platillos` en orden soporta `$push`, `$pull`, `$addToSet`, etc.           |
-| Posible integración con GridFS (en etapa 2)    | Aunque no se incluye aún, puede agregarse para subir imágenes de platillos        |
 
 ## Precarga de datos (`mongoimport`)
 
@@ -58,27 +150,18 @@ mongoimport --uri "<uri>" --collection "<nombre_coleccion>" --file "<ruta_al_arc
 ```
 
 ```bash
-mongoimport --uri "uri" --collection cliente --file "./data/clientes.json" --jsonArray
+mongoimport --uri "uri" --collection usuario --file "./data/usuarios.json" --jsonArray
+mongoimport --uri "uri" --collection restaurante --file "./data/restaurantes.json" --jsonArray
+mongoimport --uri "uri" --collection menu --file "./data/articulos_menu.json" --jsonArray
+mongoimport --uri "uri" --collection resena --file "./data/resenas.json" --jsonArray
 mongoimport --uri "uri" --collection orden --file "./data/ordenes_0.json" --jsonArray
 mongoimport --uri "uri" --collection orden --file "./data/ordenes_1.json" --jsonArray
 mongoimport --uri "uri" --collection orden --file "./data/ordenes_2.json" --jsonArray
 mongoimport --uri "uri" --collection orden --file "./data/ordenes_3.json" --jsonArray
 mongoimport --uri "uri" --collection orden --file "./data/ordenes_4.json" --jsonArray
-mongoimport --uri "uri" --collection resena --file "./data/resenas.json" --jsonArray
-mongoimport --uri "uri" --collection restaurante --file "./data/restaurantes.json" --jsonArray
 ```
 
 ## Requisitos faltantes
-
-### Requisitos no cubiertos en Etapa 1
-
-| Requisito                                            | Estado       | Observaciones                                                                 |
-|------------------------------------------------------|--------------|-------------------------------------------------------------------------------|
-| **Precarga con `mongoimport`**                       | ❌ No cubierto| Aunque es viable, no se ha proporcionado el JSON ni ejecutado `mongoimport`. |
-| **Definición de índices específicos (2 por colección)** | ⚠️ Parcial   | Se han sugerido, pero no se han definido ni implementado explícitamente.     |
-| **Índices multikey**                                 | ❌ No cubierto| No hay arrays indexados directamente (ej. etiquetas en artículos, etc.).     |
-| **Índice geoespacial**                               | ❌ No cubierto| No se ha usado un campo de ubicación tipo `location: { type, coordinates }`. |
-| **Índice de texto**                                  | ❌ No cubierto| Falta implementación en campos como `comentario` o `nombre`.                 |
 
 ### Requisitos generales aún no cubiertos (etapas futuras)
 

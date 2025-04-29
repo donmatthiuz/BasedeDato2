@@ -46,7 +46,7 @@
 1. **Índice compuesto:**  
 
    ```js
-   db.articulo_menu.createIndex({ restaurante_id: 1, disponible: 1 })
+   db.menu.createIndex({ restaurante_id: 1, disponible: 1 })
    ```
 
    > Para listar artículos disponibles por restaurante.
@@ -54,7 +54,7 @@
 2. **Índice de texto:**  
 
    ```js
-   db.articulo_menu.createIndex({ nombre: "text", descripcion: "text" })
+   db.menu.createIndex({ nombre: "text", descripcion: "text" })
    ```
 
    > Permite búsquedas por nombre y descripción del platillo.
