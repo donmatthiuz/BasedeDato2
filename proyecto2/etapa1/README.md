@@ -1,3 +1,17 @@
+<!-- ---
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{amssymb}
+  - \usepackage{fontspec}
+  - \setmainfont{FiraCode Nerd Font}
+  - \setmonofont{FiraCode Nerd Font Mono}
+  - \usepackage{setspace}
+  - \setstretch{1.5}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+geometry: top=0.67in, bottom=0.67in, left=0.85in, right=0.85in
+--- -->
+
 # Etapa 1 – Modelado de la base de datos en MongoDB
 
 ## Colecciones implementadas
@@ -119,18 +133,6 @@
 
 - Se **embeben los platillos** dentro de la orden para facilitar consultas frecuentes como el detalle completo del pedido.
 - Se **referencian usuarios, restaurantes, artículos y órdenes** para evitar redundancia y facilitar mantenibilidad (por ejemplo, si un nombre de restaurante cambia, no hay que actualizar múltiples órdenes).
-
-## Requisitos técnicos cubiertos en esta etapa
-
-| Requisito                                       | Descripción breve de cómo se cumple                                               |
-|------------------------------------------------|------------------------------------------------------------------------------------|
-| Documentos embebidos                           | Uso del array `platillos` dentro de `orden`                                       |
-| Documentos referenciados                       | Relaciones entre `orden`, `usuario`, `restaurante`, `resena`, `articulo_menu`     |
-| Mínimo de 5 colecciones                        | Cumplido: restaurante, usuario, articulo_menu, orden, reseña                      |
-| Estructura que soporta CRUD                    | Diseño pensado para crear, consultar, actualizar y eliminar documentos            |
-| Pensado para uso de índices                    | Colecciones clave tienen campos claros para crear índices (ver sugerencias arriba)|
-| Compatible con agregaciones                    | Ej. se podrá agregar para ventas por restaurante, calificación promedio, etc.     |
-| Arrays manipulables                            | Array `platillos` en orden soporta `$push`, `$pull`, `$addToSet`, etc.           |
 
 ## Precarga de datos (`mongoimport`)
 
