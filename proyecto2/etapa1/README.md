@@ -103,6 +103,15 @@ geometry: top=0.67in, bottom=0.67in, left=0.85in, right=0.85in
 
          > Mejora consultas por items de menú en pedidos.
 
+      3. **Índice simple:**  
+
+         ```js
+         db.orden.createIndex({ usuario_id: 1 })
+         db.orden.createIndex({ restaurante_id: 1 })
+         ```
+
+         > Para consultas por usuario y/o filtrar órdenes por restaurante
+
 5. **`resena`**
    - Contiene calificación y comentario que el usuario deja para un restaurante, vinculado además a una orden específica.
    - Relación referenciada a `usuario`, `orden` y `restaurante`
@@ -126,6 +135,14 @@ geometry: top=0.67in, bottom=0.67in, left=0.85in, right=0.85in
          ```
 
          > Para ver reseñas hechas por un usuario.
+
+      3. **Índice simple:**  
+
+         ```js
+         db.resena.createIndex({ orden_id: 1 }) 
+         ```
+
+         > Para consultas por reseñas - pedido
 
 ![Diagrama de Modelo de Datos NoSQL](../images/diagrama.jpg "Diagrama de Modelo de Datos NoSQL")
 
