@@ -58,14 +58,14 @@ mongoimport --uri "<uri>" --collection "<nombre_coleccion>" --file "<ruta_al_arc
 ```
 
 ```bash
-mongoimport --uri "uri" --collection clientes --file "./data/clientes.json" --jsonArray
-mongoimport --uri "uri" --collection ordenes --file "./data/ordenes_0.json" --jsonArray
-mongoimport --uri "uri" --collection ordenes --file "./data/ordenes_1.json" --jsonArray
-mongoimport --uri "uri" --collection ordenes --file "./data/ordenes_2.json" --jsonArray
-mongoimport --uri "uri" --collection ordenes --file "./data/ordenes_3.json" --jsonArray
-mongoimport --uri "uri" --collection ordenes --file "./data/ordenes_4.json" --jsonArray
-mongoimport --uri "uri" --collection resenas --file "./data/resenas.json" --jsonArray
-mongoimport --uri "uri" --collection restaurantes --file "./data/restaurantes.json" --jsonArray
+mongoimport --uri "uri" --collection cliente --file "./data/clientes.json" --jsonArray
+mongoimport --uri "uri" --collection orden --file "./data/ordenes_0.json" --jsonArray
+mongoimport --uri "uri" --collection orden --file "./data/ordenes_1.json" --jsonArray
+mongoimport --uri "uri" --collection orden --file "./data/ordenes_2.json" --jsonArray
+mongoimport --uri "uri" --collection orden --file "./data/ordenes_3.json" --jsonArray
+mongoimport --uri "uri" --collection orden --file "./data/ordenes_4.json" --jsonArray
+mongoimport --uri "uri" --collection resena --file "./data/resenas.json" --jsonArray
+mongoimport --uri "uri" --collection restaurante --file "./data/restaurantes.json" --jsonArray
 ```
 
 ## Requisitos faltantes
