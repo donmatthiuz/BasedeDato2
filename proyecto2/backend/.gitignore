@@ -1,0 +1,28 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log*
+.env
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editor de código
+.vscode/
+.idea/
+
+# Archivos temporales
+*.log
+*.tmp
+*.swp
+
+# Cobertura de pruebas
+coverage/
+
+# Producción (si compilas tu app)
+dist/
+build/
