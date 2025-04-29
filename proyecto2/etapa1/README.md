@@ -47,19 +47,25 @@
 | Arrays manipulables                            | Array `platillos` en orden soporta `$push`, `$pull`, `$addToSet`, etc.           |
 | Posible integración con GridFS (en etapa 2)    | Aunque no se incluye aún, puede agregarse para subir imágenes de platillos        |
 
-## Precarga de datos (`mongoimport`) - pendiente
+## Precarga de datos (`mongoimport`)
 
-Cada colección puede ser precargada en formato JSON con datos como:
+Usando la sintaxis mencionada en el [**siguiente enlace**](https://www.mongodb.com/docs/database-tools/mongoimport/).
 
-```json
-[
-  {
-    "nombre": "La Parrillada",
-    "direccion": "Zona 10, Guatemala",
-    "telefono": "56781234",
-    "categoria": "Parrillada"
-  }
-]
+Se puede hacer el siguiente comando para poblar la base de datos con los archivos `json` definidos en el repositorio:
+
+```bash
+mongoimport --uri "<uri>" --collection "<nombre_coleccion>" --file "<ruta_al_archivo_de_importacion>"
+```
+
+```bash
+mongoimport --uri "uri" --collection cliente --file "./data/clientes.json" --jsonArray
+mongoimport --uri "uri" --collection orden --file "./data/ordenes_0.json" --jsonArray
+mongoimport --uri "uri" --collection orden --file "./data/ordenes_1.json" --jsonArray
+mongoimport --uri "uri" --collection orden --file "./data/ordenes_2.json" --jsonArray
+mongoimport --uri "uri" --collection orden --file "./data/ordenes_3.json" --jsonArray
+mongoimport --uri "uri" --collection orden --file "./data/ordenes_4.json" --jsonArray
+mongoimport --uri "uri" --collection resena --file "./data/resenas.json" --jsonArray
+mongoimport --uri "uri" --collection restaurante --file "./data/restaurantes.json" --jsonArray
 ```
 
 ## Requisitos faltantes
