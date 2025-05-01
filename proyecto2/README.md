@@ -25,7 +25,7 @@ Donde:
 
 Existen dos formas principales de poblar la base de datos:
 
-- Puedes **configurar tus propios datos**, siempre que sigas el modelo descrito en la documentación:  
+- Puedes **configurar tus propios datos**, siempre que sigas el modelo descrito en la documentación y aplicar los índices correspondientes descritos en la misma documentación:  
   [**proyecto2/docs/model.md**](https://github.com/donmatthiuz/BasedeDato2/blob/proyecto2/proyecto2/docs/model.md)
 
 - También puedes usar los **datos de ejemplo** disponibles en el repositorio, en:  
