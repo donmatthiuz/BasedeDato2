@@ -54,10 +54,12 @@ exports.obtenerArticulos = async (req, res) => {
       filtro.disponible = req.query.disponible === "true";
     }
 
-    const articulos = await Menu.find(filtro).hint({
-      restaurante_id: 1,
-      disponible: 1,
-    });
+    const articulos = await Menu.find(filtro)
+      .hint({
+        restaurante_id: 1,
+        disponible: 1,
+      })
+      .lean();
 
     res.json(articulos);
   } catch (error) {

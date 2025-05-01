@@ -52,10 +52,12 @@ exports.obtenerUsuarios = async (req, res) => {
       filtro.nombre = new RegExp(req.query.nombre, "i");
     }
 
-    const usuarios = await Usuario.find(filtro).hint({
-      nombre: 1,
-      direccion: 1,
-    }); // índice compuesto obligatorio
+    const usuarios = await Usuario.find(filtro)
+      .hint({
+        nombre: 1,
+        direccion: 1,
+      })
+      .lean(); // índice compuesto obligatorio
 
     res.json(usuarios);
   } catch (error) {

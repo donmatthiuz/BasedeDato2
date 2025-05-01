@@ -53,7 +53,9 @@ exports.obtenerOrdenes = async (req, res) => {
       filtro.estado = req.query.estado;
     }
 
-    const ordenes = await Orden.find(filtro).hint({ usuario_id: 1, fecha: -1 });
+    const ordenes = await Orden.find(filtro)
+      .hint({ usuario_id: 1, fecha: -1 })
+      .lean();
 
     res.json(ordenes);
   } catch (error) {

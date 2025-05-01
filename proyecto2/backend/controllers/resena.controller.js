@@ -55,10 +55,12 @@ exports.obtenerResenas = async (req, res) => {
       filtro.usuario_id = req.query.usuario_id;
     }
 
-    const resenas = await Resena.find(filtro).hint({
-      restaurante_id: 1,
-      calificacion: -1,
-    }); // índice compuesto
+    const resenas = await Resena.find(filtro)
+      .hint({
+        restaurante_id: 1,
+        calificacion: -1,
+      })
+      .lean(); // índice compuesto
 
     res.json(resenas);
   } catch (error) {

@@ -57,7 +57,9 @@ exports.obtenerRestaurantes = async (req, res) => {
       filtro.nombre = new RegExp(req.query.nombre, "i"); // búsqueda parcial insensible a mayúsculas
     }
 
-    const restaurantes = await Restaurante.find(filtro).hint({ nombre: 1 }); // fuerza el uso del índice
+    const restaurantes = await Restaurante.find(filtro)
+      .hint({ nombre: 1 })
+      .lean(); // fuerza el uso del índice
 
     res.json(restaurantes);
   } catch (error) {
