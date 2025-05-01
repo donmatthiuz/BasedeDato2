@@ -15,8 +15,8 @@ const OrdenSchema = new mongoose.Schema(
     restaurante_id: { type: String, required: true },
     fecha: { type: Date, default: Date.now },
     estado: { type: String, default: "pendiente" },
-    metodo_pago: { type: String },
     platillos: [PlatilloSchema],
+    total: { type: Number, required: true },
   },
   {
     collection: "orden",

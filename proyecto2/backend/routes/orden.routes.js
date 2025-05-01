@@ -11,6 +11,7 @@ const {
  * /orden:
  *   post:
  *     summary: Crear una o varias órdenes
+ *     description: Permite crear una o varias órdenes. El campo `total` se calculará automáticamente si no se proporciona. El campo `fecha` es opcional; si no se incluye, se usará la fecha actual.
  *     requestBody:
  *       required: true
  *       content:
@@ -28,9 +29,6 @@ const {
  *                   estado:
  *                     type: string
  *                     example: "pendiente"
- *                   metodo_pago:
- *                     type: string
- *                     example: "efectivo"
  *                   fecha:
  *                     type: string
  *                     format: date-time
@@ -51,10 +49,33 @@ const {
  *                           example: 130
  *               - type: array
  *                 items:
- *                   $ref: '#/components/schemas/Orden'
+ *                   type: object
+ *                   properties:
+ *                     usuario_id:
+ *                       type: string
+ *                     restaurante_id:
+ *                       type: string
+ *                     estado:
+ *                       type: string
+ *                     fecha:
+ *                       type: string
+ *                       format: date-time
+ *                     platillos:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           menu_item_id:
+ *                             type: string
+ *                           cantidad:
+ *                             type: number
+ *                           precio_unitario:
+ *                             type: number
  *     responses:
  *       201:
  *         description: Orden(es) creada(s)
+ *       400:
+ *         description: Error en los datos enviados
  */
 router.post("/", crearOrden);
 
@@ -63,9 +84,11 @@ router.post("/", crearOrden);
  * /ordenes/upload:
  *   post:
  *     summary: Subir archivo JSON para insertar una o varias órdenes
+ *     description: El archivo debe llamarse `orden` y contener uno o varios objetos de orden con sus campos completos. El campo `total` se recalcula automáticamente si no se incluye.
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
+ *       required: true
  *       content:
  *         multipart/form-data:
  *           schema:
@@ -74,9 +97,30 @@ router.post("/", crearOrden);
  *               orden:
  *                 type: string
  *                 format: binary
+ *                 description: Archivo JSON con una o varias órdenes
  *     responses:
  *       201:
  *         description: Órdenes insertadas desde archivo
+ *       400:
+ *         description: Error al procesar el archivo
+ *     examples:
+ *       application/json:
+ *         value:
+ *           [
+ *             {
+ *               "usuario_id": "3ec19822-f7b4-4d52-b0b0-f541d96551f1",
+ *               "restaurante_id": "84862c31-461c-4706-b43d-d60487400588",
+ *               "fecha": "2024-06-26T22:34:51Z",
+ *               "estado": "pendiente",
+ *               "platillos": [
+ *                 {
+ *                   "menu_item_id": "abc123",
+ *                   "cantidad": 2,
+ *                   "precio_unitario": 50
+ *                 }
+ *               ]
+ *             }
+ *           ]
  */
 router.post("/upload", subirArchivoOrden);
 

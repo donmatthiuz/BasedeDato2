@@ -4,6 +4,18 @@ const fs = require("fs");
 
 const upload = multer({ dest: "uploads/" });
 
+const prepararOrden = (orden) => {
+  const totalCalculado = (orden.platillos || []).reduce((sum, p) => {
+    return sum + p.cantidad * p.precio_unitario;
+  }, 0);
+
+  return {
+    ...orden,
+    fecha: orden.fecha ? new Date(orden.fecha) : new Date(),
+    total: totalCalculado,
+  };
+};
+
 exports.subirArchivoOrden = [
   upload.single("orden"), // nombre del campo esperado: "orden"
   async (req, res) => {
@@ -13,7 +25,11 @@ exports.subirArchivoOrden = [
       const data = JSON.parse(content);
 
       const insertData = Array.isArray(data) ? data : [data];
-      const insertados = await Orden.insertMany(insertData, { ordered: false });
+      const ordenesConTotal = insertData.map(prepararOrden);
+
+      const insertados = await Orden.insertMany(ordenesConTotal, {
+        ordered: false,
+      });
 
       fs.unlinkSync(path);
       res.status(201).json({ insertados });
@@ -29,12 +45,6 @@ exports.subirArchivoOrden = [
 exports.crearOrden = async (req, res) => {
   try {
     const data = req.body;
-
-    // Función para preparar orden
-    const prepararOrden = (orden) => ({
-      ...orden,
-      fecha: orden.fecha || new Date(),
-    });
 
     if (!Array.isArray(data)) {
       const nuevaOrden = new Orden(prepararOrden(data));

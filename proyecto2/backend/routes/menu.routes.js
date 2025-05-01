@@ -11,6 +11,7 @@ const {
  * /menu:
  *   post:
  *     summary: Crear uno o varios artículos de menú
+ *     description: Permite registrar uno o varios artículos del menú. Cada artículo debe contener nombre, precio y restaurante asociado. El campo `disponible` es opcional (por defecto es `true`).
  *     requestBody:
  *       required: true
  *       content:
@@ -40,17 +41,24 @@ const {
  *                   properties:
  *                     nombre:
  *                       type: string
+ *                       example: "Hamburguesa BBQ"
  *                     descripcion:
  *                       type: string
+ *                       example: "Hamburguesa con salsa BBQ, queso cheddar y tocino"
  *                     precio:
  *                       type: number
+ *                       example: 58.9
  *                     disponible:
  *                       type: boolean
+ *                       example: false
  *                     restaurante_id:
  *                       type: string
+ *                       example: "c3f3bb5f-93a2-4bc8-b15f-085b684e6f62"
  *     responses:
  *       201:
  *         description: Artículo(s) creado(s)
+ *       400:
+ *         description: Error en los datos enviados
  */
 router.post("/", crearArticulo);
 
@@ -59,6 +67,7 @@ router.post("/", crearArticulo);
  * /menu/upload:
  *   post:
  *     summary: Subir archivo JSON para insertar artículos del menú
+ *     description: Permite cargar un archivo `.json` que contenga uno o varios artículos del menú. El campo del formulario debe llamarse `menu`.
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
@@ -70,9 +79,12 @@ router.post("/", crearArticulo);
  *               menu:
  *                 type: string
  *                 format: binary
+ *                 description: Archivo JSON con uno o varios artículos
  *     responses:
  *       201:
  *         description: Artículos insertados desde archivo
+ *       400:
+ *         description: Error al procesar el archivo
  */
 router.post("/upload", subirArchivoMenu);
 
