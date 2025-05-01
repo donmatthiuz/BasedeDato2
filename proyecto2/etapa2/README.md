@@ -1,16 +1,50 @@
 # Etapa 2
 
-## Requisitos faltantes
+## Funcionalidades mínimas para implementar en la API
 
-### Requisitos generales aún no cubiertos (etapas futuras)
+### 1. **Restaurantes**
 
-| Requisito                                          | Etapa esperada | Estado       | Observaciones |
-|----------------------------------------------------|----------------|--------------|---------------|
-| **Implementación REST API**                        | Etapa 2        | ❌ No iniciado| Se espera el backend (Node.js, Python, etc.). |
-| **Operaciones CRUD (completo)**                    | Etapa 2        | ❌ No iniciado| Aún no hay endpoints ni pruebas. |
-| **Ordenamiento y proyecciones en consultas**       | Etapa 2        | ❌ No iniciado| Requiere consultas reales desde la API. |
-| **Agregaciones simples y complejas**               | Etapa 2        | ❌ No iniciado| No hay pipelines implementados. |
-| **Manejo de archivos con GridFS (50k docs)**       | Etapa 2        | ❌ No iniciado| Falta colección para ello, puede ser imágenes de menú o comprobantes. |
-| **Manejo de arrays con `$push`, `$pull`, etc.**    | Etapa 2        | ⚠️ Parcial   | El diseño lo permite (ej. array `platillos`), pero falta implementación. |
-| **Operaciones `bulkWrite`**                        | Extra          | ❌ No cubierto| No planeado ni implementado aún. |
-| **Mongo Charts / BI Connectors / Frontend**        | Extra          | ❌ No cubierto| No hay integración visual ni informes. |
+- `POST /restaurantes` — Crear restaurante
+- `GET /restaurantes` — Listar con filtros, ordenamiento, búsqueda por texto
+- `GET /restaurantes/:id` — Ver detalle
+- `PUT /restaurantes/:id` — Actualizar
+- `DELETE /restaurantes/:id` — Eliminar
+
+### 2. **Usuarios**
+
+- `POST /usuarios` — Registrar usuario
+- `GET /usuarios/:id` — Obtener detalle
+- `PUT /usuarios/:id` — Actualizar datos
+- `DELETE /usuarios/:id` — Eliminar
+
+### 3. **Artículos del menú**
+
+- `POST /menu` — Crear artículo de menú
+- `GET /menu` — Filtrar por restaurante o disponibilidad
+- `PUT /menu/:id` — Actualizar
+- `DELETE /menu/:id` — Eliminar
+
+### 4. **Órdenes/Pedidos**
+
+- `POST /ordenes` — Crear pedido con array embebido de platillos
+- `GET /ordenes` — Filtros por usuario, estado, restaurante, fecha
+- `GET /ordenes/:id` — Detalle completo del pedido
+- `PUT /ordenes/:id` — Actualizar estado
+- `DELETE /ordenes/:id` — Eliminar
+
+### 5. **Reseñas**
+
+- `POST /resenas` — Crear reseña asociada a restaurante y orden
+- `GET /resenas` — Filtrar por restaurante, orden o usuario
+- `PUT /resenas/:id` — Actualizar comentario/calificación
+- `DELETE /resenas/:id` — Eliminar
+
+### 6. **Reportes (Agregaciones)**
+
+- `GET /reportes/restaurantes-mejor-calificados` — Promedio de calificación
+- `GET /reportes/platillos-mas-vendidos` — Usando `$unwind`, `$group`
+
+### 7. **Archivos (GridFS)**
+
+- `POST /archivos` — Subir archivo
+- `GET /archivos/:id` — Descargar
