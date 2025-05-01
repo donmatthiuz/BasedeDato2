@@ -46,19 +46,62 @@ exports.crearArticulo = async (req, res) => {
 
 exports.obtenerArticulos = async (req, res) => {
   try {
+    const query = req.query;
+
+    // --- Filtros flexibles ---
     const filtro = {};
-    if (req.query.restaurante_id) {
-      filtro.restaurante_id = req.query.restaurante_id;
-    }
-    if (req.query.disponible) {
-      filtro.disponible = req.query.disponible === "true";
+    if (query.restaurante_id) {
+      filtro.restaurante_id = query.restaurante_id;
     }
 
-    const articulos = await Menu.find(filtro)
-      .hint({
-        restaurante_id: 1,
-        disponible: 1,
-      })
+    if (query.disponible) {
+      filtro.disponible = query.disponible === "true";
+    }
+
+    if (query.nombre) {
+      filtro.nombre = { $regex: query.nombre, $options: "i" };
+    }
+
+    if (
+      query.precio_gt ||
+      query.precio_lt ||
+      query.precio_min ||
+      query.precio_max
+    ) {
+      filtro.precio = {};
+      if (query.precio_gt) filtro.precio.$gt = parseFloat(query.precio_gt);
+      if (query.precio_lt) filtro.precio.$lt = parseFloat(query.precio_lt);
+      if (query.precio_min) filtro.precio.$gte = parseFloat(query.precio_min);
+      if (query.precio_max) filtro.precio.$lte = parseFloat(query.precio_max);
+    }
+
+    // --- Proyección ---
+    const proyeccion = {};
+    if (query.campos) {
+      // Ej: ?campos=nombre,precio
+      query.campos.split(",").forEach((campo) => {
+        proyeccion[campo.trim()] = 1;
+      });
+    }
+
+    // --- Ordenamiento ---
+    const sort = {};
+    if (query.ordenar_por) {
+      // Ej: ?ordenar_por=precio o ?ordenar_por=-precio
+      const campo = query.ordenar_por;
+      sort[campo.replace("-", "")] = campo.startsWith("-") ? 1 : -1;
+    }
+
+    // --- Paginación ---
+    const skip = parseInt(query.skip) || 0;
+    const limit = parseInt(query.limit) || 20;
+
+    // --- Consulta ---
+    const articulos = await Menu.find(filtro, proyeccion)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .hint({ restaurante_id: 1, disponible: 1 })
       .lean();
 
     res.json(articulos);
