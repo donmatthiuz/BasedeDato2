@@ -20,6 +20,7 @@ const OrdenSchema = new mongoose.Schema(
   },
   {
     collection: "orden",
+    versionKey: false,
   }
 );
 

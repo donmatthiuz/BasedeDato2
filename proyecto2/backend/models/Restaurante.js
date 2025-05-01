@@ -9,6 +9,7 @@ const RestauranteSchema = new mongoose.Schema(
   },
   {
     collection: "restaurante",
+    versionKey: false,
   }
 );
 

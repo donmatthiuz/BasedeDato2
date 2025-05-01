@@ -135,14 +135,14 @@ router.post("/upload", subirArchivoResena);
  *           type: string
  *           format: date-time
  *           example: 2025-03-01T00:00:00Z
- *         description: Fecha mínima de reseña (ISO)
+ *         description: Fecha mínima de reseña (ISO 8601)
  *       - in: query
  *         name: fecha_fin
  *         schema:
  *           type: string
  *           format: date-time
  *           example: 2025-04-01T00:00:00Z
- *         description: Fecha máxima de reseña (ISO)
+ *         description: Fecha máxima de reseña (ISO 8601)
  *       - in: query
  *         name: comentario
  *         schema:

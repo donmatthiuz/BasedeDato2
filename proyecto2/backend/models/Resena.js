@@ -11,6 +11,7 @@ const ResenaSchema = new mongoose.Schema(
   },
   {
     collection: "resena",
+    versionKey: false,
   }
 );
 

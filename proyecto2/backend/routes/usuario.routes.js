@@ -31,9 +31,9 @@ const {
  *                   telefono:
  *                     type: string
  *                     example: "+34 982 005 692"
- *                   frecuencia:
+ *                   contra:
  *                     type: string
- *                     example: "ocasional"
+ *                     example: "*#ZwjYnzr2"
  *                   fecha_registro:
  *                     type: string
  *                     format: date-time
@@ -50,8 +50,9 @@ const {
  *                       type: string
  *                     telefono:
  *                       type: string
- *                     frecuencia:
+ *                     contra:
  *                       type: string
+ *                       example: "*#ZwjYnzr2"
  *                     fecha_registro:
  *                       type: string
  *                       format: date-time

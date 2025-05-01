@@ -77,14 +77,12 @@ exports.obtenerUsuarios = async (req, res) => {
       filtro.fecha_registro = {};
 
       if (query.fecha_inicio) {
-        const inicio = new Date(query.fecha_inicio);
-        inicio.setHours(0, 0, 0, 0); // inicio del día
+        const inicio = new Date(`${query.fecha_inicio}T00:00:00.000Z`);
         filtro.fecha_registro.$gte = inicio;
       }
 
       if (query.fecha_fin) {
-        const fin = new Date(query.fecha_fin);
-        fin.setHours(23, 59, 59, 999); // fin del día
+        const fin = new Date(`${query.fecha_fin}T23:59:59.999Z`);
         filtro.fecha_registro.$lte = fin;
       }
     }

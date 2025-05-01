@@ -7,10 +7,11 @@ const UsuarioSchema = new mongoose.Schema(
     direccion: { type: String },
     telefono: { type: String },
     fecha_registro: { type: Date, default: Date.now },
-    frecuencia: { type: String },
+    contra: { type: String, required: true },
   },
   {
     collection: "usuario",
+    versionKey: false,
   }
 );
 

@@ -10,6 +10,7 @@ const MenuSchema = new mongoose.Schema(
   },
   {
     collection: "menu",
+    versionKey: false,
   }
 );
 
