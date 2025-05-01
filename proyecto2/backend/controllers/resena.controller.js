@@ -12,7 +12,14 @@ exports.subirArchivoResena = [
       const content = fs.readFileSync(path, "utf8");
       const data = JSON.parse(content);
 
-      const insertData = Array.isArray(data) ? data : [data];
+      const prepararResena = (r) => ({
+        ...r,
+        fecha: r.fecha || new Date(),
+      });
+
+      const insertData = (Array.isArray(data) ? data : [data]).map(
+        prepararResena
+      );
       const insertados = await Resena.insertMany(insertData, {
         ordered: false,
       });

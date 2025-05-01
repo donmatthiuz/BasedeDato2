@@ -11,6 +11,7 @@ const {
  * /resena:
  *   post:
  *     summary: Crear una o varias reseñas
+ *     description: Registra una o varias reseñas. Si no se incluye el campo `fecha`, se asigna automáticamente la fecha y hora actual del servidor.
  *     requestBody:
  *       required: true
  *       content:
@@ -30,6 +31,8 @@ const {
  *                     example: "cb01f915-357a-4a2c-bcf5-d61f80c57a79"
  *                   calificacion:
  *                     type: integer
+ *                     minimum: 1
+ *                     maximum: 5
  *                     example: 4
  *                   comentario:
  *                     type: string
@@ -40,10 +43,32 @@ const {
  *                     example: "2025-03-23T09:27:47Z"
  *               - type: array
  *                 items:
- *                   $ref: '#/components/schemas/Resena'
+ *                   type: object
+ *                   properties:
+ *                     restaurante_id:
+ *                       type: string
+ *                       example: "fe8b0c30-c333-4a50-a9a6-3823cb041d92"
+ *                     usuario_id:
+ *                       type: string
+ *                       example: "52f1d182-6ccd-4475-bac7-fcad0b84cd28"
+ *                     orden_id:
+ *                       type: string
+ *                       example: "cb01f915-357a-4a2c-bcf5-d61f80c57a79"
+ *                     calificacion:
+ *                       type: integer
+ *                       example: 5
+ *                     comentario:
+ *                       type: string
+ *                       example: "Excelente comida y atención"
+ *                     fecha:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2025-03-24T12:45:00Z"
  *     responses:
  *       201:
  *         description: Reseña(s) creada(s)
+ *       400:
+ *         description: Error en los datos enviados
  */
 router.post("/", crearResena);
 
@@ -52,9 +77,11 @@ router.post("/", crearResena);
  * /resenas/upload:
  *   post:
  *     summary: Subir archivo JSON para insertar una o varias reseñas
+ *     description: El archivo debe llamarse `resena` y contener uno o varios objetos con los campos requeridos. Si no se proporciona el campo `fecha`, se asignará automáticamente la fecha actual del servidor.
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
+ *       required: true
  *       content:
  *         multipart/form-data:
  *           schema:
@@ -63,9 +90,32 @@ router.post("/", crearResena);
  *               resena:
  *                 type: string
  *                 format: binary
+ *                 description: Archivo JSON con una o varias reseñas
  *     responses:
  *       201:
  *         description: Reseñas insertadas desde archivo
+ *       400:
+ *         description: Error al procesar el archivo
+ *     examples:
+ *       application/json:
+ *         value:
+ *           [
+ *             {
+ *               "restaurante_id": "fe8b0c30-c333-4a50-a9a6-3823cb041d92",
+ *               "usuario_id": "52f1d182-6ccd-4475-bac7-fcad0b84cd28",
+ *               "orden_id": "cb01f915-357a-4a2c-bcf5-d61f80c57a79",
+ *               "calificacion": 4,
+ *               "comentario": "Muy buena experiencia",
+ *               "fecha": "2025-03-23T09:27:47Z"
+ *             },
+ *             {
+ *               "restaurante_id": "fe8b0c30-c333-4a50-a9a6-3823cb041d92",
+ *               "usuario_id": "52f1d182-6ccd-4475-bac7-fcad0b84cd28",
+ *               "orden_id": "cb01f915-357a-4a2c-bcf5-d61f80c57a79",
+ *               "calificacion": 5,
+ *               "comentario": "Excelente servicio"
+ *             }
+ *           ]
  */
 router.post("/upload", subirArchivoResena);
 
