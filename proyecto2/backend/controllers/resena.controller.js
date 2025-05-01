@@ -47,20 +47,78 @@ exports.crearResena = async (req, res) => {
 
 exports.obtenerResenas = async (req, res) => {
   try {
+    const query = req.query;
     const filtro = {};
-    if (req.query.restaurante_id) {
-      filtro.restaurante_id = req.query.restaurante_id;
-    }
-    if (req.query.usuario_id) {
-      filtro.usuario_id = req.query.usuario_id;
+
+    // --- Filtros simples ---
+    if (query.restaurante_id) filtro.restaurante_id = query.restaurante_id;
+    if (query.usuario_id) filtro.usuario_id = query.usuario_id;
+    if (query.orden_id) filtro.orden_id = query.orden_id;
+
+    // --- Filtros por inclusión/exclusión de calificación ---
+    if (query.calificacion_in)
+      filtro.calificacion = {
+        $in: query.calificacion_in.split(",").map(Number),
+      };
+    if (query.calificacion_nin)
+      filtro.calificacion = {
+        $nin: query.calificacion_nin.split(",").map(Number),
+      };
+
+    // --- Filtros por rango de calificación ---
+    if (
+      query.calificacion_gt ||
+      query.calificacion_gte ||
+      query.calificacion_lt ||
+      query.calificacion_lte
+    ) {
+      filtro.calificacion = filtro.calificacion || {};
+      if (query.calificacion_gt)
+        filtro.calificacion.$gt = parseInt(query.calificacion_gt);
+      if (query.calificacion_gte)
+        filtro.calificacion.$gte = parseInt(query.calificacion_gte);
+      if (query.calificacion_lt)
+        filtro.calificacion.$lt = parseInt(query.calificacion_lt);
+      if (query.calificacion_lte)
+        filtro.calificacion.$lte = parseInt(query.calificacion_lte);
     }
 
-    const resenas = await Resena.find(filtro)
-      .hint({
-        restaurante_id: 1,
-        calificacion: -1,
-      })
-      .lean(); // índice compuesto
+    // --- Filtro por rango de fechas ---
+    if (query.fecha_inicio || query.fecha_fin) {
+      filtro.fecha = {};
+      if (query.fecha_inicio) filtro.fecha.$gte = new Date(query.fecha_inicio);
+      if (query.fecha_fin) filtro.fecha.$lt = new Date(query.fecha_fin);
+    }
+
+    // --- Filtro por comentario (expresión regular, insensible a mayúsculas) ---
+    if (query.comentario) filtro.comentario = new RegExp(query.comentario, "i");
+
+    // --- Proyección de campos ---
+    const proyeccion = {};
+    if (query.campos) {
+      query.campos.split(",").forEach((campo) => {
+        proyeccion[campo.trim()] = 1;
+      });
+    }
+
+    // --- Ordenamiento ---
+    const sort = {};
+    if (query.ordenar_por) {
+      const campo = query.ordenar_por;
+      sort[campo.replace("-", "")] = campo.startsWith("-") ? 1 : -1;
+    }
+
+    // --- Paginación ---
+    const skip = parseInt(query.skip) || 0;
+    const limit = parseInt(query.limit) || 20;
+
+    // --- Consulta ---
+    const resenas = await Resena.find(filtro, proyeccion)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .hint({ restaurante_id: 1, calificacion: -1 })
+      .lean();
 
     res.json(resenas);
   } catch (error) {
