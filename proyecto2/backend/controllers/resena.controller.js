@@ -93,8 +93,18 @@ exports.obtenerResenas = async (req, res) => {
     // --- Filtro por rango de fechas ---
     if (query.fecha_inicio || query.fecha_fin) {
       filtro.fecha = {};
-      if (query.fecha_inicio) filtro.fecha.$gte = new Date(query.fecha_inicio);
-      if (query.fecha_fin) filtro.fecha.$lt = new Date(query.fecha_fin);
+
+      if (query.fecha_inicio) {
+        const inicio = new Date(query.fecha_inicio);
+        inicio.setHours(0, 0, 0, 0); // 00:00:00.000
+        filtro.fecha.$gte = inicio;
+      }
+
+      if (query.fecha_fin) {
+        const fin = new Date(query.fecha_fin);
+        fin.setHours(23, 59, 59, 999); // 23:59:59.999
+        filtro.fecha.$lte = fin;
+      }
     }
 
     // --- Filtro por comentario (expresión regular, insensible a mayúsculas) ---

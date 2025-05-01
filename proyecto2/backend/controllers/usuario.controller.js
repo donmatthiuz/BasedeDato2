@@ -75,10 +75,18 @@ exports.obtenerUsuarios = async (req, res) => {
     // --- Filtro por rango de fechas de registro ---
     if (query.fecha_inicio || query.fecha_fin) {
       filtro.fecha_registro = {};
-      if (query.fecha_inicio)
-        filtro.fecha_registro.$gte = new Date(query.fecha_inicio);
-      if (query.fecha_fin)
-        filtro.fecha_registro.$lte = new Date(query.fecha_fin);
+
+      if (query.fecha_inicio) {
+        const inicio = new Date(query.fecha_inicio);
+        inicio.setHours(0, 0, 0, 0); // inicio del día
+        filtro.fecha_registro.$gte = inicio;
+      }
+
+      if (query.fecha_fin) {
+        const fin = new Date(query.fecha_fin);
+        fin.setHours(23, 59, 59, 999); // fin del día
+        filtro.fecha_registro.$lte = fin;
+      }
     }
 
     // --- Proyección de campos ---
