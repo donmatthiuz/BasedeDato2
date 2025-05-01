@@ -11,6 +11,7 @@ const {
  * /restaurante:
  *   post:
  *     summary: Crear uno o varios restaurantes
+ *     description: Permite registrar uno o varios restaurantes. Si se envía un solo objeto, se crea un restaurante. Si se envía un arreglo, se insertan múltiples restaurantes.
  *     requestBody:
  *       required: true
  *       content:
@@ -50,6 +51,8 @@ const {
  *     responses:
  *       201:
  *         description: Restaurante(s) creado(s)
+ *       400:
+ *         description: Error al crear restaurante(s)
  */
 router.post("/", crearRestaurante);
 
@@ -58,9 +61,11 @@ router.post("/", crearRestaurante);
  * /restaurante/upload:
  *   post:
  *     summary: Subir archivo JSON para insertar uno o varios restaurantes
+ *     description: El archivo debe llamarse `restaurante` y contener uno o varios objetos con los campos requeridos. Si se omite algún campo no obligatorio, será ignorado.
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
+ *       required: true
  *       content:
  *         multipart/form-data:
  *           schema:
@@ -69,9 +74,29 @@ router.post("/", crearRestaurante);
  *               restaurante:
  *                 type: string
  *                 format: binary
+ *                 description: Archivo JSON con uno o varios restaurantes
  *     responses:
  *       201:
- *         description: Documentos insertados desde archivo
+ *         description: Restaurantes insertados desde archivo
+ *       400:
+ *         description: Error al procesar el archivo
+ *     examples:
+ *       application/json:
+ *         value:
+ *           [
+ *             {
+ *               "nombre": "El Fogón de Paco",
+ *               "direccion": "Calle Real 45\nGranada, 18001",
+ *               "telefono": "+34 922 444 111",
+ *               "categoria": "Tapas"
+ *             },
+ *             {
+ *               "nombre": "La Marisquería",
+ *               "direccion": "Paseo del Puerto 23\nValencia, 46002",
+ *               "telefono": "+34 933 222 333",
+ *               "categoria": "Mariscos"
+ *             }
+ *           ]
  */
 router.post("/upload", subirArchivoRestaurante);
 
