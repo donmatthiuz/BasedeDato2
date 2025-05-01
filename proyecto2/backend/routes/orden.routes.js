@@ -84,7 +84,7 @@ router.post("/", crearOrden);
  * /ordenes/upload:
  *   post:
  *     summary: Subir archivo JSON para insertar una o varias órdenes
- *     description: El archivo debe llamarse `orden` y contener uno o varios objetos de orden con sus campos completos. El campo `total` se recalcula automáticamente si no se incluye.
+ *     description: El archivo debe llamarse `orden` y contener uno o varios objetos de orden con sus campos completos. El campo `total` se calculará automáticamente si no se proporciona. El campo `fecha` es opcional; si no se incluye, se usará la fecha actual.
  *     consumes:
  *       - multipart/form-data
  *     requestBody:

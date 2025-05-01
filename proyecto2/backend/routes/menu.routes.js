@@ -67,7 +67,7 @@ router.post("/", crearArticulo);
  * /menu/upload:
  *   post:
  *     summary: Subir archivo JSON para insertar artículos del menú
- *     description: Permite cargar un archivo `.json` que contenga uno o varios artículos del menú. El campo del formulario debe llamarse `menu`.
+ *     description: Permite cargar un archivo `.json` que contenga uno o varios artículos del menú. El campo del formulario debe llamarse `menu`. El campo `disponible` es opcional (por defecto es `true`).
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
