@@ -68,7 +68,7 @@
 - `email`: string
 - `direccion`: string
 - `telefono`: string
-- `pass`: string
+- `contra`: string
 - `fecha_registro`: ISODate
 
 **Índices:**

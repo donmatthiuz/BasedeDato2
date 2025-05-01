@@ -11,6 +11,7 @@ const {
  * /usuario:
  *   post:
  *     summary: Crear uno o varios usuarios
+ *     description: Permite registrar uno o más usuarios. Si no se proporciona `fecha_registro`, se asignará automáticamente la fecha actual.
  *     requestBody:
  *       required: true
  *       content:
@@ -44,21 +45,28 @@ const {
  *                   properties:
  *                     nombre:
  *                       type: string
+ *                       example: "Luisa Romero García"
  *                     email:
  *                       type: string
+ *                       example: "luisa.romero@example.com"
  *                     direccion:
  *                       type: string
+ *                       example: "Calle Principal 123\nMadrid, 28001"
  *                     telefono:
  *                       type: string
+ *                       example: "+34 911 223 334"
  *                     contra:
  *                       type: string
- *                       example: "*#ZwjYnzr2"
+ *                       example: "P@ssword2024"
  *                     fecha_registro:
  *                       type: string
  *                       format: date-time
+ *                       example: "2024-06-10T09:00:00.000Z"
  *     responses:
  *       201:
  *         description: Usuario(s) creado(s)
+ *       400:
+ *         description: Error al crear usuario(s)
  */
 router.post("/", crearUsuario);
 
@@ -67,9 +75,11 @@ router.post("/", crearUsuario);
  * /usuarios/upload:
  *   post:
  *     summary: Subir archivo JSON para insertar uno o varios usuarios
+ *     description: El archivo debe llamarse `usuario` y contener uno o varios objetos con los campos requeridos. Si no se incluye `fecha_registro`, se asignará la fecha actual automáticamente.
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
+ *       required: true
  *       content:
  *         multipart/form-data:
  *           schema:
@@ -78,9 +88,33 @@ router.post("/", crearUsuario);
  *               usuario:
  *                 type: string
  *                 format: binary
+ *                 description: Archivo JSON con uno o varios usuarios
  *     responses:
  *       201:
  *         description: Usuarios insertados desde archivo
+ *       400:
+ *         description: Error al procesar el archivo
+ *     examples:
+ *       application/json:
+ *         value:
+ *           [
+ *             {
+ *               "nombre": "Fernando López Ruiz",
+ *               "email": "fernando.lopez@example.net",
+ *               "direccion": "Av. de la Constitución 56\nBarcelona, 08001",
+ *               "telefono": "+34 933 445 556",
+ *               "contra": "1234Abc#",
+ *               "fecha_registro": "2024-06-20T15:30:00.000Z"
+ *             },
+ *             {
+ *               "nombre": "Carmen Pérez Molina",
+ *               "email": "carmen.molina@example.org",
+ *               "direccion": "Plaza Mayor 7\nSevilla, 41001",
+ *               "telefono": "+34 955 667 778",
+ *               "contra": "Molina2024!",
+ *               "fecha_registro": "2024-06-25T22:45:00.000Z"
+ *             }
+ *           ]
  */
 router.post("/upload", subirArchivoUsuario);
 

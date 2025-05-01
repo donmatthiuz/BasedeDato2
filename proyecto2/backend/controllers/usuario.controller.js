@@ -12,7 +12,12 @@ exports.subirArchivoUsuario = [
       const content = fs.readFileSync(path, "utf8");
       const data = JSON.parse(content);
 
-      const insertData = Array.isArray(data) ? data : [data];
+      const setFecha = (item) => {
+        if (!item.fecha_registro) item.fecha_registro = new Date();
+        return item;
+      };
+
+      const insertData = (Array.isArray(data) ? data : [data]).map(setFecha);
       const insertados = await Usuario.insertMany(insertData, {
         ordered: false,
       });
