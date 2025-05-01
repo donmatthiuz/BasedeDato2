@@ -8,6 +8,34 @@ const {
 
 /**
  * @swagger
+ * /usuario:
+ *   post:
+ *     summary: Crear un nuevo usuario
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               direccion:
+ *                 type: string
+ *               telefono:
+ *                 type: string
+ *               frecuencia:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Usuario creado
+ */
+router.post("/", crearUsuario);
+
+/**
+ * @swagger
  * /usuarios/upload:
  *   post:
  *     summary: Subir archivo JSON para insertar uno o varios usuarios
@@ -44,33 +72,5 @@ router.post("/upload", subirArchivoUsuario);
  *         description: Lista de usuarios
  */
 router.get("/", obtenerUsuarios);
-
-/**
- * @swagger
- * /usuario:
- *   post:
- *     summary: Crear un nuevo usuario
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               nombre:
- *                 type: string
- *               email:
- *                 type: string
- *               direccion:
- *                 type: string
- *               telefono:
- *                 type: string
- *               frecuencia:
- *                 type: string
- *     responses:
- *       201:
- *         description: Usuario creado
- */
-router.post("/", crearUsuario);
 
 module.exports = router;

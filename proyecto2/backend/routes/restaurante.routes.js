@@ -8,28 +8,6 @@ const {
 
 /**
  * @swagger
- * /restaurante/upload:
- *   post:
- *     summary: Subir archivo JSON para insertar uno o varios restaurantes
- *     consumes:
- *       - multipart/form-data
- *     requestBody:
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               restaurante:
- *                 type: string
- *                 format: binary
- *     responses:
- *       201:
- *         description: Documentos insertados desde archivo
- */
-router.post("/upload", subirArchivoRestaurante);
-
-/**
- * @swagger
  * /restaurante:
  *   post:
  *     summary: Crear uno o varios restaurantes
@@ -66,6 +44,28 @@ router.post("/upload", subirArchivoRestaurante);
  *         description: Restaurante(s) creado(s)
  */
 router.post("/", crearRestaurante);
+
+/**
+ * @swagger
+ * /restaurante/upload:
+ *   post:
+ *     summary: Subir archivo JSON para insertar uno o varios restaurantes
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               restaurante:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Documentos insertados desde archivo
+ */
+router.post("/upload", subirArchivoRestaurante);
 
 /**
  * @swagger

@@ -8,6 +8,34 @@ const {
 
 /**
  * @swagger
+ * /menu:
+ *   post:
+ *     summary: Crear un nuevo artículo de menú
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *               descripcion:
+ *                 type: string
+ *               precio:
+ *                 type: number
+ *               disponible:
+ *                 type: boolean
+ *               restaurante_id:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Artículo creado
+ */
+router.post("/", crearArticulo);
+
+/**
+ * @swagger
  * /menu/upload:
  *   post:
  *     summary: Subir archivo JSON para insertar artículos del menú
@@ -49,33 +77,5 @@ router.post("/upload", subirArchivoMenu);
  *         description: Lista de artículos
  */
 router.get("/", obtenerArticulos);
-
-/**
- * @swagger
- * /menu:
- *   post:
- *     summary: Crear un nuevo artículo de menú
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               nombre:
- *                 type: string
- *               descripcion:
- *                 type: string
- *               precio:
- *                 type: number
- *               disponible:
- *                 type: boolean
- *               restaurante_id:
- *                 type: string
- *     responses:
- *       201:
- *         description: Artículo creado
- */
-router.post("/", crearArticulo);
 
 module.exports = router;

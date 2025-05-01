@@ -8,6 +8,43 @@ const {
 
 /**
  * @swagger
+ * /orden:
+ *   post:
+ *     summary: Crear una nueva orden
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               usuario_id:
+ *                 type: string
+ *               restaurante_id:
+ *                 type: string
+ *               estado:
+ *                 type: string
+ *               metodo_pago:
+ *                 type: string
+ *               platillos:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     menu_item_id:
+ *                       type: string
+ *                     cantidad:
+ *                       type: number
+ *                     precio_unitario:
+ *                       type: number
+ *     responses:
+ *       201:
+ *         description: Orden creada
+ */
+router.post("/", crearOrden);
+
+/**
+ * @swagger
  * /ordenes/upload:
  *   post:
  *     summary: Subir archivo JSON para insertar una o varias órdenes
@@ -49,42 +86,5 @@ router.post("/upload", subirArchivoOrden);
  *         description: Lista de órdenes
  */
 router.get("/", obtenerOrdenes);
-
-/**
- * @swagger
- * /orden:
- *   post:
- *     summary: Crear una nueva orden
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               usuario_id:
- *                 type: string
- *               restaurante_id:
- *                 type: string
- *               estado:
- *                 type: string
- *               metodo_pago:
- *                 type: string
- *               platillos:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     menu_item_id:
- *                       type: string
- *                     cantidad:
- *                       type: number
- *                     precio_unitario:
- *                       type: number
- *     responses:
- *       201:
- *         description: Orden creada
- */
-router.post("/", crearOrden);
 
 module.exports = router;

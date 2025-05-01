@@ -8,6 +8,34 @@ const {
 
 /**
  * @swagger
+ * /resena:
+ *   post:
+ *     summary: Crear una nueva reseña
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               restaurante_id:
+ *                 type: string
+ *               usuario_id:
+ *                 type: string
+ *               orden_id:
+ *                 type: string
+ *               calificacion:
+ *                 type: integer
+ *               comentario:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Reseña creada
+ */
+router.post("/", crearResena);
+
+/**
+ * @swagger
  * /resenas/upload:
  *   post:
  *     summary: Subir archivo JSON para insertar una o varias reseñas
@@ -49,33 +77,5 @@ router.post("/upload", subirArchivoResena);
  *         description: Lista de reseñas
  */
 router.get("/", obtenerResenas);
-
-/**
- * @swagger
- * /resena:
- *   post:
- *     summary: Crear una nueva reseña
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               restaurante_id:
- *                 type: string
- *               usuario_id:
- *                 type: string
- *               orden_id:
- *                 type: string
- *               calificacion:
- *                 type: integer
- *               comentario:
- *                 type: string
- *     responses:
- *       201:
- *         description: Reseña creada
- */
-router.post("/", crearResena);
 
 module.exports = router;
