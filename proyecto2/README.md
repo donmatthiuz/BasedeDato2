@@ -24,10 +24,10 @@ Donde:
 Existen dos formas principales de poblar la base de datos:
 
 - Puedes **configurar tus propios datos**, siempre que sigas el modelo descrito en la documentación:  
-  [**proyecto2/docs/model.md**]()
+  [**proyecto2/docs/model.md**](https://github.com/donmatthiuz/BasedeDato2/blob/proyecto2/proyecto2/docs/model.md)
 
 - También puedes usar los **datos de ejemplo** disponibles en el repositorio, en:  
-  [**proyecto2/data/**]()
+  [**proyecto2/data/**](https://github.com/donmatthiuz/BasedeDato2/tree/proyecto2/proyecto2/data)
 
 ### 2.1 Métodos para poblar
 
@@ -37,23 +37,23 @@ Puedes poblar la base de datos usando:
 - **MongoDB Compass** (interfaz gráfica)
 
 Ambos métodos están explicados en detalle en:  
-[**proyecto2/docs/seed.md**]()
+[**proyecto2/docs/seed.md**](https://github.com/donmatthiuz/BasedeDato2/blob/proyecto2/proyecto2/docs/seed.md)
 
 > Si eliges usar `mongoimport`, asegúrate de seguir primero las instrucciones de instalación de herramientas en:  
-[**proyecto2/docs/configuration.md**]()
+[**proyecto2/docs/configuration.md**](https://github.com/donmatthiuz/BasedeDato2/blob/proyecto2/proyecto2/docs/configuration.md)
 >
 > Si prefieres usar **MongoDB Compass**, también puedes seguir el mismo documento para instalar la herramienta y luego seguir el procedimiento en `seed.md`.
 
 ## 3. Backend
 
 Para levantar el servidor backend y consumir la base de datos a través de un servicio REST, sigue la guía detallada en:  
-[**proyecto2/docs/backend.md**]()
+[**proyecto2/docs/backend.md**](https://github.com/donmatthiuz/BasedeDato2/blob/proyecto2/proyecto2/docs/backend.md)
 
 Esta guía incluye cómo iniciar el servidor, probar los endpoints y realizar operaciones CRUD con la base de datos MongoDB.
 
 ## 4. Frontend
 
 La interfaz de usuario permite visualizar y manipular los datos del proyecto interactuando con el backend. Para utilizarla, consulta la guía en:  
-[**proyecto2/docs/frontend.md**]()
+[**proyecto2/docs/frontend.md**](https://github.com/donmatthiuz/BasedeDato2/blob/proyecto2/proyecto2/docs/frontend.md)
 
 Allí encontrarás los pasos para levantar el frontend, configurarlo y empezar a interactuar con el sistema.
