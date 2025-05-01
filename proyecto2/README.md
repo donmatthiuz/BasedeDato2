@@ -1,6 +1,8 @@
 # Proyecto de Gestión de Restaurantes con MongoDB
 
-Este proyecto tiene como objetivo desarrollar una solución completa utilizando **MongoDB** para gestionar y analizar datos relacionados con **restaurantes**, **pedidos** y **reseñas**. Se enfoca en aplicar estructuras optimizadas (documentos embebidos y referenciados), operaciones CRUD avanzadas, agregaciones, manejo de archivos y visualizaciones, buscando mejorar tanto la experiencia del usuario como la administración de la información.
+El objetivo de este proyecto es desarrollar una solución completa basada en **MongoDB** que permita gestionar de manera eficiente información relacionada con **restaurantes**, **pedidos**, **menús**, **usuarios** y **reseñas**. La base de datos se diseñará para optimizar la consulta, almacenamiento y análisis de datos mediante el uso de documentos embebidos y referenciados, operaciones CRUD avanzadas, ordenamiento, proyecciones, manejo de archivos grandes, agregaciones y manipulación de arrays.
+
+El sistema incluye tanto un **backend** que gestiona la base de datos a través de una REST API como un **frontend** interactivo que permite a los usuarios manipular y visualizar los datos de manera intuitiva.
 
 ## 1. Crear instancia y obtener URI de conexión
 
