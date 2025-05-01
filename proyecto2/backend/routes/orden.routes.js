@@ -7,7 +7,7 @@ const {
 
 /**
  * @swagger
- * /ordenes:
+ * /orden:
  *   get:
  *     summary: Obtener órdenes
  *     parameters:
@@ -29,7 +29,7 @@ const {
 router.get("/", obtenerOrdenes);
 /**
  * @swagger
- * /ordenes:
+ * /orden:
  *   post:
  *     summary: Crear una nueva orden
  *     requestBody:

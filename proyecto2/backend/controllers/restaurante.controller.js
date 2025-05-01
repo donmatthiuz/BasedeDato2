@@ -1,12 +1,53 @@
 const Restaurante = require("../models/Restaurante");
+const multer = require("multer");
+const fs = require("fs");
+
+// Middleware para archivo
+const upload = multer({ dest: "uploads/" }); // crea carpeta si no existe
+
+exports.subirArchivoRestaurante = [
+  upload.single("restaurante"),
+  async (req, res) => {
+    try {
+      const path = req.file.path;
+      const content = fs.readFileSync(path, "utf8");
+      const data = JSON.parse(content);
+
+      const insertData = Array.isArray(data) ? data : [data];
+      const insertados = await Restaurante.insertMany(insertData, {
+        ordered: false,
+      });
+
+      fs.unlinkSync(path);
+      res.status(201).json({ insertados });
+    } catch (error) {
+      res.status(400).json({
+        error: "Error al procesar el archivo",
+        detalle: error.message,
+      });
+    }
+  },
+];
 
 exports.crearRestaurante = async (req, res) => {
   try {
-    const restaurante = new Restaurante(req.body);
-    await restaurante.save();
-    res.status(201).json(restaurante);
+    const data = req.body;
+
+    if (!Array.isArray(data)) {
+      // Si es un solo restaurante
+      const restaurante = new Restaurante(data);
+      await restaurante.save();
+      return res.status(201).json(restaurante);
+    }
+
+    // Si es un array, inserta múltiples
+    const restaurantes = await Restaurante.insertMany(data, { ordered: false });
+    res.status(201).json(restaurantes);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({
+      error: "Error al crear restaurante(s)",
+      detalle: error.message,
+    });
   }
 };
 

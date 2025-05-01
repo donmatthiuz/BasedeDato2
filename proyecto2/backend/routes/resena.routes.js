@@ -7,7 +7,7 @@ const {
 
 /**
  * @swagger
- * /resenas:
+ * /resena:
  *   get:
  *     summary: Obtener reseñas
  *     parameters:
@@ -29,7 +29,7 @@ const {
 router.get("/", obtenerResenas);
 /**
  * @swagger
- * /resenas:
+ * /resena:
  *   post:
  *     summary: Crear una nueva reseña
  *     requestBody:

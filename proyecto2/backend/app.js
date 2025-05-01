@@ -14,11 +14,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/restaurantes", restauranteRoutes);
-app.use("/api/usuarios", usuarioRoutes);
+app.use("/api/restaurante", restauranteRoutes);
+app.use("/api/usuario", usuarioRoutes);
 app.use("/api/menu", menuRoutes);
-app.use("/api/ordenes", ordenRoutes);
-app.use("/api/resenas", resenaRoutes);
+app.use("/api/orden", ordenRoutes);
+app.use("/api/resena", resenaRoutes);
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 module.exports = app;

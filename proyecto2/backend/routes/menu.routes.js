@@ -3,7 +3,31 @@ const router = express.Router();
 const {
   crearArticulo,
   obtenerArticulos,
+  subirArchivoMenu,
 } = require("../controllers/menu.controller");
+
+/**
+ * @swagger
+ * /menu/upload:
+ *   post:
+ *     summary: Subir archivo JSON para insertar artículos del menú
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               menu:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Artículos insertados desde archivo
+ */
+
+router.post("/upload", subirArchivoMenu);
 
 /**
  * @swagger

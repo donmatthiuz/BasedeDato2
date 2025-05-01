@@ -7,7 +7,7 @@ const {
 
 /**
  * @swagger
- * /usuarios:
+ * /usuario:
  *   get:
  *     summary: Obtener todos los usuarios
  *     parameters:
@@ -24,7 +24,7 @@ const {
 router.get("/", obtenerUsuarios);
 /**
  * @swagger
- * /usuarios:
+ * /usuario:
  *   post:
  *     summary: Crear un nuevo usuario
  *     requestBody:

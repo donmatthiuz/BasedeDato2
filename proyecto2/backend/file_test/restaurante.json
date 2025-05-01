@@ -1,0 +1,14 @@
+[
+  {
+    "nombre": "La Parrillada Colonial",
+    "direccion": "Avenida Reforma 12-34, Zona 10",
+    "telefono": "55551234",
+    "categoria": "Parrillada"
+  },
+  {
+    "nombre": "Sushi Express",
+    "direccion": "Boulevard Los Próceres, Centro Comercial X",
+    "telefono": "55556789",
+    "categoria": "Japonesa"
+  }
+]

@@ -1,10 +1,43 @@
 const Menu = require("../models/Menu");
+const multer = require("multer");
+const fs = require("fs");
+
+const upload = multer({ dest: "uploads/" });
+
+exports.subirArchivoMenu = [
+  upload.single("menu"),
+  async (req, res) => {
+    try {
+      const path = req.file.path;
+      const content = fs.readFileSync(path, "utf8");
+      const data = JSON.parse(content);
+
+      const insertData = Array.isArray(data) ? data : [data];
+      const insertados = await Menu.insertMany(insertData, { ordered: false });
+
+      fs.unlinkSync(path);
+      res.status(201).json({ insertados });
+    } catch (error) {
+      res.status(400).json({
+        error: "Error al procesar el archivo",
+        detalle: error.message,
+      });
+    }
+  },
+];
 
 exports.crearArticulo = async (req, res) => {
   try {
-    const articulo = new Menu(req.body);
-    await articulo.save();
-    res.status(201).json(articulo);
+    const data = req.body;
+
+    if (!Array.isArray(data)) {
+      const articulo = new Menu(data);
+      await articulo.save();
+      return res.status(201).json(articulo);
+    }
+
+    const articulos = await Menu.insertMany(data, { ordered: false });
+    res.status(201).json(articulos);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
