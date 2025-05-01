@@ -10,36 +10,51 @@ const {
  * @swagger
  * /orden:
  *   post:
- *     summary: Crear una nueva orden
+ *     summary: Crear una o varias órdenes
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               usuario_id:
- *                 type: string
- *               restaurante_id:
- *                 type: string
- *               estado:
- *                 type: string
- *               metodo_pago:
- *                 type: string
- *               platillos:
- *                 type: array
+ *             oneOf:
+ *               - type: object
+ *                 properties:
+ *                   usuario_id:
+ *                     type: string
+ *                     example: "3ec19822-f7b4-4d52-b0b0-f541d96551f1"
+ *                   restaurante_id:
+ *                     type: string
+ *                     example: "84862c31-461c-4706-b43d-d60487400588"
+ *                   estado:
+ *                     type: string
+ *                     example: "pendiente"
+ *                   metodo_pago:
+ *                     type: string
+ *                     example: "efectivo"
+ *                   fecha:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-07-01T12:00:00Z"
+ *                   platillos:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         menu_item_id:
+ *                           type: string
+ *                           example: "908d1f97-b9f4-487c-a0a5-d819017e6d7f"
+ *                         cantidad:
+ *                           type: number
+ *                           example: 2
+ *                         precio_unitario:
+ *                           type: number
+ *                           example: 130
+ *               - type: array
  *                 items:
- *                   type: object
- *                   properties:
- *                     menu_item_id:
- *                       type: string
- *                     cantidad:
- *                       type: number
- *                     precio_unitario:
- *                       type: number
+ *                   $ref: '#/components/schemas/Orden'
  *     responses:
  *       201:
- *         description: Orden creada
+ *         description: Orden(es) creada(s)
  */
 router.post("/", crearOrden);
 

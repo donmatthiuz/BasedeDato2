@@ -10,27 +10,54 @@ const {
  * @swagger
  * /usuario:
  *   post:
- *     summary: Crear un nuevo usuario
+ *     summary: Crear uno o varios usuarios
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               nombre:
- *                 type: string
- *               email:
- *                 type: string
- *               direccion:
- *                 type: string
- *               telefono:
- *                 type: string
- *               frecuencia:
- *                 type: string
+ *             oneOf:
+ *               - type: object
+ *                 properties:
+ *                   nombre:
+ *                     type: string
+ *                     example: "Cristóbal Trujillo Martínez"
+ *                   email:
+ *                     type: string
+ *                     example: "nazario23@example.net"
+ *                   direccion:
+ *                     type: string
+ *                     example: "Alameda de Aurelia Carbajo 63 Piso 1 \nSegovia, 51167"
+ *                   telefono:
+ *                     type: string
+ *                     example: "+34 982 005 692"
+ *                   frecuencia:
+ *                     type: string
+ *                     example: "ocasional"
+ *                   fecha_registro:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-06-22T21:38:28Z"
+ *               - type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     nombre:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     direccion:
+ *                       type: string
+ *                     telefono:
+ *                       type: string
+ *                     frecuencia:
+ *                       type: string
+ *                     fecha_registro:
+ *                       type: string
+ *                       format: date-time
  *     responses:
  *       201:
- *         description: Usuario creado
+ *         description: Usuario(s) creado(s)
  */
 router.post("/", crearUsuario);
 

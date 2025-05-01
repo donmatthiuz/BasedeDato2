@@ -30,13 +30,21 @@ exports.crearOrden = async (req, res) => {
   try {
     const data = req.body;
 
+    // Función para preparar orden
+    const prepararOrden = (orden) => ({
+      ...orden,
+      fecha: orden.fecha || new Date(),
+    });
+
     if (!Array.isArray(data)) {
-      const orden = new Orden(data);
-      await orden.save();
-      return res.status(201).json(orden);
+      const nuevaOrden = new Orden(prepararOrden(data));
+      await nuevaOrden.save();
+      return res.status(201).json(nuevaOrden);
     }
 
-    const ordenes = await Orden.insertMany(data, { ordered: false });
+    const ordenes = await Orden.insertMany(data.map(prepararOrden), {
+      ordered: false,
+    });
     res.status(201).json(ordenes);
   } catch (error) {
     res.status(400).json({ error: error.message });

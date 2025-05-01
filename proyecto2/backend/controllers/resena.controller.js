@@ -32,13 +32,20 @@ exports.crearResena = async (req, res) => {
   try {
     const data = req.body;
 
+    const prepararResena = (r) => ({
+      ...r,
+      fecha: r.fecha || new Date(),
+    });
+
     if (!Array.isArray(data)) {
-      const resena = new Resena(data);
+      const resena = new Resena(prepararResena(data));
       await resena.save();
       return res.status(201).json(resena);
     }
 
-    const resenas = await Resena.insertMany(data, { ordered: false });
+    const resenas = await Resena.insertMany(data.map(prepararResena), {
+      ordered: false,
+    });
     res.status(201).json(resenas);
   } catch (error) {
     res.status(400).json({ error: error.message });

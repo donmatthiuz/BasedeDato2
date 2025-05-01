@@ -21,24 +21,32 @@ const {
  *                 properties:
  *                   nombre:
  *                     type: string
+ *                     example: "La Carnicería"
  *                   direccion:
  *                     type: string
+ *                     example: "Plaza Olegario Dueñas 1 Apt. 84 \nLa Coruña, 04962"
  *                   telefono:
  *                     type: string
+ *                     example: "+34 928 766 724"
  *                   categoria:
  *                     type: string
+ *                     example: "Parrillada"
  *               - type: array
  *                 items:
  *                   type: object
  *                   properties:
  *                     nombre:
  *                       type: string
+ *                       example: "La Carnicería"
  *                     direccion:
  *                       type: string
+ *                       example: "Plaza Olegario Dueñas 1 Apt. 84 \nLa Coruña, 04962"
  *                     telefono:
  *                       type: string
+ *                       example: "+34 928 766 724"
  *                     categoria:
  *                       type: string
+ *                       example: "Parrillada"
  *     responses:
  *       201:
  *         description: Restaurante(s) creado(s)

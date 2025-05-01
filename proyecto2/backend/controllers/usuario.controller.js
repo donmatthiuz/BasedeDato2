@@ -32,13 +32,20 @@ exports.crearUsuario = async (req, res) => {
   try {
     const data = req.body;
 
+    const setFecha = (item) => {
+      if (!item.fecha_registro) item.fecha_registro = new Date();
+      return item;
+    };
+
     if (!Array.isArray(data)) {
-      const usuario = new Usuario(data);
+      const usuario = new Usuario(setFecha(data));
       await usuario.save();
       return res.status(201).json(usuario);
     }
 
-    const usuarios = await Usuario.insertMany(data, { ordered: false });
+    const usuarios = await Usuario.insertMany(data.map(setFecha), {
+      ordered: false,
+    });
     res.status(201).json(usuarios);
   } catch (error) {
     res.status(400).json({ error: error.message });

@@ -10,27 +10,47 @@ const {
  * @swagger
  * /menu:
  *   post:
- *     summary: Crear un nuevo artículo de menú
+ *     summary: Crear uno o varios artículos de menú
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               nombre:
- *                 type: string
- *               descripcion:
- *                 type: string
- *               precio:
- *                 type: number
- *               disponible:
- *                 type: boolean
- *               restaurante_id:
- *                 type: string
+ *             oneOf:
+ *               - type: object
+ *                 properties:
+ *                   nombre:
+ *                     type: string
+ *                     example: "Ensalada César"
+ *                   descripcion:
+ *                     type: string
+ *                     example: "Ensalada con lechuga romana, pollo y aderezo césar"
+ *                   precio:
+ *                     type: number
+ *                     example: 45.5
+ *                   disponible:
+ *                     type: boolean
+ *                     example: true
+ *                   restaurante_id:
+ *                     type: string
+ *                     example: "c3f3bb5f-93a2-4bc8-b15f-085b684e6f62"
+ *               - type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     nombre:
+ *                       type: string
+ *                     descripcion:
+ *                       type: string
+ *                     precio:
+ *                       type: number
+ *                     disponible:
+ *                       type: boolean
+ *                     restaurante_id:
+ *                       type: string
  *     responses:
  *       201:
- *         description: Artículo creado
+ *         description: Artículo(s) creado(s)
  */
 router.post("/", crearArticulo);
 

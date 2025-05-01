@@ -10,27 +10,40 @@ const {
  * @swagger
  * /resena:
  *   post:
- *     summary: Crear una nueva reseña
+ *     summary: Crear una o varias reseñas
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               restaurante_id:
- *                 type: string
- *               usuario_id:
- *                 type: string
- *               orden_id:
- *                 type: string
- *               calificacion:
- *                 type: integer
- *               comentario:
- *                 type: string
+ *             oneOf:
+ *               - type: object
+ *                 properties:
+ *                   restaurante_id:
+ *                     type: string
+ *                     example: "fe8b0c30-c333-4a50-a9a6-3823cb041d92"
+ *                   usuario_id:
+ *                     type: string
+ *                     example: "52f1d182-6ccd-4475-bac7-fcad0b84cd28"
+ *                   orden_id:
+ *                     type: string
+ *                     example: "cb01f915-357a-4a2c-bcf5-d61f80c57a79"
+ *                   calificacion:
+ *                     type: integer
+ *                     example: 4
+ *                   comentario:
+ *                     type: string
+ *                     example: "Muy buena experiencia"
+ *                   fecha:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2025-03-23T09:27:47Z"
+ *               - type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/Resena'
  *     responses:
  *       201:
- *         description: Reseña creada
+ *         description: Reseña(s) creada(s)
  */
 router.post("/", crearResena);
 
