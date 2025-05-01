@@ -47,17 +47,59 @@ exports.crearUsuario = async (req, res) => {
 
 exports.obtenerUsuarios = async (req, res) => {
   try {
+    const query = req.query;
     const filtro = {};
-    if (req.query.nombre) {
-      filtro.nombre = new RegExp(req.query.nombre, "i");
+
+    // --- Filtros simples ---
+    if (query.nombre) filtro.nombre = new RegExp(query.nombre, "i");
+    if (query.email) filtro.email = query.email;
+    if (query.telefono) filtro.telefono = query.telefono;
+
+    // --- Filtros con expresiones regulares ---
+    if (query.email_regex) filtro.email = new RegExp(query.email_regex, "i");
+    if (query.direccion_regex)
+      filtro.direccion = new RegExp(query.direccion_regex, "i");
+
+    // --- Filtros por inclusión/exclusión ---
+    if (query.email_in) filtro.email = { $in: query.email_in.split(",") };
+    if (query.telefono_nin)
+      filtro.telefono = { $nin: query.telefono_nin.split(",") };
+
+    // --- Filtro por rango de fechas de registro ---
+    if (query.fecha_inicio || query.fecha_fin) {
+      filtro.fecha_registro = {};
+      if (query.fecha_inicio)
+        filtro.fecha_registro.$gte = new Date(query.fecha_inicio);
+      if (query.fecha_fin)
+        filtro.fecha_registro.$lte = new Date(query.fecha_fin);
     }
 
-    const usuarios = await Usuario.find(filtro)
-      .hint({
-        nombre: 1,
-        direccion: 1,
-      })
-      .lean(); // índice compuesto obligatorio
+    // --- Proyección de campos ---
+    const proyeccion = {};
+    if (query.campos) {
+      query.campos.split(",").forEach((campo) => {
+        proyeccion[campo.trim()] = 1;
+      });
+    }
+
+    // --- Ordenamiento ---
+    const sort = {};
+    if (query.ordenar_por) {
+      const campo = query.ordenar_por;
+      sort[campo.replace("-", "")] = campo.startsWith("-") ? 1 : -1;
+    }
+
+    // --- Paginación ---
+    const skip = parseInt(query.skip) || 0;
+    const limit = parseInt(query.limit) || 20;
+
+    // --- Consulta ---
+    const usuarios = await Usuario.find(filtro, proyeccion)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .hint({ nombre: 1, direccion: 1 })
+      .lean();
 
     res.json(usuarios);
   } catch (error) {

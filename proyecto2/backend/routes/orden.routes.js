@@ -150,7 +150,7 @@ router.post("/upload", subirArchivoOrden);
  *         schema:
  *           type: string
  *           example: -fecha
- *         description: Campo por el cual ordenar (usa "-" para ascendente)
+ *         description: Campo por el cual ordenar (usa `-` para ascendente)
  *       - in: query
  *         name: skip
  *         schema:

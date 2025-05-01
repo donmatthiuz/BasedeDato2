@@ -147,7 +147,7 @@ router.post("/upload", subirArchivoResena);
  *         schema:
  *           type: string
  *           example: -fecha
- *         description: Campo para ordenar (usa '-' para ascendente)
+ *         description: Campo para ordenar (usa `-` para ascendente)
  *       - in: query
  *         name: skip
  *         schema:

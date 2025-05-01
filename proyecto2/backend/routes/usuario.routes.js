@@ -66,7 +66,82 @@ router.post("/upload", subirArchivoUsuario);
  *         name: nombre
  *         schema:
  *           type: string
+ *           example: Cristóbal
  *         description: Nombre parcial del usuario
+ *       - in: query
+ *         name: email
+ *         schema:
+ *           type: string
+ *           example: nazario23@example.net
+ *         description: Email exacto
+ *       - in: query
+ *         name: telefono
+ *         schema:
+ *           type: string
+ *           example: +34 982 005 692
+ *         description: Teléfono exacto
+ *       - in: query
+ *         name: email_regex
+ *         schema:
+ *           type: string
+ *           example: "tapiaeustaquio"
+ *         description: Búsqueda por expresión regular en email
+ *       - in: query
+ *         name: direccion_regex
+ *         schema:
+ *           type: string
+ *           example: Segovia
+ *         description: Búsqueda parcial por dirección
+ *       - in: query
+ *         name: email_in
+ *         schema:
+ *           type: string
+ *           example: a@a.com,nazario23@example.net
+ *         description: Lista de emails separados por coma
+ *       - in: query
+ *         name: telefono_nin
+ *         schema:
+ *           type: string
+ *           example: +34 123,+34 982 005 692
+ *         description: Teléfonos a excluir
+ *       - in: query
+ *         name: fecha_inicio
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: 2024-06-01
+ *         description: Fecha de registro desde (ISO 8601)
+ *       - in: query
+ *         name: fecha_fin
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: 2024-06-30
+ *         description: Fecha de registro hasta (ISO 8601)
+ *       - in: query
+ *         name: campos
+ *         schema:
+ *           type: string
+ *           example: nombre,email
+ *         description: Campos a proyectar separados por coma
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           example: -fecha_registro
+ *         description: Campo por el cual ordenar (usa `-` para descendente)
+ *       - in: query
+ *         name: skip
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *         description: Cuántos resultados omitir
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 5
+ *         description: Máximo de resultados a devolver
  *     responses:
  *       200:
  *         description: Lista de usuarios

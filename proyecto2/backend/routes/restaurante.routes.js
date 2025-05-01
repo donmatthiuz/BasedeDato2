@@ -120,7 +120,7 @@ router.post("/upload", subirArchivoRestaurante);
  *         schema:
  *           type: string
  *           example: -nombre
- *         description: Campo por el cual ordenar (usa '-' para ascendente)
+ *         description: Campo por el cual ordenar (usa `-` para ascendente)
  *       - in: query
  *         name: skip
  *         schema:
