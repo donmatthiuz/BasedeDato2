@@ -71,16 +71,71 @@ router.post("/upload", subirArchivoRestaurante);
  * @swagger
  * /restaurante:
  *   get:
- *     summary: Obtener todos los restaurantes
+ *     summary: Obtener restaurantes con filtros avanzados
  *     parameters:
  *       - in: query
  *         name: nombre
  *         schema:
  *           type: string
- *         description: Nombre parcial del restaurante
+ *           example: Carnicería
+ *         description: Nombre parcial del restaurante (regex insensible a mayúsculas)
+ *       - in: query
+ *         name: categoria
+ *         schema:
+ *           type: string
+ *           example: Parrillada
+ *         description: Categoría exacta del restaurante
+ *       - in: query
+ *         name: categoria_in
+ *         schema:
+ *           type: string
+ *           example: Parrillada,Italiana
+ *         description: Lista de categorías permitidas (separadas por coma)
+ *       - in: query
+ *         name: categoria_nin
+ *         schema:
+ *           type: string
+ *           example: Rápida,Mexicana
+ *         description: Lista de categorías a excluir
+ *       - in: query
+ *         name: direccion_regex
+ *         schema:
+ *           type: string
+ *           example: La Coruña
+ *         description: Texto parcial en dirección (regex)
+ *       - in: query
+ *         name: telefono
+ *         schema:
+ *           type: string
+ *           example: +34 928 766 724
+ *         description: Número de teléfono exacto
+ *       - in: query
+ *         name: campos
+ *         schema:
+ *           type: string
+ *           example: nombre,categoria,direccion
+ *         description: Campos a incluir en la respuesta (separados por coma)
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           example: -nombre
+ *         description: Campo por el cual ordenar (usa '-' para ascendente)
+ *       - in: query
+ *         name: skip
+ *         schema:
+ *           type: integer
+ *           example: 0
+ *         description: Número de resultados a omitir
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *         description: Número máximo de resultados a devolver
  *     responses:
  *       200:
- *         description: Lista de restaurantes
+ *         description: Lista de restaurantes filtrados
  */
 router.get("/", obtenerRestaurantes);
 

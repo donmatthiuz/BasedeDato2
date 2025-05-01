@@ -52,14 +52,51 @@ exports.crearRestaurante = async (req, res) => {
 
 exports.obtenerRestaurantes = async (req, res) => {
   try {
+    const query = req.query;
     const filtro = {};
-    if (req.query.nombre) {
-      filtro.nombre = new RegExp(req.query.nombre, "i"); // búsqueda parcial insensible a mayúsculas
+
+    // --- Filtros simples ---
+    if (query.nombre) filtro.nombre = new RegExp(query.nombre, "i");
+    if (query.categoria) filtro.categoria = query.categoria;
+    if (query.telefono) filtro.telefono = query.telefono;
+
+    // --- Filtros por inclusión/exclusión de categorías ---
+    if (query.categoria_in)
+      filtro.categoria = { $in: query.categoria_in.split(",") };
+    if (query.categoria_nin)
+      filtro.categoria = { $nin: query.categoria_nin.split(",") };
+
+    // --- Búsqueda por expresión regular en dirección -
+    if (query.direccion_regex) {
+      filtro.direccion = new RegExp(query.direccion_regex, "i");
     }
 
-    const restaurantes = await Restaurante.find(filtro)
+    // --- Proyección de campos ---
+    const proyeccion = {};
+    if (query.campos) {
+      query.campos.split(",").forEach((campo) => {
+        proyeccion[campo.trim()] = 1;
+      });
+    }
+
+    // --- Ordenamiento ---
+    const sort = {};
+    if (query.ordenar_por) {
+      const campo = query.ordenar_por;
+      sort[campo.replace("-", "")] = campo.startsWith("-") ? 1 : -1;
+    }
+
+    // --- Paginación ---
+    const skip = parseInt(query.skip) || 0;
+    const limit = parseInt(query.limit) || 20;
+
+    // --- Consulta ---
+    const restaurantes = await Restaurante.find(filtro, proyeccion)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
       .hint({ nombre: 1 })
-      .lean(); // fuerza el uso del índice
+      .lean();
 
     res.json(restaurantes);
   } catch (error) {
