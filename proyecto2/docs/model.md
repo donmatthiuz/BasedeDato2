@@ -1,6 +1,6 @@
 # Modelo
 
-![Diagrama de Modelo de Datos NoSQL](../images/diagrama.jpg "Diagrama de Modelo de Datos NoSQL")
+![Diagrama de Modelo de Datos NoSQL](../images/diagrama_inicial.jpg "Diagrama de Modelo de Datos NoSQL")
 
 ## **restaurante**
 
