@@ -3,7 +3,30 @@ const router = express.Router();
 const {
   crearOrden,
   obtenerOrdenes,
+  subirArchivoOrden,
 } = require("../controllers/orden.controller");
+
+/**
+ * @swagger
+ * /ordenes/upload:
+ *   post:
+ *     summary: Subir archivo JSON para insertar una o varias órdenes
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               orden:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Órdenes insertadas desde archivo
+ */
+router.post("/upload", subirArchivoOrden);
 
 /**
  * @swagger
@@ -25,8 +48,8 @@ const {
  *       200:
  *         description: Lista de órdenes
  */
-
 router.get("/", obtenerOrdenes);
+
 /**
  * @swagger
  * /orden:

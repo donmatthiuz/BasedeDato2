@@ -3,7 +3,30 @@ const router = express.Router();
 const {
   crearResena,
   obtenerResenas,
+  subirArchivoResena,
 } = require("../controllers/resena.controller");
+
+/**
+ * @swagger
+ * /resenas/upload:
+ *   post:
+ *     summary: Subir archivo JSON para insertar una o varias reseñas
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               resena:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Reseñas insertadas desde archivo
+ */
+router.post("/upload", subirArchivoResena);
 
 /**
  * @swagger
@@ -25,8 +48,8 @@ const {
  *       200:
  *         description: Lista de reseñas
  */
-
 router.get("/", obtenerResenas);
+
 /**
  * @swagger
  * /resena:

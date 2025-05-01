@@ -2,11 +2,10 @@ const Restaurante = require("../models/Restaurante");
 const multer = require("multer");
 const fs = require("fs");
 
-// Middleware para archivo
-const upload = multer({ dest: "uploads/" }); // crea carpeta si no existe
+const upload = multer({ dest: "uploads/" });
 
 exports.subirArchivoRestaurante = [
-  upload.single("restaurante"),
+  upload.single("restaurante"), // nombre del campo esperado: "restaurante"
   async (req, res) => {
     try {
       const path = req.file.path;

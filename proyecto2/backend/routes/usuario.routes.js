@@ -3,7 +3,30 @@ const router = express.Router();
 const {
   crearUsuario,
   obtenerUsuarios,
+  subirArchivoUsuario,
 } = require("../controllers/usuario.controller");
+
+/**
+ * @swagger
+ * /usuarios/upload:
+ *   post:
+ *     summary: Subir archivo JSON para insertar uno o varios usuarios
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               usuario:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Usuarios insertados desde archivo
+ */
+router.post("/upload", subirArchivoUsuario);
 
 /**
  * @swagger
@@ -20,8 +43,8 @@ const {
  *       200:
  *         description: Lista de usuarios
  */
-
 router.get("/", obtenerUsuarios);
+
 /**
  * @swagger
  * /usuario:

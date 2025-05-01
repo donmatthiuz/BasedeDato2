@@ -26,7 +26,6 @@ const {
  *       201:
  *         description: Artículos insertados desde archivo
  */
-
 router.post("/upload", subirArchivoMenu);
 
 /**
@@ -49,7 +48,6 @@ router.post("/upload", subirArchivoMenu);
  *       200:
  *         description: Lista de artículos
  */
-
 router.get("/", obtenerArticulos);
 
 /**

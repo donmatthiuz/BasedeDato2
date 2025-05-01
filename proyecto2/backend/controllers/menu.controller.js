@@ -2,10 +2,11 @@ const Menu = require("../models/Menu");
 const multer = require("multer");
 const fs = require("fs");
 
-const upload = multer({ dest: "uploads/" });
+// Middleware para archivo
+const upload = multer({ dest: "uploads/" }); // crea carpeta si no existe
 
 exports.subirArchivoMenu = [
-  upload.single("menu"),
+  upload.single("menu"), // nombre del campo esperado: "menu"
   async (req, res) => {
     try {
       const path = req.file.path;

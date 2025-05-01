@@ -1,10 +1,45 @@
 const Resena = require("../models/Resena");
+const multer = require("multer");
+const fs = require("fs");
+
+const upload = multer({ dest: "uploads/" });
+
+exports.subirArchivoResena = [
+  upload.single("resena"), // nombre del campo esperado: "resena"
+  async (req, res) => {
+    try {
+      const path = req.file.path;
+      const content = fs.readFileSync(path, "utf8");
+      const data = JSON.parse(content);
+
+      const insertData = Array.isArray(data) ? data : [data];
+      const insertados = await Resena.insertMany(insertData, {
+        ordered: false,
+      });
+
+      fs.unlinkSync(path);
+      res.status(201).json({ insertados });
+    } catch (error) {
+      res.status(400).json({
+        error: "Error al procesar el archivo",
+        detalle: error.message,
+      });
+    }
+  },
+];
 
 exports.crearResena = async (req, res) => {
   try {
-    const resena = new Resena(req.body);
-    await resena.save();
-    res.status(201).json(resena);
+    const data = req.body;
+
+    if (!Array.isArray(data)) {
+      const resena = new Resena(data);
+      await resena.save();
+      return res.status(201).json(resena);
+    }
+
+    const resenas = await Resena.insertMany(data, { ordered: false });
+    res.status(201).json(resenas);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
