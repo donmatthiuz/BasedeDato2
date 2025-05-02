@@ -116,6 +116,8 @@ exports.obtenerResenas = async (req, res) => {
 
     // --- Filtro por comentario (expresión regular, insensible a mayúsculas) ---
     if (query.comentario) filtro.comentario = new RegExp(query.comentario, "i");
+    if (query.nombre_usuario)
+      filtro.nombre_usuario = new RegExp(query.nombre_usuario, "i");
 
     // --- Proyección de campos ---
     const proyeccion = {};

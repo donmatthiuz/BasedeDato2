@@ -26,6 +26,9 @@ const {
  *                   usuario_id:
  *                     type: string
  *                     example: "52f1d182-6ccd-4475-bac7-fcad0b84cd28"
+ *                   nombre_usuario:
+ *                     type: string
+ *                     example: "Juan Pérez"
  *                   orden_id:
  *                     type: string
  *                     example: "cb01f915-357a-4a2c-bcf5-d61f80c57a79"
@@ -51,6 +54,9 @@ const {
  *                     usuario_id:
  *                       type: string
  *                       example: "52f1d182-6ccd-4475-bac7-fcad0b84cd28"
+ *                     nombre_usuario:
+ *                       type: string
+ *                       example: "Juan Pérez"
  *                     orden_id:
  *                       type: string
  *                       example: "cb01f915-357a-4a2c-bcf5-d61f80c57a79"
@@ -103,6 +109,7 @@ router.post("/", crearResena);
  *             {
  *               "restaurante_id": "fe8b0c30-c333-4a50-a9a6-3823cb041d92",
  *               "usuario_id": "52f1d182-6ccd-4475-bac7-fcad0b84cd28",
+ *               "nombre_usuario": "Juan Pérez",
  *               "orden_id": "cb01f915-357a-4a2c-bcf5-d61f80c57a79",
  *               "calificacion": 4,
  *               "comentario": "Muy buena experiencia",
@@ -111,6 +118,7 @@ router.post("/", crearResena);
  *             {
  *               "restaurante_id": "fe8b0c30-c333-4a50-a9a6-3823cb041d92",
  *               "usuario_id": "52f1d182-6ccd-4475-bac7-fcad0b84cd28",
+ *               "nombre_usuario": "Juan Pérez",
  *               "orden_id": "cb01f915-357a-4a2c-bcf5-d61f80c57a79",
  *               "calificacion": 5,
  *               "comentario": "Excelente servicio"
@@ -199,6 +207,12 @@ router.post("/upload", subirArchivoResena);
  *           type: string
  *           example: doloremque
  *         description: Texto que debe estar incluido en el comentario (búsqueda parcial)
+ *       - in: query
+ *         name: nombre_usuario
+ *         schema:
+ *           type: string
+ *           example: juan
+ *         description: Texto parcial del nombre del usuario (búsqueda parcial)
  *       - in: query
  *         name: campos
  *         schema:

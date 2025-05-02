@@ -144,7 +144,7 @@ geometry: top=0.67in, bottom=0.67in, left=0.85in, right=0.85in
 
          > Para consultas por reseñas - pedido
 
-![Diagrama de Modelo de Datos NoSQL](../images/diagrama_inicial.jpg "Diagrama de Modelo de Datos NoSQL")
+![Diagrama de Modelo de Datos NoSQL](../images/diagrama_final.jpg "Diagrama de Modelo de Datos NoSQL")
 
 ## Justificación de estructuras embebidas vs referenciadas
 
