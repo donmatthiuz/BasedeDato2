@@ -2,63 +2,39 @@
 
 ## Índices
 
-### `restaurante`
+### **restaurante**
 
 ```js
 db.restaurante.createIndex({ nombre: 1 })
-
 db.restaurante.createIndex({ nombre: "text", categoria: "text" })
-
-db.restaurante.createIndex({ "platos.nombre": 1 })
-
-db.restaurante.createIndex({ "platos.disponible": 1 })
-
-db.restaurante.createIndex({ "resenas.calificacion": -1 })
-
-db.restaurante.createIndex({ "resenas.fecha": -1 })
-
-db.restaurante.createIndex({ "ordenes.estado": 1 })
-
-db.restaurante.createIndex({ "ordenes.fecha": -1 })
-
-db.restaurante.createIndex({ posicion: "2dsphere" })
-
-db.restaurante.createIndex({ "resenas.usuario_id": 1 })
-
-db.restaurante.createIndex({ "resenas.orden_id": 1 })
-
-db.restaurante.createIndex({ "ordenes.usuario_id": 1 })
+db.restaurante.createIndex({ coordenadas: "2dsphere" })
 ```
 
-### `articulo_menu` (`menu`)
+### **articulo\_menu**
 
 ```js
 db.menu.createIndex({ restaurante_id: 1, disponible: 1 })
-
 db.menu.createIndex({ nombre: "text", descripcion: "text" })
 ```
 
-### `usuario`
+### **usuario**
 
 ```js
-db.usuario.createIndex({ nombre: 1, direccion: 1 })
+db.usuario.createIndex({ nombre: 1, tipo: 1 })
 ```
 
-### `orden`
+### **orden**
 
 ```js
 db.orden.createIndex({ usuario_id: 1, fecha: -1 })
-
-db.orden.createIndex({ "platillos.menu_item_id": 1 })
+db.orden.createIndex({ restaurante_id: 1 })
 ```
 
-### `resena`
+### **resena**
 
 ```js
 db.resena.createIndex({ restaurante_id: 1, calificacion: -1 })
-
 db.resena.createIndex({ usuario_id: 1 })
-
 db.resena.createIndex({ nombre_usuario: 1 })
 ```
 
