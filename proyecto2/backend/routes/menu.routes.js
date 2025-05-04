@@ -5,6 +5,7 @@ const {
   obtenerArticulos,
   subirArchivoMenu,
   actualizarArticulo,
+  eliminarArticulo,
 } = require("../controllers/menu.controller");
 
 /**
@@ -13,6 +14,8 @@ const {
  *   post:
  *     summary: Crear uno o varios artículos de menú
  *     description: Permite registrar uno o varios artículos del menú. Cada artículo debe contener nombre, precio y restaurante asociado. El campo `disponible` es opcional (por defecto es `true`).
+ *     tags:
+ *      - Menu
  *     requestBody:
  *       required: true
  *       content:
@@ -69,6 +72,8 @@ router.post("/", crearArticulo);
  *   post:
  *     summary: Subir archivo JSON para insertar artículos del menú
  *     description: Permite cargar un archivo `.json` que contenga uno o varios artículos del menú. El campo del formulario debe llamarse `menu`. El campo `disponible` es opcional (por defecto es `true`).
+ *     tags:
+ *      - Menu
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
@@ -94,6 +99,8 @@ router.post("/upload", subirArchivoMenu);
  * /menu:
  *   get:
  *     summary: Obtener artículos del menú con filtros avanzados
+ *     tags:
+ *      - Menu
  *     parameters:
  *       - in: query
  *         name: restaurante_id
@@ -181,6 +188,8 @@ router.get("/", obtenerArticulos);
  *   patch:
  *     summary: Actualizar uno o varios artículos del menú
  *     description: Permite actualizar cualquier campo de uno o varios artículos del menú. Solo se requiere incluir el campo `_id` y los campos que se deseen modificar.
+ *     tags:
+ *      - Menu
  *     requestBody:
  *       required: true
  *       content:
@@ -232,5 +241,63 @@ router.get("/", obtenerArticulos);
  *         description: Uno o más artículos no fueron encontrados
  */
 router.patch("/", actualizarArticulo);
+
+/**
+ * @swagger
+ * /menu:
+ *   delete:
+ *     summary: Eliminar uno o varios artículos del menú
+ *     description: Permite eliminar uno o varios documentos de menú proporcionando sus `_id`. Si se envía un array, elimina múltiples documentos.
+ *     tags:
+ *      - Menu
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: 681741a5a913f0b464ef960f
+ *               - type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 681741a5a913f0b464ef9610
+ *     responses:
+ *       200:
+ *         description: Resultado de la operación de eliminación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 eliminados:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       status:
+ *                         type: string
+ *                         example: eliminado
+ *                 errores:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       error:
+ *                         type: string
+ *       400:
+ *         description: Error al procesar la solicitud de eliminación
+ */
+router.delete("/", eliminarArticulo);
 
 module.exports = router;

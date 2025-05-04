@@ -173,3 +173,40 @@ exports.actualizarArticulo = async (req, res) => {
     });
   }
 };
+
+exports.eliminarArticulo = async (req, res) => {
+  try {
+    const data = req.body;
+
+    // Eliminación única
+    if (!Array.isArray(data)) {
+      const { _id } = data;
+      if (!_id) return res.status(400).json({ error: "Falta el campo _id" });
+
+      const eliminado = await Menu.findByIdAndDelete(_id);
+      if (!eliminado)
+        return res.status(404).json({ error: "Artículo no encontrado" });
+
+      return res.status(200).json({ _id, eliminado: true });
+    }
+
+    // Eliminación múltiple
+    const resultados = await Promise.all(
+      data.map(async ({ _id }) => {
+        if (!_id) return { error: "Falta _id" };
+
+        const eliminado = await Menu.findByIdAndDelete(_id);
+        return eliminado
+          ? { _id, eliminado: true }
+          : { _id, eliminado: false, error: "No encontrado" };
+      })
+    );
+
+    res.status(200).json(resultados);
+  } catch (error) {
+    res.status(400).json({
+      error: "Error al eliminar artículo(s)",
+      detalle: error.message,
+    });
+  }
+};

@@ -232,3 +232,45 @@ exports.actualizarOrden = async (req, res) => {
       .json({ error: "Error al actualizar", detalle: error.message });
   }
 };
+
+exports.eliminarOrden = async (req, res) => {
+  try {
+    const data = req.body;
+
+    if (!data || (Array.isArray(data) && data.length === 0)) {
+      return res.status(400).json({ error: "Se requiere al menos un _id" });
+    }
+
+    // Eliminación única
+    if (!Array.isArray(data)) {
+      const { _id } = data;
+      if (!_id) return res.status(400).json({ error: "Falta el campo _id" });
+
+      const resultado = await Orden.findByIdAndDelete(_id);
+      if (!resultado)
+        return res
+          .status(404)
+          .json({ _id, eliminado: false, error: "Orden no encontrada" });
+
+      return res.json({ _id, eliminado: true });
+    }
+
+    // Eliminación múltiple
+    const resultados = await Promise.all(
+      data.map(async ({ _id }) => {
+        if (!_id) return { eliminado: false, error: "Falta _id" };
+        const resultado = await Orden.findByIdAndDelete(_id);
+        if (!resultado)
+          return { _id, eliminado: false, error: "No encontrada" };
+        return { _id, eliminado: true };
+      })
+    );
+
+    res.json(resultados);
+  } catch (error) {
+    res.status(400).json({
+      error: "Error al eliminar orden(es)",
+      detalle: error.message,
+    });
+  }
+};

@@ -5,6 +5,7 @@ const {
   obtenerUsuarios,
   subirArchivoUsuario,
   actualizarUsuario,
+  eliminarUsuario,
 } = require("../controllers/usuario.controller");
 
 /**
@@ -13,6 +14,8 @@ const {
  *   post:
  *     summary: Crear uno o varios usuarios
  *     description: Permite registrar uno o más usuarios. Si no se proporciona `fecha_registro`, se asignará automáticamente la fecha actual.
+ *     tags:
+ *      - Usuario
  *     requestBody:
  *       required: true
  *       content:
@@ -107,6 +110,8 @@ router.post("/", crearUsuario);
  *   post:
  *     summary: Subir archivo JSON para insertar uno o varios usuarios
  *     description: El archivo debe llamarse `usuario` y contener uno o varios objetos con los campos requeridos. Si no se incluye `fecha_registro`, se asignará la fecha actual automáticamente.
+ *     tags:
+ *      - Usuario
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
@@ -164,6 +169,8 @@ router.post("/upload", subirArchivoUsuario);
  * /usuario:
  *   get:
  *     summary: Obtener todos los usuarios
+ *     tags:
+ *      - Usuario
  *     parameters:
  *       - in: query
  *         name: nombre
@@ -271,6 +278,8 @@ router.get("/", obtenerUsuarios);
  *   patch:
  *     summary: Actualizar uno o varios usuarios
  *     description: Actualiza uno o varios usuarios existentes. Se debe incluir el campo `_id` en cada objeto a modificar. Solo se actualizan los campos enviados.
+ *     tags:
+ *      - Usuario
  *     requestBody:
  *       required: true
  *       content:
@@ -312,5 +321,65 @@ router.get("/", obtenerUsuarios);
  *         description: Uno o más usuarios no fueron encontrados
  */
 router.patch("/", actualizarUsuario);
+
+/**
+ * @swagger
+ * /usuario:
+ *   delete:
+ *     summary: Eliminar uno o varios usuarios por _id
+ *     description: Elimina uno o varios usuarios proporcionando su campo `_id`. Devuelve el estado de eliminación de cada uno.
+ *     tags:
+ *      - Usuario
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - type: object
+ *                 required: [_id]
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "6634abef1b8a1e23f3c45678"
+ *               - type: array
+ *                 items:
+ *                   type: object
+ *                   required: [_id]
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "6634abef1b8a1e23f3c45678"
+ *     responses:
+ *       200:
+ *         description: Usuario(s) eliminado(s) con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     status:
+ *                       type: string
+ *                       example: "eliminado"
+ *                 - type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       status:
+ *                         type: string
+ *                         example: "eliminado"
+ *                       error:
+ *                         type: string
+ *       400:
+ *         description: Error al procesar la solicitud
+ *       404:
+ *         description: Usuario no encontrado
+ */
+router.delete("/", eliminarUsuario);
 
 module.exports = router;

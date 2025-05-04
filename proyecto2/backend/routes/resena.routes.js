@@ -5,6 +5,7 @@ const {
   obtenerResenas,
   subirArchivoResena,
   actualizarResena,
+  eliminarResena,
 } = require("../controllers/resena.controller");
 
 /**
@@ -13,6 +14,8 @@ const {
  *   post:
  *     summary: Crear una o varias reseñas
  *     description: Registra una o varias reseñas. Si no se incluye el campo `fecha`, se asigna automáticamente la fecha y hora actual del servidor.
+ *     tags:
+ *      - Reseña
  *     requestBody:
  *       required: true
  *       content:
@@ -94,6 +97,8 @@ router.post("/", crearResena);
  *   post:
  *     summary: Subir archivo JSON para insertar una o varias reseñas
  *     description: El archivo debe llamarse `resena` y contener uno o varios objetos con los campos requeridos. Si no se proporciona el campo `fecha`, se asignará automáticamente la fecha actual del servidor.
+ *     tags:
+ *      - Reseña
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
@@ -138,6 +143,8 @@ router.post("/upload", subirArchivoResena);
  * /resena:
  *   get:
  *     summary: Obtener reseñas con filtros avanzados
+ *     tags:
+ *      - Reseña
  *     parameters:
  *       - in: query
  *         name: restaurante_id
@@ -287,6 +294,8 @@ router.get("/", obtenerResenas);
  *   patch:
  *     summary: Actualizar una o varias reseñas
  *     description: Permite actualizar una o múltiples reseñas. Solo se requiere el campo `_id`. Se puede actualizar el menú embebido, comentario, calificación, fecha, etc.
+ *     tags:
+ *      - Reseña
  *     requestBody:
  *       required: true
  *       content:
@@ -346,5 +355,61 @@ router.get("/", obtenerResenas);
  *         description: Reseña no encontrada
  */
 router.patch("/", actualizarResena);
+
+/**
+ * @swagger
+ * /resena:
+ *   delete:
+ *     summary: Eliminar una o varias reseñas
+ *     description: Elimina una o varias reseñas mediante sus identificadores `_id`. Se puede enviar un solo objeto o un arreglo de objetos.
+ *     tags:
+ *      - Reseña
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - type: object
+ *                 required: [_id]
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: 6817c161b94ef16d3f5c9001
+ *               - type: array
+ *                 items:
+ *                   type: object
+ *                   required: [_id]
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 6817c161b94ef16d3f5c9002
+ *     responses:
+ *       200:
+ *         description: Resultado de la eliminación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     eliminado:
+ *                       type: boolean
+ *                 - type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       eliminado:
+ *                         type: boolean
+ *                       error:
+ *                         type: string
+ *       400:
+ *         description: Error en los datos enviados o falta de _id
+ */
+router.delete("/", eliminarResena);
 
 module.exports = router;

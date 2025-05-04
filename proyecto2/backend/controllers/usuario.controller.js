@@ -186,3 +186,46 @@ exports.actualizarUsuario = async (req, res) => {
     });
   }
 };
+
+exports.eliminarUsuario = async (req, res) => {
+  try {
+    const data = req.body;
+
+    // --- Eliminación única ---
+    if (!Array.isArray(data)) {
+      const { _id } = data;
+      if (!_id) return res.status(400).json({ error: "Falta el campo _id" });
+
+      const eliminado = await Usuario.findByIdAndDelete(_id);
+      if (!eliminado) {
+        return res.status(404).json({ error: "Usuario no encontrado", _id });
+      }
+
+      return res.status(200).json({ _id, status: "eliminado" });
+    }
+
+    // --- Eliminación múltiple ---
+    const resultados = await Promise.all(
+      data.map(async (item) => {
+        const { _id } = item;
+        if (!_id) return { error: "Falta _id" };
+
+        try {
+          const eliminado = await Usuario.findByIdAndDelete(_id);
+          return eliminado
+            ? { _id, status: "eliminado" }
+            : { _id, error: "No encontrado" };
+        } catch (e) {
+          return { _id, error: "Error al eliminar", detalle: e.message };
+        }
+      })
+    );
+
+    res.status(200).json(resultados);
+  } catch (error) {
+    res.status(400).json({
+      error: "Error al procesar la solicitud",
+      detalle: error.message,
+    });
+  }
+};

@@ -232,3 +232,37 @@ exports.actualizarResena = async (req, res) => {
       .json({ error: "Error al actualizar", detalle: error.message });
   }
 };
+
+exports.eliminarResena = async (req, res) => {
+  try {
+    const data = req.body;
+
+    // Eliminación única
+    if (!Array.isArray(data)) {
+      const { _id } = data;
+      if (!_id) return res.status(400).json({ error: "Falta el campo _id" });
+
+      const eliminado = await Resena.findByIdAndDelete(_id);
+      if (!eliminado)
+        return res.status(404).json({ error: "Reseña no encontrada" });
+
+      return res.json({ mensaje: "Reseña eliminada", _id });
+    }
+
+    // Eliminación múltiple
+    const ids = data.map((r) => r._id).filter(Boolean);
+    if (ids.length === 0)
+      return res.status(400).json({ error: "Ningún _id válido proporcionado" });
+
+    const resultado = await Resena.deleteMany({ _id: { $in: ids } });
+
+    res.json({
+      mensaje: "Reseñas eliminadas",
+      eliminadas: resultado.deletedCount,
+    });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ error: "Error al eliminar reseña(s)", detalle: error.message });
+  }
+};

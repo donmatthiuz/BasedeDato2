@@ -5,6 +5,7 @@ const {
   obtenerRestaurantes,
   subirArchivoRestaurante,
   actualizarRestaurante,
+  eliminarRestaurante,
 } = require("../controllers/restaurante.controller");
 
 /**
@@ -13,6 +14,8 @@ const {
  *   post:
  *     summary: Crear uno o varios restaurantes
  *     description: Permite registrar uno o varios restaurantes. Si se envía un solo objeto, se crea un restaurante. Si se envía un arreglo, se insertan múltiples restaurantes.
+ *     tags:
+ *      - Restaurante
  *     requestBody:
  *       required: true
  *       content:
@@ -85,6 +88,8 @@ router.post("/", crearRestaurante);
  *   post:
  *     summary: Subir archivo JSON para insertar uno o varios restaurantes
  *     description: El archivo debe llamarse `restaurante` y contener uno o varios objetos con los campos requeridos.
+ *     tags:
+ *       - Restaurante
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
@@ -136,6 +141,8 @@ router.post("/upload", subirArchivoRestaurante);
  * /restaurante:
  *   get:
  *     summary: Obtener restaurantes con filtros avanzados
+ *     tags:
+ *       - Restaurante
  *     parameters:
  *       - in: query
  *         name: nombre
@@ -235,6 +242,8 @@ router.get("/", obtenerRestaurantes);
  *   patch:
  *     summary: Actualizar uno o varios restaurantes
  *     description: Permite actualizar campos específicos de uno o varios restaurantes mediante su `_id`.
+ *     tags:
+ *       - Restaurante
  *     requestBody:
  *       required: true
  *       content:
@@ -303,5 +312,45 @@ router.get("/", obtenerRestaurantes);
  *         description: Uno o más artículos no fueron encontrados
  */
 router.patch("/", actualizarRestaurante);
+
+/**
+ * @swagger
+ * /restaurante:
+ *   delete:
+ *     summary: Eliminar uno o varios restaurantes
+ *     description: Elimina uno o varios documentos de restaurante proporcionando el/los `_id`. Acepta un objeto o un arreglo de objetos con el campo `_id`.
+ *     tags:
+ *       - Restaurante
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - type: object
+ *                 required:
+ *                   - _id
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "663bc7a917bac5271c712ca1"
+ *               - type: array
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - _id
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "663bc7a917bac5271c712ca2"
+ *     responses:
+ *       200:
+ *         description: Resultado de la eliminación de uno o varios restaurantes
+ *       400:
+ *         description: Error en la solicitud o falta de campo _id
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.delete("/", eliminarRestaurante);
 
 module.exports = router;

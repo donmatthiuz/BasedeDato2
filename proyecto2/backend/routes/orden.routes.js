@@ -5,6 +5,7 @@ const {
   obtenerOrdenes,
   subirArchivoOrden,
   actualizarOrden,
+  eliminarOrden,
 } = require("../controllers/orden.controller");
 
 /**
@@ -13,6 +14,8 @@ const {
  *   post:
  *     summary: Crear una o varias órdenes
  *     description: Permite crear una o varias órdenes. El campo `total` se calcula automáticamente. El campo `fecha` es opcional; si no se incluye, se asigna la fecha actual.
+ *     tags:
+ *      - Orden
  *     requestBody:
  *       required: true
  *       content:
@@ -93,6 +96,8 @@ router.post("/", crearOrden);
  *   post:
  *     summary: Subir archivo JSON para insertar una o varias órdenes
  *     description: El archivo debe llamarse `orden` y contener uno o varios objetos de orden. El campo `total` se calcula automáticamente. El campo `fecha` es opcional.
+ *     tags:
+ *      - Orden
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
@@ -138,6 +143,8 @@ router.post("/upload", subirArchivoOrden);
  * /orden:
  *   get:
  *     summary: Obtener órdenes con filtros avanzados
+ *     tags:
+ *      - Orden
  *     parameters:
  *       - in: query
  *         name: usuario_id
@@ -251,6 +258,8 @@ router.get("/", obtenerOrdenes);
  *   patch:
  *     summary: Actualizar una o varias órdenes existentes
  *     description: Permite actualizar una o varias órdenes. El campo `total` no puede modificarse directamente; se recalcula automáticamente si se actualizan los platillos.
+ *     tags:
+ *      - Orden
  *     requestBody:
  *       required: true
  *       content:
@@ -303,5 +312,64 @@ router.get("/", obtenerOrdenes);
  *         description: Una o más órdenes no fueron encontradas
  */
 router.patch("/", actualizarOrden);
+
+/**
+ * @swagger
+ * /orden:
+ *   delete:
+ *     summary: Eliminar una o varias órdenes
+ *     description: Elimina una o varias órdenes enviando uno o más objetos con el campo `_id`.
+ *                  Si se envía un solo objeto, se elimina una orden. Si se envía un arreglo, se eliminan múltiples órdenes.
+ *     tags:
+ *      - Orden
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - type: object
+ *                 required: [_id]
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "6817b9b2e33af63113f5a098"
+ *               - type: array
+ *                 items:
+ *                   type: object
+ *                   required: [_id]
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "6817b9b2e33af63113f5a099"
+ *     responses:
+ *       200:
+ *         description: Resultado de la eliminación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     eliminado:
+ *                       type: boolean
+ *                 - type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       eliminado:
+ *                         type: boolean
+ *                       error:
+ *                         type: string
+ *       400:
+ *         description: Error en la solicitud
+ *       404:
+ *         description: Orden no encontrada
+ */
+router.delete("/", eliminarOrden);
 
 module.exports = router;
