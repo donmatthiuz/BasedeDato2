@@ -35,6 +35,21 @@ const {
  *                   contra:
  *                     type: string
  *                     example: "*#ZwjYnzr2"
+ *                   tipo:
+ *                     type: string
+ *                     example: "cliente"
+ *                   coordenadas:
+ *                     type: object
+ *                     properties:
+ *                       type:
+ *                         type: string
+ *                         enum: [Point]
+ *                         example: "Point"
+ *                       coordinates:
+ *                         type: array
+ *                         items:
+ *                           type: number
+ *                         example: [-90.5069, 14.6349]
  *                   fecha_registro:
  *                     type: string
  *                     format: date-time
@@ -58,6 +73,21 @@ const {
  *                     contra:
  *                       type: string
  *                       example: "P@ssword2024"
+ *                     tipo:
+ *                       type: string
+ *                       example: "admin"
+ *                     coordenadas:
+ *                       type: object
+ *                       properties:
+ *                         type:
+ *                           type: string
+ *                           enum: [Point]
+ *                           example: "Point"
+ *                         coordinates:
+ *                           type: array
+ *                           items:
+ *                             type: number
+ *                           example: [-90.5055, 14.6355]
  *                     fecha_registro:
  *                       type: string
  *                       format: date-time
@@ -104,7 +134,12 @@ router.post("/", crearUsuario);
  *               "direccion": "Av. de la Constitución 56\nBarcelona, 08001",
  *               "telefono": "+34 933 445 556",
  *               "contra": "1234Abc#",
- *               "fecha_registro": "2024-06-20T15:30:00.000Z"
+ *               "tipo": "cliente",
+ *               "coordenadas": {
+ *                 "type": "Point",
+ *                 "coordinates": [-90.51, 14.62]
+ *               },
+ *               "fecha_registro": { "$date": "2024-06-20T15:30:00.000Z" }
  *             },
  *             {
  *               "nombre": "Carmen Pérez Molina",
@@ -112,7 +147,12 @@ router.post("/", crearUsuario);
  *               "direccion": "Plaza Mayor 7\nSevilla, 41001",
  *               "telefono": "+34 955 667 778",
  *               "contra": "Molina2024!",
- *               "fecha_registro": "2024-06-25T22:45:00.000Z"
+ *               "tipo": "admin",
+ *               "coordenadas": {
+ *                 "type": "Point",
+ *                 "coordinates": [-90.52, 14.63]
+ *               },
+ *               "fecha_registro": { "$date": "2024-06-25T22:45:00.000Z" }
  *             }
  *           ]
  */
@@ -129,7 +169,7 @@ router.post("/upload", subirArchivoUsuario);
  *         schema:
  *           type: string
  *           example: Cristóbal
- *         description: Nombre parcial del usuario
+ *         description: Nombre parcial del usuario (regex insensible a mayúsculas)
  *       - in: query
  *         name: email
  *         schema:
@@ -143,17 +183,23 @@ router.post("/upload", subirArchivoUsuario);
  *           example: +34 982 005 692
  *         description: Teléfono exacto
  *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           example: cliente
+ *         description: Tipo de usuario
+ *       - in: query
  *         name: email_regex
  *         schema:
  *           type: string
  *           example: "tapiaeustaquio"
- *         description: Búsqueda por expresión regular en email
+ *         description: Búsqueda por expresión regular en email (regex insensible a mayúsculas)
  *       - in: query
  *         name: direccion_regex
  *         schema:
  *           type: string
  *           example: Segovia
- *         description: Búsqueda parcial por dirección
+ *         description: Búsqueda parcial por dirección (regex insensible a mayúsculas)
  *       - in: query
  *         name: email_in
  *         schema:
@@ -181,6 +227,12 @@ router.post("/upload", subirArchivoUsuario);
  *           example: 2024-06-30
  *         description: Fecha de registro hasta (ISO 8601)
  *       - in: query
+ *         name: exists
+ *         schema:
+ *           type: string
+ *           example: direccion,-telefono
+ *         description: Verifica existencia o ausencia de campos. Usa `-` para negar.
+ *       - in: query
  *         name: campos
  *         schema:
  *           type: string
@@ -207,6 +259,8 @@ router.post("/upload", subirArchivoUsuario);
  *     responses:
  *       200:
  *         description: Lista de usuarios
+ *       400:
+ *         description: Consulta no válida o sin índice
  */
 router.get("/", obtenerUsuarios);
 

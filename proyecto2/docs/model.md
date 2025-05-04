@@ -107,20 +107,55 @@ Este modelo representa un platillo o producto ofrecido en el menú de un restaur
 
    > Permite búsquedas por nombre y descripción del platillo.
 
-## **usuario**
+## Usuario
 
-**Atributos:**
+Este modelo representa un usuario registrado en la plataforma.
 
-* `_id`: ObjectId
-* `nombre`: string
-* `email`: string
-* `direccion`: string
-* `telefono`: string
-* `contra`: string
-* `fecha_registro`: ISODate
-* `tipo`: string
+### Estructura del documento
 
-**Índices:**
+| Campo            | Tipo       | Descripción                                                               |
+| ---------------- | ---------- | ------------------------------------------------------------------------- |
+| `_id`            | `ObjectId` | Identificador único generado automáticamente por MongoDB                  |
+| `nombre`         | `string`   | Nombre completo del usuario                                               |
+| `email`          | `string`   | Dirección de correo electrónico única                                     |
+| `direccion`      | `string`   | Dirección física del usuario                                              |
+| `telefono`       | `string`   | Número de contacto en formato internacional (ej. +502 1234 5678)          |
+| `contra`         | `string`   | Contraseña en formato encriptado u ofuscado                               |
+| `fecha_registro` | `ISODate`  | Fecha y hora en que el usuario se registró                                |
+| `tipo`           | `string`   | Rol o tipo de usuario (ej. cliente, repartidor, administrador, etc.)      |
+| `coordenadas`    | `GeoJSON`  | Coordenadas geográficas en formato GeoJSON (`type: Point`, `coordinates`) |
+
+**Nota:** El campo `coordenadas` debe tener el formato correcto de GeoJSON Point, con el orden `[longitud, latitud]`.
+
+### Ejemplo de documento
+
+```json
+{
+  "nombre": "Luisa Romero García",
+  "email": "luisa.romero@example.com",
+  "direccion": "Calle Principal 123\nMadrid, 28001",
+  "telefono": "+34 911 223 334",
+  "contra": "P@ssword2024",
+  "fecha_registro": "2024-06-10T09:00:00Z",
+  "tipo": "cliente",
+  "coordenadas": {
+    "type": "Point",
+    "coordinates": [-90.50123, 14.62056]
+  }
+}
+```
+
+**Nota:** Dado que se utilizará `mongoimport` para insertar los datos, se debe declarar los valores utilizando el formato correcto de MongoDB Extended JSON con `"$date"`:
+
+```js
+"fecha_registro": {
+   "$date": "2024-06-10T09:00:00Z"
+}
+```
+
+De lo contrario, las fechas se almacenarán como simples strings y no podrán ser consultadas correctamente mediante filtros por rango de fechas (`$gte`, `$lte`, etc.).
+
+### Índices
 
 1. **Índice compuesto:**  
 
@@ -129,6 +164,14 @@ Este modelo representa un platillo o producto ofrecido en el menú de un restaur
    ```
 
    > Mejora búsquedas por nombre y tipo de usuario (ej. administrador, cliente).
+
+2. **Índice geoespacial:**
+
+   ```js
+   db.usuario.createIndex({ coordenadas: "2dsphere" })
+   ```
+
+   > Para realizar búsquedas geográficas (por ubicación) usando coordenadas \[longitud, latitud].
 
 ## **orden**
 

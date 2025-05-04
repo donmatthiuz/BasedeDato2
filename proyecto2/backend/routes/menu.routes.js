@@ -111,7 +111,7 @@ router.post("/upload", subirArchivoMenu);
  *         schema:
  *           type: string
  *           example: anca
- *         description: Búsqueda parcial por nombre del platillo (insensible a mayúsculas)
+ *         description: Búsqueda parcial por nombre del platillo (regex insensible a mayúsculas)
  *       - in: query
  *         name: precio_min
  *         schema:

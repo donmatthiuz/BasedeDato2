@@ -21,6 +21,7 @@ db.menu.createIndex({ nombre: "text", descripcion: "text" })
 
 ```js
 db.usuario.createIndex({ nombre: 1, tipo: 1 })
+db.usuario.createIndex({ coordenadas: "2dsphere" })
 ```
 
 ### **orden**

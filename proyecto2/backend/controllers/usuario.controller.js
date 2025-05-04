@@ -66,6 +66,7 @@ exports.obtenerUsuarios = async (req, res) => {
     if (query.nombre) filtro.nombre = new RegExp(query.nombre, "i");
     if (query.email) filtro.email = query.email;
     if (query.telefono) filtro.telefono = query.telefono;
+    if (query.tipo) filtro.tipo = query.tipo;
 
     // --- Filtros con expresiones regulares ---
     if (query.email_regex) filtro.email = new RegExp(query.email_regex, "i");
@@ -92,12 +93,26 @@ exports.obtenerUsuarios = async (req, res) => {
       }
     }
 
+    // --- Filtros por existencia de campos ---
+    if (query.exists) {
+      query.exists.split(",").forEach((campo) => {
+        const existe = !campo.startsWith("-");
+        const campoLimpio = campo.replace(/^-/, "").trim();
+        filtro[campoLimpio] = { $exists: existe };
+      });
+    }
+
     // --- Proyección de campos ---
     const proyeccion = {};
     if (query.campos) {
-      query.campos.split(",").forEach((campo) => {
-        proyeccion[campo.trim()] = 1;
+      const campos = query.campos.split(",").map((c) => c.trim());
+      campos.forEach((campo) => {
+        proyeccion[campo] = 1;
       });
+
+      if (!campos.includes("_id")) {
+        proyeccion["_id"] = 0; // excluye _id si no fue solicitado
+      }
     }
 
     // --- Ordenamiento ---
