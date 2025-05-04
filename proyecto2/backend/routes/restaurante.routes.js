@@ -83,7 +83,7 @@ router.post("/", crearRestaurante);
  * /restaurante/upload:
  *   post:
  *     summary: Subir archivo JSON para insertar uno o varios restaurantes
- *     description: El archivo debe llamarse `restaurante` y contener uno o varios objetos con los campos requeridos. Si se omite algún campo no obligatorio, será ignorado.
+ *     description: El archivo debe llamarse `restaurante` y contener uno o varios objetos con los campos requeridos.
  *     consumes:
  *       - multipart/form-data
  *     requestBody:

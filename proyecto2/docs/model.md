@@ -173,23 +173,59 @@ De lo contrario, las fechas se almacenarán como simples strings y no podrán se
 
    > Para realizar búsquedas geográficas (por ubicación) usando coordenadas \[longitud, latitud].
 
-## **orden**
+## Orden
 
-**Atributos:**
+Este modelo representa una orden realizada por un usuario hacia un restaurante determinado.
 
-* `_id`: ObjectId
-* `fecha`: ISODate
-* `estado`: string
-* `platillo`: array de objetos con:
-  * `nombre`: string
-  * `precio`: number
-  * `descripcion`: string
-  * `cantidad`: number
-* `total`: number
-* `usuario_id`: ObjectId
-* `restaurante_id`: ObjectId
+### Estructura del documento
 
-**Índices:**
+| Campo                     | Tipo       | Descripción                                                                  |
+| ------------------------- | ---------- | ---------------------------------------------------------------------------- |
+| `_id`                     | `ObjectId` | Identificador único generado automáticamente por MongoDB                     |
+| `fecha`                   | `ISODate`  | Fecha en que se realizó la orden. Se asigna automáticamente si no se incluye |
+| `estado`                  | `string`   | Estado de la orden (ej. pendiente, completada, cancelada)                    |
+| `platillos`               | `array`    | Lista de platillos solicitados en la orden                                   |
+| `platillos[].nombre`      | `string`   | Nombre del platillo tal como fue pedido                                      |
+| `platillos[].descripcion` | `string`   | Descripción del platillo                                                     |
+| `platillos[].precio`      | `number`   | Precio unitario del platillo                                                 |
+| `platillos[].cantidad`    | `number`   | Cantidad de unidades solicitadas                                             |
+| `total`                   | `number`   | Total monetario calculado de la orden                                        |
+| `usuario_id`              | `ObjectId` | Referencia al `_id` del usuario que hizo la orden                            |
+| `restaurante_id`          | `ObjectId` | Referencia al `_id` del restaurante al que pertenece la orden                |
+
+### Ejemplo de documento
+
+```json
+{
+  "usuario_id": "68174f099a2bb59ba7bb111c",
+  "restaurante_id": "681741a5a913f0b464ef950f",
+  "estado": "pendiente",
+  "fecha": "2024-07-01T10:30:00Z",
+  "platillos": [
+    {
+      "nombre": "Tacos de prueba A",
+      "descripcion": "Tacos con ingredientes de prueba para el Restaurante A",
+      "precio": 35,
+      "cantidad": 2
+    }
+  ],
+  "total": 70
+}
+```
+
+**Nota:** Dado que se utilizará `mongoimport` para insertar los datos, se debe declarar los valores utilizando el formato correcto de MongoDB Extended JSON con `"$date"`:
+
+De lo contrario, las fechas se almacenarán como simples strings y no podrán ser consultadas correctamente mediante filtros por rango de fechas (`$gte`, `$lte`, etc.).
+
+```js
+"fecha": {
+   "$date": "2024-07-01T10:30:00Z"
+}
+```
+
+**Nota:** Los campos `usuario_id` y `restaurante_id` debe existir en los documentos de `restaurante` y `usuario` respectivamente.
+
+### Índices
 
 1. **Índice compuesto:**
 

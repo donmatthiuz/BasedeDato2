@@ -6,7 +6,7 @@ const upload = multer({ dest: "uploads/" });
 
 const prepararOrden = (orden) => {
   const totalCalculado = (orden.platillos || []).reduce((sum, p) => {
-    return sum + p.cantidad * p.precio_unitario;
+    return sum + p.cantidad * p.precio;
   }, 0);
 
   return {
@@ -104,12 +104,26 @@ exports.obtenerOrdenes = async (req, res) => {
       }
     }
 
+    // --- Filtros por existencia de campos ---
+    if (query.exists) {
+      query.exists.split(",").forEach((campo) => {
+        const existe = !campo.startsWith("-");
+        const campoLimpio = campo.replace(/^-/, "").trim();
+        filtro[campoLimpio] = { $exists: existe };
+      });
+    }
+
     // --- Proyección de campos ---
     const proyeccion = {};
     if (query.campos) {
-      query.campos.split(",").forEach((campo) => {
-        proyeccion[campo.trim()] = 1;
+      const campos = query.campos.split(",").map((c) => c.trim());
+      campos.forEach((campo) => {
+        proyeccion[campo] = 1;
       });
+
+      if (!campos.includes("_id")) {
+        proyeccion["_id"] = 0; // excluye _id si no fue solicitado
+      }
     }
 
     // --- Ordenamiento ---

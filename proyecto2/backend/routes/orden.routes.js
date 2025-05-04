@@ -11,7 +11,7 @@ const {
  * /orden:
  *   post:
  *     summary: Crear una o varias órdenes
- *     description: Permite crear una o varias órdenes. El campo `total` se calculará automáticamente si no se proporciona. El campo `fecha` es opcional; si no se incluye, se usará la fecha actual.
+ *     description: Permite crear una o varias órdenes. El campo `total` se calcula automáticamente. El campo `fecha` es opcional; si no se incluye, se asigna la fecha actual.
  *     requestBody:
  *       required: true
  *       content:
@@ -22,9 +22,11 @@ const {
  *                 properties:
  *                   usuario_id:
  *                     type: string
+ *                     format: uuid
  *                     example: "3ec19822-f7b4-4d52-b0b0-f541d96551f1"
  *                   restaurante_id:
  *                     type: string
+ *                     format: uuid
  *                     example: "84862c31-461c-4706-b43d-d60487400588"
  *                   estado:
  *                     type: string
@@ -38,15 +40,18 @@ const {
  *                     items:
  *                       type: object
  *                       properties:
- *                         menu_item_id:
+ *                         nombre:
  *                           type: string
- *                           example: "908d1f97-b9f4-487c-a0a5-d819017e6d7f"
+ *                           example: "Pizza Margarita"
+ *                         descripcion:
+ *                           type: string
+ *                           example: "Pizza con salsa de tomate y queso mozzarella"
+ *                         precio:
+ *                           type: number
+ *                           example: 89.5
  *                         cantidad:
  *                           type: number
  *                           example: 2
- *                         precio_unitario:
- *                           type: number
- *                           example: 130
  *               - type: array
  *                 items:
  *                   type: object
@@ -65,11 +70,13 @@ const {
  *                       items:
  *                         type: object
  *                         properties:
- *                           menu_item_id:
+ *                           nombre:
  *                             type: string
- *                           cantidad:
+ *                           descripcion:
+ *                             type: string
+ *                           precio:
  *                             type: number
- *                           precio_unitario:
+ *                           cantidad:
  *                             type: number
  *     responses:
  *       201:
@@ -84,7 +91,7 @@ router.post("/", crearOrden);
  * /ordenes/upload:
  *   post:
  *     summary: Subir archivo JSON para insertar una o varias órdenes
- *     description: El archivo debe llamarse `orden` y contener uno o varios objetos de orden con sus campos completos. El campo `total` se calculará automáticamente si no se proporciona. El campo `fecha` es opcional; si no se incluye, se usará la fecha actual.
+ *     description: El archivo debe llamarse `orden` y contener uno o varios objetos de orden. El campo `total` se calcula automáticamente. El campo `fecha` es opcional.
  *     consumes:
  *       - multipart/form-data
  *     requestBody:
@@ -110,13 +117,14 @@ router.post("/", crearOrden);
  *             {
  *               "usuario_id": "3ec19822-f7b4-4d52-b0b0-f541d96551f1",
  *               "restaurante_id": "84862c31-461c-4706-b43d-d60487400588",
- *               "fecha": "2024-06-26T22:34:51Z",
+ *               "fecha": { "$date": "2024-06-26T22:34:51Z" },
  *               "estado": "pendiente",
  *               "platillos": [
  *                 {
- *                   "menu_item_id": "abc123",
- *                   "cantidad": 2,
- *                   "precio_unitario": 50
+ *                   "nombre": "Taco al Pastor",
+ *                   "descripcion": "Taco con carne de cerdo marinada y piña",
+ *                   "precio": 25.5,
+ *                   "cantidad": 3
  *                 }
  *               ]
  *             }
@@ -199,6 +207,12 @@ router.post("/upload", subirArchivoOrden);
  *           example: 2024-07-01T00:00:00Z
  *         description: Fecha final (ISO 8601)
  *       - in: query
+ *         name: exists
+ *         schema:
+ *           type: string
+ *           example: estado,-platillos
+ *         description: Verifica existencia o ausencia de campos. Usa `-` para negar.
+ *       - in: query
  *         name: campos
  *         schema:
  *           type: string
@@ -209,7 +223,7 @@ router.post("/upload", subirArchivoOrden);
  *         schema:
  *           type: string
  *           example: -fecha
- *         description: Campo por el cual ordenar (usa `-` para ascendente)
+ *         description: Campo por el cual ordenar (usa `-` para descendente)
  *       - in: query
  *         name: skip
  *         schema:
@@ -225,6 +239,8 @@ router.post("/upload", subirArchivoOrden);
  *     responses:
  *       200:
  *         description: Lista de órdenes filtradas
+ *       400:
+ *         description: Consulta no válida o sin índice
  */
 router.get("/", obtenerOrdenes);
 
