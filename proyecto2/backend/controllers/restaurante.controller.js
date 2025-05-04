@@ -66,17 +66,59 @@ exports.obtenerRestaurantes = async (req, res) => {
     if (query.categoria_nin)
       filtro.categoria = { $nin: query.categoria_nin.split(",") };
 
+    // --- Filtro por coordenadas exactas (GeoJSON) ---
+    if (query.coordenadas) {
+      const [lng, lat] = query.coordenadas.split(",").map(Number);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        filtro.coordenadas = {
+          $geoWithin: {
+            $centerSphere: [[lng, lat], 0], // radio cero para coincidencia exacta
+          },
+        };
+      }
+    }
+
+    // --- Filtro por coordenadas cercanas ---
+    if (query.cerca_de) {
+      const [lng, lat] = query.cerca_de.split(",").map(Number);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        filtro.coordenadas = {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: [lng, lat],
+            },
+            $maxDistance: parseFloat(query.radio_metros) || 5000, // radio opcional, default 5km
+          },
+        };
+      }
+    }
+
     // --- Búsqueda por expresión regular en dirección -
     if (query.direccion_regex) {
       filtro.direccion = new RegExp(query.direccion_regex, "i");
     }
 
+    // --- Filtros por existencia de campos ---
+    if (query.exists) {
+      query.exists.split(",").forEach((campo) => {
+        const existe = !campo.startsWith("-");
+        const campoLimpio = campo.replace(/^-/, "").trim();
+        filtro[campoLimpio] = { $exists: existe };
+      });
+    }
+
     // --- Proyección de campos ---
     const proyeccion = {};
     if (query.campos) {
-      query.campos.split(",").forEach((campo) => {
-        proyeccion[campo.trim()] = 1;
+      const campos = query.campos.split(",").map((c) => c.trim());
+      campos.forEach((campo) => {
+        proyeccion[campo] = 1;
       });
+
+      if (!campos.includes("_id")) {
+        proyeccion["_id"] = 0; // excluye _id si no fue solicitado
+      }
     }
 
     // --- Ordenamiento ---

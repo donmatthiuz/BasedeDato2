@@ -32,6 +32,17 @@ const {
  *                   categoria:
  *                     type: string
  *                     example: "Parrillada"
+ *                   coordenadas:
+ *                     type: object
+ *                     properties:
+ *                       type:
+ *                         type: string
+ *                         example: Point
+ *                       coordinates:
+ *                         type: array
+ *                         items:
+ *                           type: number
+ *                         example: [-90.51234, 14.62345]
  *               - type: array
  *                 items:
  *                   type: object
@@ -48,6 +59,17 @@ const {
  *                     categoria:
  *                       type: string
  *                       example: "Parrillada"
+ *                     coordenadas:
+ *                       type: object
+ *                       properties:
+ *                         type:
+ *                           type: string
+ *                           example: Point
+ *                         coordinates:
+ *                           type: array
+ *                           items:
+ *                             type: number
+ *                           example: [-90.51234, 14.62345]
  *     responses:
  *       201:
  *         description: Restaurante(s) creado(s)
@@ -88,13 +110,21 @@ router.post("/", crearRestaurante);
  *               "nombre": "El Fogón de Paco",
  *               "direccion": "Calle Real 45\nGranada, 18001",
  *               "telefono": "+34 922 444 111",
- *               "categoria": "Tapas"
+ *               "categoria": "Tapas",
+ *               "coordenadas": {
+ *                 "type": "Point",
+ *                 "coordinates": [-90.5, 14.6]
+ *               }
  *             },
  *             {
  *               "nombre": "La Marisquería",
  *               "direccion": "Paseo del Puerto 23\nValencia, 46002",
  *               "telefono": "+34 933 222 333",
- *               "categoria": "Mariscos"
+ *               "categoria": "Mariscos",
+ *               "coordenadas": {
+ *                 "type": "Point",
+ *                 "coordinates": [-90.51, 14.62]
+ *               }
  *             }
  *           ]
  */
@@ -135,13 +165,37 @@ router.post("/upload", subirArchivoRestaurante);
  *         schema:
  *           type: string
  *           example: La Coruña
- *         description: Texto parcial en dirección (regex)
+ *         description: Texto parcial de dirección (regex insensible a mayúsculas)
  *       - in: query
  *         name: telefono
  *         schema:
  *           type: string
  *           example: +34 928 766 724
  *         description: Número de teléfono exacto
+ *       - in: query
+ *         name: exists
+ *         schema:
+ *           type: string
+ *           example: telefono,-coordenadas
+ *         description: Verifica existencia o ausencia de campos. Usa `-` para negar.
+ *       - in: query
+ *         name: coordenadas
+ *         schema:
+ *           type: string
+ *           example: -90.5,14.6
+ *         description: Coordenadas exactas para coincidencia [longitud,latitud]
+ *       - in: query
+ *         name: cerca_de
+ *         schema:
+ *           type: string
+ *           example: -90.5,14.6
+ *         description: Coordenadas de ubicación [longitud,latitud] para encontrar restaurantes cercanos
+ *       - in: query
+ *         name: radio_metros
+ *         schema:
+ *           type: number
+ *           example: 5000
+ *         description: Distancia máxima en metros para buscar restaurantes cercanos (requiere `cerca_de`)
  *       - in: query
  *         name: campos
  *         schema:
@@ -169,6 +223,8 @@ router.post("/upload", subirArchivoRestaurante);
  *     responses:
  *       200:
  *         description: Lista de restaurantes filtrados
+ *       400:
+ *        description: Consulta no válida o sin índice
  */
 router.get("/", obtenerRestaurantes);
 
