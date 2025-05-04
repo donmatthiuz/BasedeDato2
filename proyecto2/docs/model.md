@@ -2,18 +2,39 @@
 
 ![Diagrama de Modelo de Datos NoSQL](../images/diagrama_final.png "Diagrama de Modelo de Datos NoSQL")
 
-## **restaurante**
+## Restaurante
 
-**Atributos:**
+Este modelo representa un restaurante registrado en la base de datos.
 
-* `_id`: ObjectId
-* `nombre`: string
-* `direccion`: string
-* `coordenadas`: array(float)
-* `telefono`: string
-* `categoria`: string
+### Estructura del documento
 
-**Índices:**
+| Campo         | Tipo       | Descripción                                                               |
+| ------------- | ---------- | ------------------------------------------------------------------------- |
+| `_id`         | `ObjectId` | Identificador único generado automáticamente por MongoDB                  |
+| `nombre`      | `string`   | Nombre del restaurante                                                    |
+| `direccion`   | `string`   | Dirección completa del restaurante                                        |
+| `telefono`    | `string`   | Número de contacto en formato internacional (ej. +34, +502, etc.)         |
+| `categoria`   | `string`   | Tipo de comida o categoría (ej. Parrillada, Mexicana, Italiana, etc.)     |
+| `coordenadas` | `GeoJSON`  | Coordenadas geográficas en formato GeoJSON (`type: Point`, `coordinates`) |
+
+**Nota:** El campo `coordenadas` debe tener el formato correcto de GeoJSON Point, con el orden `[longitud, latitud]`.
+
+### Ejemplo de documento completo
+
+```json
+{
+  "nombre": "La Carnicería",
+  "direccion": "Plaza Olegario Dueñas 1 Apt. 84 \nLa Coruña, 04962",
+  "telefono": "+34 928 766 724",
+  "categoria": "Parrillada",
+  "coordenadas": {
+    "type": "Point",
+    "coordinates": [-90.51234, 14.62345]
+  }
+}
+```
+
+### Índices
 
 1. **Índice simple:**
 
