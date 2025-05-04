@@ -8,8 +8,8 @@ const { obtenerCamposDeColeccion } = require("../controllers/utils.controller");
  *   get:
  *     summary: Obtener nombres de campos de una colección
  *     description: Retorna todos los campos encontrados en los documentos de una colección.
- *    tags:
- *     - Utilidades
+ *     tags:
+ *       - Utilidades
  *     parameters:
  *       - name: coleccion
  *         in: path

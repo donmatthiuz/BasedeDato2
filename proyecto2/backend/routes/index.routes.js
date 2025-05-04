@@ -12,8 +12,8 @@ const {
  *   post:
  *     summary: Aplica índices en las colecciones MongoDB
  *     description: Crea los índices predefinidos en las colecciones de restaurante, menú, usuario, orden y reseña.
- *    tags:
- *      - Indices
+ *     tags:
+ *       - Indices
  *     requestBody:
  *       required: true
  *       content:
@@ -52,8 +52,8 @@ router.post("/indices", aplicarIndices);
  *   get:
  *     summary: Lista los índices actuales en todas las colecciones
  *     description: Muestra los índices definidos actualmente en cada colección MongoDB.
- *    tags:
- *      - Indices
+ *     tags:
+ *       - Indices
  *     responses:
  *       200:
  *         description: Índices listados correctamente.
@@ -81,8 +81,8 @@ router.get("/", verIndices);
  *   post:
  *     summary: Elimina índices de una colección
  *     description: Elimina uno o varios índices de la colección indicada. Si no se especifican índices, elimina todos excepto el índice por defecto (_id).
- *    tags:
- *      - Indices
+ *     tags:
+ *       - Indices
  *     requestBody:
  *       required: true
  *       content:
