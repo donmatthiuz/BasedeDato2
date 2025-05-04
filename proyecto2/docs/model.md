@@ -19,7 +19,7 @@ Este modelo representa un restaurante registrado en la base de datos.
 
 **Nota:** El campo `coordenadas` debe tener el formato correcto de GeoJSON Point, con el orden `[longitud, latitud]`.
 
-### Ejemplo de documento completo
+### Ejemplo de documento
 
 ```json
 {
@@ -60,18 +60,36 @@ Este modelo representa un restaurante registrado en la base de datos.
 
    > Para realizar búsquedas geográficas (por ubicación) usando coordenadas \[longitud, latitud].
 
-## **articulo_menu**
+## Artículo del Menú (`Menu`)
 
-**Atributos:**
+Este modelo representa un platillo o producto ofrecido en el menú de un restaurante.
 
-* `_id`: ObjectId
-* `nombre`: string
-* `precio`: number
-* `descripcion`: string
-* `disponible`: boolean
-* `restaurante_id`: ObjectId
+### Estructura del documento
 
-**Índices:**
+| Campo            | Tipo       | Descripción                                                             |
+| ---------------- | ---------- | ----------------------------------------------------------------------- |
+| `_id`            | `ObjectId` | Identificador único generado automáticamente por MongoDB                |
+| `nombre`         | `string`   | Nombre del platillo o artículo del menú                                 |
+| `precio`         | `number`   | Precio del artículo en la moneda local                                  |
+| `descripcion`    | `string`   | Descripción opcional del platillo                                       |
+| `disponible`     | `boolean`  | Indica si el artículo está disponible para pedidos (por defecto `true`) |
+| `restaurante_id` | `ObjectId` | Referencia al `_id` del restaurante al que pertenece este artículo      |
+
+### Ejemplo de documento
+
+```json
+{
+  "nombre": "Hamburguesa BBQ",
+  "descripcion": "Hamburguesa con salsa BBQ, queso cheddar y tocino",
+  "precio": 58.9,
+  "disponible": true,
+  "restaurante_id": "681741a5a913f0b464ef950f"
+}
+```
+
+**Nota:** El campo `restaurante_id`  debe existir en los documentos de `restaurante`.
+
+### Índices
 
 1. **Índice compuesto:**  
 

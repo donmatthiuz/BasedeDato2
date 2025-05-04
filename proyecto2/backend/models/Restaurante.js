@@ -4,8 +4,6 @@ const RestauranteSchema = new mongoose.Schema(
   {
     nombre: { type: String, required: true },
     direccion: { type: String },
-    telefono: { type: String },
-    categoria: { type: String },
     coordenadas: {
       type: {
         type: String,
@@ -24,6 +22,8 @@ const RestauranteSchema = new mongoose.Schema(
         },
       },
     },
+    telefono: { type: String },
+    categoria: { type: String },
   },
   {
     collection: "restaurante",

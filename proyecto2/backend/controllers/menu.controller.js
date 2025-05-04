@@ -75,13 +75,26 @@ exports.obtenerArticulos = async (req, res) => {
       if (query.precio_max) filtro.precio.$lte = parseFloat(query.precio_max);
     }
 
+    // --- Filtros por existencia de campos ---
+    if (query.exists) {
+      query.exists.split(",").forEach((campo) => {
+        const existe = !campo.startsWith("-");
+        const campoLimpio = campo.replace(/^-/, "").trim();
+        filtro[campoLimpio] = { $exists: existe };
+      });
+    }
+
     // --- Proyección ---
     const proyeccion = {};
     if (query.campos) {
-      // Ej: ?campos=nombre,precio
-      query.campos.split(",").forEach((campo) => {
-        proyeccion[campo.trim()] = 1;
+      const campos = query.campos.split(",").map((c) => c.trim());
+      campos.forEach((campo) => {
+        proyeccion[campo] = 1;
       });
+
+      if (!campos.includes("_id")) {
+        proyeccion["_id"] = 0; // excluye _id si no fue solicitado
+      }
     }
 
     // --- Ordenamiento ---

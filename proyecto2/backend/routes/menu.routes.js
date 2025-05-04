@@ -137,6 +137,12 @@ router.post("/upload", subirArchivoMenu);
  *           example: 90
  *         description: Precio estrictamente menor que este valor
  *       - in: query
+ *         name: exists
+ *         schema:
+ *           type: string
+ *           example: descripcion,-disponible
+ *         description: Verifica existencia o ausencia de campos. Usa `-` para negar.
+ *       - in: query
  *         name: campos
  *         schema:
  *           type: string
@@ -147,7 +153,7 @@ router.post("/upload", subirArchivoMenu);
  *         schema:
  *           type: string
  *           example: -precio
- *         description: Ordenar por campo. Usa `-` para ascendente (ej. precio)
+ *         description: Ordenar por campo. Usa `-` para ascendente (ej. -precio)
  *       - in: query
  *         name: skip
  *         schema:
@@ -163,6 +169,8 @@ router.post("/upload", subirArchivoMenu);
  *     responses:
  *       200:
  *         description: Lista de artículos filtrados
+ *       400:
+ *         description: Consulta no válida o sin índice
  */
 router.get("/", obtenerArticulos);
 
