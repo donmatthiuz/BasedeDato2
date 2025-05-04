@@ -125,3 +125,51 @@ exports.obtenerArticulos = async (req, res) => {
     });
   }
 };
+
+exports.actualizarArticulo = async (req, res) => {
+  try {
+    const data = req.body;
+
+    // --- Actualización única ---
+    if (!Array.isArray(data)) {
+      const { _id, ...update } = data;
+      if (!_id) return res.status(400).json({ error: "Falta el campo _id" });
+
+      const actualizado = await Menu.findByIdAndUpdate(_id, update, {
+        new: true,
+        runValidators: true,
+      });
+
+      if (!actualizado)
+        return res.status(404).json({ error: "Artículo no encontrado", _id });
+
+      return res.status(200).json(actualizado);
+    }
+
+    // --- Actualización múltiple ---
+    const resultados = await Promise.all(
+      data.map(async (item) => {
+        const { _id, ...update } = item;
+        if (!_id) return { error: "Falta _id" };
+
+        try {
+          const actualizado = await Menu.findByIdAndUpdate(_id, update, {
+            new: true,
+            runValidators: true,
+          });
+
+          return actualizado || { _id, error: "No encontrado" };
+        } catch (e) {
+          return { _id, error: "Error al actualizar", detalle: e.message };
+        }
+      })
+    );
+
+    res.status(200).json(resultados);
+  } catch (error) {
+    res.status(400).json({
+      error: "Error al procesar la solicitud",
+      detalle: error.message,
+    });
+  }
+};

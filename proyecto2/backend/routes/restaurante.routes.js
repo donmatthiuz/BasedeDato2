@@ -4,6 +4,7 @@ const {
   crearRestaurante,
   obtenerRestaurantes,
   subirArchivoRestaurante,
+  actualizarRestaurante,
 } = require("../controllers/restaurante.controller");
 
 /**
@@ -227,5 +228,80 @@ router.post("/upload", subirArchivoRestaurante);
  *        description: Consulta no válida o sin índice
  */
 router.get("/", obtenerRestaurantes);
+
+/**
+ * @swagger
+ * /restaurante:
+ *   patch:
+ *     summary: Actualizar uno o varios restaurantes
+ *     description: Permite actualizar campos específicos de uno o varios restaurantes mediante su `_id`.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - type: object
+ *                 required: [_id]
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "681741a5a913f0b464ef950f"
+ *                   nombre:
+ *                     type: string
+ *                     example: "Nuevo Nombre del Restaurante"
+ *                   direccion:
+ *                     type: string
+ *                     example: "Nueva Dirección 123, Ciudad"
+ *                   telefono:
+ *                     type: string
+ *                     example: "+502 5555 8888"
+ *                   categoria:
+ *                     type: string
+ *                     example: "Comida Fusión"
+ *                   coordenadas:
+ *                     type: object
+ *                     properties:
+ *                       type:
+ *                         type: string
+ *                         example: "Point"
+ *                       coordinates:
+ *                         type: array
+ *                         items:
+ *                           type: number
+ *                         example: [-90.512, 14.624]
+ *               - type: array
+ *                 items:
+ *                   type: object
+ *                   required: [_id]
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     nombre:
+ *                       type: string
+ *                     direccion:
+ *                       type: string
+ *                     telefono:
+ *                       type: string
+ *                     categoria:
+ *                       type: string
+ *                     coordenadas:
+ *                       type: object
+ *                       properties:
+ *                         type:
+ *                           type: string
+ *                         coordinates:
+ *                           type: array
+ *                           items:
+ *                             type: number
+ *     responses:
+ *       200:
+ *         description: Restaurantes actualizados correctamente
+ *       400:
+ *         description: Error en los datos proporcionados
+ *       404:
+ *         description: Uno o más artículos no fueron encontrados
+ */
+router.patch("/", actualizarRestaurante);
 
 module.exports = router;

@@ -142,3 +142,47 @@ exports.obtenerUsuarios = async (req, res) => {
     });
   }
 };
+
+exports.actualizarUsuario = async (req, res) => {
+  try {
+    const data = req.body;
+
+    // --- Actualización única ---
+    if (!Array.isArray(data)) {
+      const { _id, ...update } = data;
+      if (!_id) return res.status(400).json({ error: "Falta el campo _id" });
+
+      const actualizado = await Usuario.findByIdAndUpdate(_id, update, {
+        new: true,
+        runValidators: true,
+      });
+
+      if (!actualizado)
+        return res.status(404).json({ error: "Usuario no encontrado" });
+
+      return res.json(actualizado);
+    }
+
+    // --- Actualización múltiple ---
+    const resultados = await Promise.all(
+      data.map(async (u) => {
+        const { _id, ...update } = u;
+        if (!_id) return { error: "Falta _id" };
+
+        const actualizado = await Usuario.findByIdAndUpdate(_id, update, {
+          new: true,
+          runValidators: true,
+        });
+
+        return actualizado || { _id, error: "No encontrado" };
+      })
+    );
+
+    res.json(resultados);
+  } catch (error) {
+    res.status(400).json({
+      error: "Error al actualizar",
+      detalle: error.message,
+    });
+  }
+};

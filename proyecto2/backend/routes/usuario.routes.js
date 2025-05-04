@@ -4,6 +4,7 @@ const {
   crearUsuario,
   obtenerUsuarios,
   subirArchivoUsuario,
+  actualizarUsuario,
 } = require("../controllers/usuario.controller");
 
 /**
@@ -263,5 +264,53 @@ router.post("/upload", subirArchivoUsuario);
  *         description: Consulta no válida o sin índice
  */
 router.get("/", obtenerUsuarios);
+
+/**
+ * @swagger
+ * /usuario:
+ *   patch:
+ *     summary: Actualizar uno o varios usuarios
+ *     description: Actualiza uno o varios usuarios existentes. Se debe incluir el campo `_id` en cada objeto a modificar. Solo se actualizan los campos enviados.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - type: object
+ *                 required: [_id]
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "68174f099a2bb59ba7bb111c"
+ *                   nombre:
+ *                     type: string
+ *                     example: "Luis Pérez"
+ *                   telefono:
+ *                     type: string
+ *                     example: "+502 4444 9999"
+ *               - type: array
+ *                 items:
+ *                   type: object
+ *                   required: [_id]
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "68174f099a2bb59ba7bb111d"
+ *                     nombre:
+ *                       type: string
+ *                       example: "María Gómez"
+ *                     tipo:
+ *                       type: string
+ *                       example: "repartidor"
+ *     responses:
+ *       200:
+ *         description: Usuario(s) actualizado(s)
+ *       400:
+ *         description: Error en los datos enviados
+ *       404:
+ *         description: Uno o más usuarios no fueron encontrados
+ */
+router.patch("/", actualizarUsuario);
 
 module.exports = router;

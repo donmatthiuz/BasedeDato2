@@ -4,6 +4,7 @@ const {
   crearArticulo,
   obtenerArticulos,
   subirArchivoMenu,
+  actualizarArticulo,
 } = require("../controllers/menu.controller");
 
 /**
@@ -173,5 +174,63 @@ router.post("/upload", subirArchivoMenu);
  *         description: Consulta no válida o sin índice
  */
 router.get("/", obtenerArticulos);
+
+/**
+ * @swagger
+ * /menu:
+ *   patch:
+ *     summary: Actualizar uno o varios artículos del menú
+ *     description: Permite actualizar cualquier campo de uno o varios artículos del menú. Solo se requiere incluir el campo `_id` y los campos que se deseen modificar.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "6817492c6d0b0ee7f00fc65d"
+ *                   nombre:
+ *                     type: string
+ *                     example: "Tacos Especiales"
+ *                   precio:
+ *                     type: number
+ *                     example: 42.5
+ *                   descripcion:
+ *                     type: string
+ *                     example: "Tacos con carne premium y guacamole"
+ *                   disponible:
+ *                     type: boolean
+ *                     example: true
+ *                   restaurante_id:
+ *                     type: string
+ *                     example: "681741a5a913f0b464ef950f"
+ *               - type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     nombre:
+ *                       type: string
+ *                     precio:
+ *                       type: number
+ *                     descripcion:
+ *                       type: string
+ *                     disponible:
+ *                       type: boolean
+ *                     restaurante_id:
+ *                       type: string
+ *     responses:
+ *       200:
+ *         description: Artículo(s) actualizado(s)
+ *       400:
+ *         description: Error al actualizar o datos inválidos
+ *       404:
+ *         description: Uno o más artículos no fueron encontrados
+ */
+router.patch("/", actualizarArticulo);
 
 module.exports = router;
