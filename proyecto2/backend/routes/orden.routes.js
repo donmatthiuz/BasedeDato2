@@ -4,6 +4,7 @@ const {
   crearOrden,
   obtenerOrdenes,
   subirArchivoOrden,
+  actualizarOrden,
 } = require("../controllers/orden.controller");
 
 /**
@@ -243,5 +244,64 @@ router.post("/upload", subirArchivoOrden);
  *         description: Consulta no válida o sin índice
  */
 router.get("/", obtenerOrdenes);
+
+/**
+ * @swagger
+ * /orden:
+ *   patch:
+ *     summary: Actualizar una o varias órdenes existentes
+ *     description: Permite actualizar una o varias órdenes. El campo `total` no puede modificarse directamente; se recalcula automáticamente si se actualizan los platillos.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - type: object
+ *                 required: [_id]
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "6817b9b2e33af63113f5a098"
+ *                   estado:
+ *                     type: string
+ *                     example: completada
+ *                   platillos:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         nombre:
+ *                           type: string
+ *                           example: "Nuevo platillo"
+ *                         descripcion:
+ *                           type: string
+ *                           example: "Descripción actualizada"
+ *                         precio:
+ *                           type: number
+ *                           example: 50
+ *                         cantidad:
+ *                           type: integer
+ *                           example: 1
+ *               - type: array
+ *                 items:
+ *                   type: object
+ *                   required: [_id]
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "6817b9b2e33af63113f5a099"
+ *                     estado:
+ *                       type: string
+ *                       example: cancelada
+ *     responses:
+ *       200:
+ *         description: Orden(es) actualizada(s) exitosamente
+ *       400:
+ *         description: Error en la actualización (formato inválido, falta _id, intento de modificar `total`, etc.)
+ *       404:
+ *         description: Una o más órdenes no fueron encontradas
+ */
+router.patch("/", actualizarOrden);
 
 module.exports = router;

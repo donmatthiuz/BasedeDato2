@@ -4,6 +4,7 @@ const {
   crearResena,
   obtenerResenas,
   subirArchivoResena,
+  actualizarResena,
 } = require("../controllers/resena.controller");
 
 /**
@@ -279,5 +280,71 @@ router.post("/upload", subirArchivoResena);
  *         description: Consulta no válida o sin índice
  */
 router.get("/", obtenerResenas);
+
+/**
+ * @swagger
+ * /resena:
+ *   patch:
+ *     summary: Actualizar una o varias reseñas
+ *     description: Permite actualizar una o múltiples reseñas. Solo se requiere el campo `_id`. Se puede actualizar el menú embebido, comentario, calificación, fecha, etc.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             oneOf:
+ *               - type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "6817b9b2e33af63113f5a099"
+ *                   comentario:
+ *                     type: string
+ *                     example: "Excelente comida actualizada"
+ *                   calificacion:
+ *                     type: integer
+ *                     minimum: 1
+ *                     maximum: 5
+ *                     example: 5
+ *                   menu:
+ *                     type: object
+ *                     properties:
+ *                       nombre:
+ *                         type: string
+ *                         example: "Hamburguesa Doble"
+ *                       precio:
+ *                         type: number
+ *                         example: 68.5
+ *                       descripcion:
+ *                         type: string
+ *                         example: "Con queso y tocino"
+ *               - type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "6817b9b2e33af63113f5a098"
+ *                     comentario:
+ *                       type: string
+ *                       example: "Buena atención"
+ *                     calificacion:
+ *                       type: integer
+ *                       example: 4
+ *                     menu:
+ *                       type: object
+ *                       properties:
+ *                         precio:
+ *                           type: number
+ *                           example: 42
+ *     responses:
+ *       200:
+ *         description: Reseña(s) actualizada(s)
+ *       400:
+ *         description: Error al actualizar reseña(s)
+ *       404:
+ *         description: Reseña no encontrada
+ */
+router.patch("/", actualizarResena);
 
 module.exports = router;

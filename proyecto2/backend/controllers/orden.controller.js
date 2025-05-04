@@ -153,3 +153,82 @@ exports.obtenerOrdenes = async (req, res) => {
     });
   }
 };
+
+exports.actualizarOrden = async (req, res) => {
+  try {
+    const data = req.body;
+
+    // Función para recalcular el total si se actualizan platillos
+    const recalcularTotal = async (platillos, ordenId) => {
+      const ordenActual = await Orden.findById(ordenId);
+      if (!ordenActual) return 0;
+
+      return (platillos || []).reduce((sum, p, i) => {
+        const precio =
+          typeof p.precio === "number"
+            ? p.precio
+            : ordenActual.platillos[i]?.precio || 0;
+        const cantidad = p.cantidad || ordenActual.platillos[i]?.cantidad || 0;
+        return sum + precio * cantidad;
+      }, 0);
+    };
+
+    // --- Actualización única ---
+    if (!Array.isArray(data)) {
+      const { _id, total, ...update } = data;
+      if (!_id) return res.status(400).json({ error: "Falta el campo _id" });
+
+      if (Object.prototype.hasOwnProperty.call(data, "total")) {
+        return res.status(400).json({
+          error: "El campo 'total' no puede ser modificado directamente",
+        });
+      }
+
+      if (update.platillos) {
+        update.total = await recalcularTotal(update.platillos, _id);
+      }
+
+      const actualizado = await Orden.findByIdAndUpdate(_id, update, {
+        new: true,
+        runValidators: true,
+      });
+
+      if (!actualizado)
+        return res.status(404).json({ error: "Orden no encontrada" });
+
+      return res.json(actualizado);
+    }
+
+    // --- Actualización múltiple ---
+    const resultados = await Promise.all(
+      data.map(async (orden) => {
+        const { _id, total, ...update } = orden;
+        if (!_id) return { error: "Falta _id" };
+
+        if (Object.prototype.hasOwnProperty.call(orden, "total")) {
+          return {
+            _id,
+            error: "El campo 'total' no puede ser modificado directamente",
+          };
+        }
+
+        if (update.platillos) {
+          update.total = await recalcularTotal(update.platillos, _id);
+        }
+
+        const actualizado = await Orden.findByIdAndUpdate(_id, update, {
+          new: true,
+          runValidators: true,
+        });
+
+        return actualizado || { _id, error: "No encontrado" };
+      })
+    );
+
+    res.json(resultados);
+  } catch (error) {
+    res
+      .status(400)
+      .json({ error: "Error al actualizar", detalle: error.message });
+  }
+};
