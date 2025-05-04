@@ -23,21 +23,6 @@ export default function OrdersPage({
       </div>
 
       <Tabs defaultValue={status} className="w-full">
-        <TabsList className="mb-6">
-          <TabsTrigger value="all" asChild>
-            <Link href="/orders">All</Link>
-          </TabsTrigger>
-          <TabsTrigger value="active" asChild>
-            <Link href="/orders?status=active">Active</Link>
-          </TabsTrigger>
-          <TabsTrigger value="completed" asChild>
-            <Link href="/orders?status=completed">Completed</Link>
-          </TabsTrigger>
-          <TabsTrigger value="cancelled" asChild>
-            <Link href="/orders?status=cancelled">Cancelled</Link>
-          </TabsTrigger>
-        </TabsList>
-
         <Suspense fallback={<OrdersLoadingSkeleton />}>
           <OrdersList status={status} />
         </Suspense>

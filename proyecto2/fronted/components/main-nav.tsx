@@ -28,7 +28,8 @@ export function MainNav() {
       href: "/orders",
       label: "My Orders",
       active: pathname === "/orders",
-    },
+    }
+    
   ]
 
   return (
@@ -89,12 +90,7 @@ export function MainNav() {
             </Button>
           </Link>
 
-          <Link href="/profile">
-            <Button variant="outline" size="icon">
-              <User className="h-5 w-5" />
-              <span className="sr-only">Profile</span>
-            </Button>
-          </Link>
+         
         </div>
 
         <div className="flex md:hidden ml-auto items-center space-x-4">
