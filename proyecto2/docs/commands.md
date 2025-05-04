@@ -20,7 +20,7 @@ db.menu.createIndex({ nombre: "text", descripcion: "text" })
 ### **usuario**
 
 ```js
-db.usuario.createIndex({ nombre: 1, tipo: 1 })
+db.usuario.createIndex({ nombre: 1, tipo: 1, fecha_registro: -1 })
 db.usuario.createIndex({ coordenadas: "2dsphere" })
 ```
 
@@ -35,8 +35,10 @@ db.orden.createIndex({ restaurante_id: 1 })
 
 ```js
 db.resena.createIndex({ restaurante_id: 1, calificacion: -1 })
-db.resena.createIndex({ usuario_id: 1 })
+db.resena.createIndex({ usuario_id: 1, fecha: -1 })
 db.resena.createIndex({ nombre_usuario: 1 })
+db.resena.createIndex({ "menu.nombre": 1 });
+db.resena.createIndex({ "menu.precio": 1 });
 ```
 
 ## Ver los atributos de una colección

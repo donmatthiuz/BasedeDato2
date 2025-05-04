@@ -239,7 +239,7 @@ router.post("/upload", subirArchivoOrden);
  *     responses:
  *       200:
  *         description: Lista de órdenes filtradas
- *       400:
+ *       500:
  *         description: Consulta no válida o sin índice
  */
 router.get("/", obtenerOrdenes);

@@ -114,17 +114,52 @@ exports.obtenerResenas = async (req, res) => {
       }
     }
 
+    // --- Filtros de campos embebidos (menu) ---
+    if (query.menu_nombre)
+      filtro["menu.nombre"] = new RegExp(query.menu_nombre, "i");
+
+    if (
+      query.menu_precio_gt ||
+      query.menu_precio_gte ||
+      query.menu_precio_lt ||
+      query.menu_precio_lte
+    ) {
+      filtro["menu.precio"] = {};
+      if (query.menu_precio_gt)
+        filtro["menu.precio"].$gt = parseFloat(query.menu_precio_gt);
+      if (query.menu_precio_gte)
+        filtro["menu.precio"].$gte = parseFloat(query.menu_precio_gte);
+      if (query.menu_precio_lt)
+        filtro["menu.precio"].$lt = parseFloat(query.menu_precio_lt);
+      if (query.menu_precio_lte)
+        filtro["menu.precio"].$lte = parseFloat(query.menu_precio_lte);
+    }
+
     // --- Filtro por comentario (expresión regular, insensible a mayúsculas) ---
     if (query.comentario) filtro.comentario = new RegExp(query.comentario, "i");
     if (query.nombre_usuario)
       filtro.nombre_usuario = new RegExp(query.nombre_usuario, "i");
 
+    // --- Filtros por existencia de campos ---
+    if (query.exists) {
+      query.exists.split(",").forEach((campo) => {
+        const existe = !campo.startsWith("-");
+        const campoLimpio = campo.replace(/^-/, "").trim();
+        filtro[campoLimpio] = { $exists: existe };
+      });
+    }
+
     // --- Proyección de campos ---
     const proyeccion = {};
     if (query.campos) {
-      query.campos.split(",").forEach((campo) => {
-        proyeccion[campo.trim()] = 1;
+      const campos = query.campos.split(",").map((c) => c.trim());
+      campos.forEach((campo) => {
+        proyeccion[campo] = 1;
       });
+
+      if (!campos.includes("_id")) {
+        proyeccion["_id"] = 0; // excluye _id si no fue solicitado
+      }
     }
 
     // --- Ordenamiento ---

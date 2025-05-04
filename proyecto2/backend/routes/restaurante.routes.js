@@ -223,7 +223,7 @@ router.post("/upload", subirArchivoRestaurante);
  *     responses:
  *       200:
  *         description: Lista de restaurantes filtrados
- *       400:
+ *       500:
  *        description: Consulta no válida o sin índice
  */
 router.get("/", obtenerRestaurantes);

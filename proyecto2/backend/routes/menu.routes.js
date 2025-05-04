@@ -169,7 +169,7 @@ router.post("/upload", subirArchivoMenu);
  *     responses:
  *       200:
  *         description: Lista de artículos filtrados
- *       400:
+ *       500:
  *         description: Consulta no válida o sin índice
  */
 router.get("/", obtenerArticulos);

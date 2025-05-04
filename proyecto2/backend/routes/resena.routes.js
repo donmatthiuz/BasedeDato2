@@ -22,16 +22,13 @@ const {
  *                 properties:
  *                   restaurante_id:
  *                     type: string
- *                     example: "fe8b0c30-c333-4a50-a9a6-3823cb041d92"
+ *                     example: "681741a5a913f0b464ef950f"
  *                   usuario_id:
  *                     type: string
- *                     example: "52f1d182-6ccd-4475-bac7-fcad0b84cd28"
+ *                     example: "68174f099a2bb59ba7bb111c"
  *                   nombre_usuario:
  *                     type: string
  *                     example: "Juan Pérez"
- *                   orden_id:
- *                     type: string
- *                     example: "cb01f915-357a-4a2c-bcf5-d61f80c57a79"
  *                   calificacion:
  *                     type: integer
  *                     minimum: 1
@@ -44,32 +41,44 @@ const {
  *                     type: string
  *                     format: date-time
  *                     example: "2025-03-23T09:27:47Z"
+ *                   menu:
+ *                     type: object
+ *                     properties:
+ *                       nombre:
+ *                         type: string
+ *                         example: "Tacos de prueba A"
+ *                       precio:
+ *                         type: number
+ *                         example: 35
+ *                       descripcion:
+ *                         type: string
+ *                         example: "Tacos con ingredientes de prueba"
  *               - type: array
  *                 items:
  *                   type: object
  *                   properties:
  *                     restaurante_id:
  *                       type: string
- *                       example: "fe8b0c30-c333-4a50-a9a6-3823cb041d92"
  *                     usuario_id:
  *                       type: string
- *                       example: "52f1d182-6ccd-4475-bac7-fcad0b84cd28"
  *                     nombre_usuario:
  *                       type: string
- *                       example: "Juan Pérez"
- *                     orden_id:
- *                       type: string
- *                       example: "cb01f915-357a-4a2c-bcf5-d61f80c57a79"
  *                     calificacion:
  *                       type: integer
- *                       example: 5
  *                     comentario:
  *                       type: string
- *                       example: "Excelente comida y atención"
  *                     fecha:
  *                       type: string
  *                       format: date-time
- *                       example: "2025-03-24T12:45:00Z"
+ *                     menu:
+ *                       type: object
+ *                       properties:
+ *                         nombre:
+ *                           type: string
+ *                         precio:
+ *                           type: number
+ *                         descripcion:
+ *                           type: string
  *     responses:
  *       201:
  *         description: Reseña(s) creada(s)
@@ -107,21 +116,17 @@ router.post("/", crearResena);
  *         value:
  *           [
  *             {
- *               "restaurante_id": "fe8b0c30-c333-4a50-a9a6-3823cb041d92",
- *               "usuario_id": "52f1d182-6ccd-4475-bac7-fcad0b84cd28",
+ *               "restaurante_id": "681741a5a913f0b464ef950f",
+ *               "usuario_id": "68174f099a2bb59ba7bb111c",
  *               "nombre_usuario": "Juan Pérez",
- *               "orden_id": "cb01f915-357a-4a2c-bcf5-d61f80c57a79",
  *               "calificacion": 4,
  *               "comentario": "Muy buena experiencia",
- *               "fecha": "2025-03-23T09:27:47Z"
- *             },
- *             {
- *               "restaurante_id": "fe8b0c30-c333-4a50-a9a6-3823cb041d92",
- *               "usuario_id": "52f1d182-6ccd-4475-bac7-fcad0b84cd28",
- *               "nombre_usuario": "Juan Pérez",
- *               "orden_id": "cb01f915-357a-4a2c-bcf5-d61f80c57a79",
- *               "calificacion": 5,
- *               "comentario": "Excelente servicio"
+ *               "fecha": "2025-03-23T09:27:47Z",
+ *               "menu": {
+ *                 "nombre": "Tacos de prueba A",
+ *                 "precio": 35,
+ *                 "descripcion": "Tacos con ingredientes de prueba"
+ *               }
  *             }
  *           ]
  */
@@ -145,12 +150,6 @@ router.post("/upload", subirArchivoResena);
  *           type: string
  *           example: 52f1d182-6ccd-4475-bac7-fcad0b84cd28
  *         description: ID del usuario
- *       - in: query
- *         name: orden_id
- *         schema:
- *           type: string
- *           example: cb01f915-357a-4a2c-bcf5-d61f80c57a79
- *         description: ID de la orden relacionada
  *       - in: query
  *         name: calificacion_in
  *         schema:
@@ -205,14 +204,50 @@ router.post("/upload", subirArchivoResena);
  *         name: comentario
  *         schema:
  *           type: string
- *           example: doloremque
- *         description: Texto que debe estar incluido en el comentario (búsqueda parcial)
+ *           example: excelente
+ *         description: Texto parcial contenido en el comentario (regex insensible a mayúsculas)
  *       - in: query
  *         name: nombre_usuario
  *         schema:
  *           type: string
  *           example: juan
- *         description: Texto parcial del nombre del usuario (búsqueda parcial)
+ *         description: Texto parcial del nombre del usuario (regex insensible a mayúsculas)
+ *       - in: query
+ *         name: menu_nombre
+ *         schema:
+ *           type: string
+ *           example: pizza
+ *         description: Búsqueda parcial por nombre del platillo (regex insensible a mayúsculas)
+ *       - in: query
+ *         name: menu_precio_gt
+ *         schema:
+ *           type: number
+ *           example: 50
+ *         description: Precio del platillo mayor que
+ *       - in: query
+ *         name: menu_precio_gte
+ *         schema:
+ *           type: number
+ *           example: 60
+ *         description: Precio del platillo mayor o igual
+ *       - in: query
+ *         name: menu_precio_lt
+ *         schema:
+ *           type: number
+ *           example: 100
+ *         description: Precio del platillo menor que
+ *       - in: query
+ *         name: menu_precio_lte
+ *         schema:
+ *           type: number
+ *           example: 80
+ *         description: Precio del platillo menor o igual
+ *       - in: query
+ *         name: exists
+ *         schema:
+ *           type: string
+ *           example: comentario,-menu.descripcion
+ *         description: Verifica existencia o ausencia de campos. Usa `-` para negar.
  *       - in: query
  *         name: campos
  *         schema:
@@ -230,16 +265,18 @@ router.post("/upload", subirArchivoResena);
  *         schema:
  *           type: integer
  *           example: 0
- *         description: Número de resultados a omitir (para paginación)
+ *         description: Resultados a omitir (paginación)
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
  *           example: 10
- *         description: Número máximo de resultados
+ *         description: Máximo de resultados a retornar
  *     responses:
  *       200:
  *         description: Lista de reseñas encontradas
+ *       500:
+ *         description: Consulta no válida o sin índice
  */
 router.get("/", obtenerResenas);
 

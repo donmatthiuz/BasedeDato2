@@ -243,23 +243,61 @@ De lo contrario, las fechas se almacenarán como simples strings y no podrán se
 
    > Filtrado de órdenes por restaurante.
 
-## **resena**
+Aquí tienes la documentación de `resena` actualizada con el formato uniforme que siguen los demás modelos:
 
-**Atributos:**
+---
 
-* `_id`: ObjectId
-* `menu`:
-  * `nombre`: string
-  * `precio`: number
-  * `descripcion`: string
-* `nombre_usuario`: string
-* `calificacion`: number
-* `comentario`: string
-* `fecha`: ISODate
-* `usuario_id`: ObjectId
-* `restaurante_id`: ObjectId
+## Reseña (`Resena`)
 
-**Índices:**
+Este modelo representa la calificación y comentario que un usuario deja sobre un platillo consumido en un restaurante.
+
+### Estructura del documento
+
+| Campo              | Tipo       | Descripción                                                                       |
+| ------------------ | ---------- | --------------------------------------------------------------------------------- |
+| `_id`              | `ObjectId` | Identificador único generado automáticamente por MongoDB                          |
+| `menu`             | `object`   | Datos del platillo reseñado, embebidos desde el menú                              |
+| `menu.nombre`      | `string`   | Nombre del platillo reseñado                                                      |
+| `menu.precio`      | `number`   | Precio del platillo reseñado                                                      |
+| `menu.descripcion` | `string`   | Descripción del platillo                                                          |
+| `nombre_usuario`   | `string`   | Nombre del usuario que dejó la reseña                                             |
+| `calificacion`     | `number`   | Calificación numérica entre 1 y 5                                                 |
+| `comentario`       | `string`   | Comentario escrito por el usuario                                                 |
+| `fecha`            | `ISODate`  | Fecha y hora en que se creó la reseña. Se asigna automáticamente si no se incluye |
+| `usuario_id`       | `ObjectId` | Referencia al `_id` del usuario que hizo la reseña                                |
+| `restaurante_id`   | `ObjectId` | Referencia al `_id` del restaurante reseñado                                      |
+
+### Ejemplo de documento
+
+```json
+{
+  "menu": {
+    "nombre": "Pizza de prueba B",
+    "precio": 55,
+    "descripcion": "Pizza con ingredientes simulados para el Restaurante B"
+  },
+  "nombre_usuario": "TEST Usuario B",
+  "calificacion": 5,
+  "comentario": "Deliciosa pizza, volvería sin duda",
+  "fecha": "2024-07-02T17:00:00Z",
+  "usuario_id": "68174f099a2bb59ba7bb111d",
+  "restaurante_id": "681741a5a913f0b464ef9510"
+}
+```
+
+**Nota:** Dado que se utilizará `mongoimport` para insertar los datos, se debe declarar los valores utilizando el formato correcto de MongoDB Extended JSON con `"$date"`:
+
+De lo contrario, las fechas se almacenarán como simples strings y no podrán ser consultadas correctamente mediante filtros por rango de fechas (`$gte`, `$lte`, etc.).
+
+```json
+"fecha": {
+  "$date": "2024-07-02T17:00:00Z"
+}
+```
+
+**Nota:** Los campos `usuario_id` y `restaurante_id` deben existir en los documentos de las colecciones `usuario` y `restaurante`, respectivamente.
+
+### Índices
 
 1. **Índice compuesto:**
 
@@ -272,10 +310,10 @@ De lo contrario, las fechas se almacenarán como simples strings y no podrán se
 2. **Índice simple:**
 
    ```js
-   db.resena.createIndex({ usuario_id: 1 })
+   db.resena.createIndex({ usuario_id: 1, fecha: -1 })
    ```
 
-   > Para ver reseñas hechas por un usuario.
+   > Para ver reseñas hechas por un usuario y fecha.
 
 3. **Índice simple:**
 
@@ -284,3 +322,19 @@ De lo contrario, las fechas se almacenarán como simples strings y no podrán se
    ```
 
    > Para buscar reseñas por nombre de usuario.
+
+4. **Índice simple:**
+
+   ```js
+   db.resena.createIndex({ "menu.nombre": 1 });
+   ```
+
+   > Para búsqueda por nombre de menú.
+
+5. **Índice simple:**
+
+   ```js
+   db.resena.createIndex({ "menu.precio": 1 });
+   ```
+
+   > Para filtros de precio del menú.

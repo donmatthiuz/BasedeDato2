@@ -259,7 +259,7 @@ router.post("/upload", subirArchivoUsuario);
  *     responses:
  *       200:
  *         description: Lista de usuarios
- *       400:
+ *       500:
  *         description: Consulta no válida o sin índice
  */
 router.get("/", obtenerUsuarios);
