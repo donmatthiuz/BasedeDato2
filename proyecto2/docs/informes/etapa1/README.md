@@ -349,7 +349,7 @@ De lo contrario, las fechas se almacenarán como simples strings y no podrán se
 
    > Para filtros de precio del menú.
 
-![Diagrama de Modelo de Datos NoSQL](../images/diagrama_final.png "Diagrama de Modelo de Datos NoSQL")
+![Diagrama de Modelo de Datos NoSQL](../../../images/diagrama_final.png "Diagrama de Modelo de Datos NoSQL")
 
 ## Justificación de estructuras embebidas vs referenciadas
 
