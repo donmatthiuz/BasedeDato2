@@ -29,7 +29,9 @@ proyecto2/
 └── README.md             # Especificaciones de uso del sistema
 ```
 
-## 1. Crear instancia y obtener URI de conexión
+## Uso del sistema
+
+### 1. Crear instancia y obtener URI de conexión
 
 Para utilizar la base de datos, es necesario contar con una **instancia activa en MongoDB Atlas** y haber creado una base de datos en dicha instancia. Desde el panel de MongoDB Atlas se puede generar la URI de conexión, que tiene el siguiente formato:
 
@@ -46,7 +48,7 @@ Donde:
 
 > Esta URI se utilizará en varias partes, así que guárdala.
 
-## 2. Poblar la base de datos
+### 2. Poblar la base de datos
 
 Existen dos formas principales de poblar la base de datos:
 
@@ -56,7 +58,7 @@ Existen dos formas principales de poblar la base de datos:
 - También puedes usar los **datos de ejemplo** disponibles en el repositorio, en:  
   [**proyecto2/data/**](https://github.com/donmatthiuz/BasedeDato2/tree/proyecto2/proyecto2/data)
 
-### 2.1 Métodos para poblar
+#### 2.1 Métodos para poblar
 
 Puedes poblar la base de datos usando:
 
@@ -71,14 +73,14 @@ Ambos métodos están explicados en detalle en:
 >
 > Si prefieres usar **MongoDB Compass**, también puedes seguir el mismo documento para instalar la herramienta y luego seguir el procedimiento en `seed.md`.
 
-## 3. Backend
+### 3. Backend
 
 Para levantar el servidor backend y consumir la base de datos a través de un servicio REST, sigue la guía detallada en:  
 [**proyecto2/docs/backend.md**](https://github.com/donmatthiuz/BasedeDato2/blob/proyecto2/proyecto2/docs/backend.md)
 
 Esta guía incluye cómo iniciar el servidor, probar los endpoints y realizar operaciones CRUD con la base de datos MongoDB.
 
-## 4. Frontend
+### 4. Frontend
 
 La interfaz de usuario permite visualizar y manipular los datos del proyecto interactuando con el backend. Para utilizarla, consulta la guía en:  
 [**proyecto2/docs/frontend.md**](https://github.com/donmatthiuz/BasedeDato2/blob/proyecto2/proyecto2/docs/frontend.md)
