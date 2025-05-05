@@ -4,6 +4,31 @@ El objetivo de este proyecto es desarrollar una solución completa basada en **M
 
 El sistema incluye tanto un **backend** que gestiona la base de datos a través de una REST API como un **frontend** interactivo que permite a los usuarios manipular y visualizar los datos de manera intuitiva.
 
+## Arquitectura y Estructura del Proyecto
+
+El proyecto está organizado en dos etapas:
+
+- **Etapa 1**: En esta fase se describe el modelo implementado, la forma de importar los datos, las políticas de índices y la justificación de los datos embebidos y referenciados. Estos aspectos son fundamentales para entender la estructura de la base de datos y cómo se gestionan los datos en MongoDB.
+
+- **Etapa 2**: Aquí se encuentran los informes relacionados con el análisis de los datos mediante agregaciones. Esta etapa se enfoca en la obtención de información relevante de los restaurantes a través de consultas avanzadas y técnicas de análisis de datos.
+
+La estructura del proyecto es la siguiente:
+
+```bash
+proyecto2/
+│
+├── backend/              # Código del servidor backend (API REST)
+├── data/                 # Datos de ejemplo para poblar la base de datos
+├── docs/                 # Documentación detallada del proyecto
+│   ├── informes/         # Informes relacionados con el análisis
+│   │   ├── etapa1/       # Documentación de la primera etapa
+│   │   └── etapa2/       # Documentación de la segunda etapa
+│   └── documentos.md     # Documentación detallada sobre uso de sistema, configuración, instalación, etc.
+├── frontend/             # Código del frontend (interfaz de usuario)
+├── images/               # Imágenes utilizadas en la documentación
+└── README.md             # Especificaciones de uso del sistema
+```
+
 ## 1. Crear instancia y obtener URI de conexión
 
 Para utilizar la base de datos, es necesario contar con una **instancia activa en MongoDB Atlas** y haber creado una base de datos en dicha instancia. Desde el panel de MongoDB Atlas se puede generar la URI de conexión, que tiene el siguiente formato:

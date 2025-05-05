@@ -1,0 +1,44 @@
+# Análisis de Desempeño Comercial y Consumo en Restaurantes
+
+Este informe busca evaluar el comportamiento económico y operativo de los restaurantes a través del análisis de sus órdenes, ingresos, productos más solicitados, eficiencia de entrega y evolución mensual. Se combina información de los modelos `Restaurante`, `Menú` y `Orden` para obtener una visión detallada sobre:
+
+* Cuánto vende cada restaurante (en ingresos y volumen).
+* Qué tan frecuentes son sus órdenes y cuáles son sus platillos más populares.
+* Cuáles restaurantes dominan el mercado (ingresos, volumen de pedidos).
+* Cómo evolucionan sus ingresos en el tiempo.
+* Qué estados operativos predominan en sus órdenes (eficiencia operativa).
+* Qué productos del menú no se están pidiendo (oportunidades de mejora en la oferta).
+
+## Estructura del informe
+
+### 1. Volumen General de Órdenes y Ventas por Restaurante
+
+* Conteo total de órdenes por restaurante.
+* Suma total de ingresos generados por cada restaurante.
+
+**Análisis:** Permite identificar qué restaurantes tienen mayor actividad comercial y volumen de ventas. Esta información es clave para evaluar el rendimiento económico y la popularidad de cada establecimiento.
+
+### 2. Frecuencia de Pedidos por Platillo
+
+* Listado de platillos más vendidos (top N) por cantidad total solicitada.
+* Acumulado de ingresos generados por cada platillo.
+
+**Análisis:** Ayuda a determinar los productos estrella del menú. Este análisis puede orientar decisiones de marketing, promociones, y ajustes de inventario.
+
+### 3. Evolución Mensual de Ingresos
+
+* Agrupación de órdenes por mes y cálculo de ingresos mensuales por restaurante.
+
+**Análisis:** Proporciona una vista temporal del desempeño económico. Es útil para detectar tendencias estacionales, crecimiento o caídas en la demanda.
+
+### 4. Distribución de Estados de Órdenes
+
+* Conteo de órdenes por estado (`pendiente`, `completada`, `cancelada`, etc.).
+
+**Análisis:** Refleja la eficiencia operativa del sistema. Un número alto de órdenes canceladas o pendientes puede indicar problemas logísticos o de atención.
+
+### 5. Productos del Menú No Ordenados
+
+* Identificación de artículos del menú que no aparecen en ninguna orden.
+
+**Análisis:** Estos datos revelan oportunidades de mejora en la oferta gastronómica. Los productos no demandados podrían promocionarse más, modificarse o eliminarse para optimizar el menú.
