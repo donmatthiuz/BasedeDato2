@@ -16,6 +16,7 @@ exports.aplicarIndices = async (req, res) => {
         .collection("restaurante")
         .createIndex({ nombre: "text", categoria: "text" }),
       db.collection("restaurante").createIndex({ coordenadas: "2dsphere" }),
+      db.collection("restaurante").createIndex({ telefono: 1 }),
 
       // Menu
       db.collection("menu").createIndex({ restaurante_id: 1, disponible: 1 }),

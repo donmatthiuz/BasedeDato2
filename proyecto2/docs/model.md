@@ -60,6 +60,14 @@ Este modelo representa un restaurante registrado en la base de datos.
 
    > Para realizar búsquedas geográficas (por ubicación) usando coordenadas \[longitud, latitud].
 
+4. **Índice por prefijo telefónico:**
+
+   ```js
+   db.restaurante.createIndex({ telefono: 1 })
+   ```
+
+   > Optimiza búsquedas por número telefónico o prefijos internacionales, útil en análisis regionales.
+
 ## Artículo del Menú (`Menu`)
 
 Este modelo representa un platillo o producto ofrecido en el menú de un restaurante.

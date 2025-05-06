@@ -10,6 +10,8 @@ const {
   cantidadPorCategoria,
   categoriasUnicas,
   restaurantesPorZona,
+  restaurantesPorPrefijo,
+  categoriasTopOBottom,
 } = require("../controllers/restaurante.controller");
 
 // --- CRUD RESTAURANTE ---
@@ -499,5 +501,96 @@ router.get("/categorias/unicas", categoriasUnicas);
  *         description: Error interno del servidor
  */
 router.get("/zona", restaurantesPorZona);
+
+/**
+ * @swagger
+ * /restaurante/prefijos:
+ *   get:
+ *     summary: Lista detallada de prefijos con números agrupados
+ *     description: Muestra los prefijos con la cantidad de restaurantes y sus números telefónicos asociados. Se puede filtrar por un prefijo específico.
+ *     tags:
+ *       - Restaurante - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: prefijo
+ *         schema:
+ *           type: string
+ *           example: "+502"
+ *         description: Prefijo telefónico a filtrar (opcional)
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Ordenar por cantidad de restaurantes (ascendente o descendente)
+ *     responses:
+ *       200:
+ *         description: Prefijos con detalles de restaurantes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   prefijo:
+ *                     type: string
+ *                     example: "+502"
+ *                   cantidad:
+ *                     type: integer
+ *                     example: 8
+ *                   telefonos:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                       example: "+502 1234 5678"
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/prefijos", restaurantesPorPrefijo);
+
+/**
+ * @swagger
+ * /restaurante/categorias/top-bottom:
+ *   get:
+ *     summary: Categorías con más o menos restaurantes
+ *     description: Retorna las N categorías con mayor o menor cantidad de restaurantes según el parámetro `tipo`.
+ *     tags:
+ *       - Restaurante - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           enum: [top, bottom]
+ *           default: top
+ *         description: Define si se devuelven las más comunes (`top`) o las menos comunes (`bottom`).
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 5
+ *         description: Número máximo de categorías a devolver.
+ *     responses:
+ *       200:
+ *         description: Lista de categorías con sus cantidades
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   categoria:
+ *                     type: string
+ *                     example: Parrillada
+ *                   cantidad:
+ *                     type: integer
+ *                     example: 10
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/categorias/top-bottom", categoriasTopOBottom);
 
 module.exports = router;

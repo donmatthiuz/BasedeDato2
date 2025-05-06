@@ -21,8 +21,7 @@ Este informe tiene como objetivo explorar la distribución territorial, diversid
 ### 2. Distribución Geográfica
 
 * Clasificación de restaurantes por zona (norte, sur, este, oeste) según coordenadas.
-* Análisis de densidad: identificación de zonas con mayor concentración de restaurantes.
-* Agrupamiento de coordenadas para detectar posibles núcleos o zonas gastronómicas específicas.
+<!-- * Análisis de densidad: identificación de zonas con mayor concentración de restaurantes. -->
 
 **Análisis:** Se determina la distribución territorial de los restaurantes. Se pueden identificar zonas saturadas o zonas desatendidas para evaluar oportunidades de expansión o refuerzo comercial.
 
@@ -36,13 +35,5 @@ Este informe tiene como objetivo explorar la distribución territorial, diversid
 ### 4. Concentración de Restaurantes por Categoría
 
 * Identificación de las 5 categorías con mayor número de restaurantes.
-* Detección de categorías poco representadas o únicas.
 
 **Análisis:** Se obtienen indicadores clave sobre la concentración del mercado según tipo de comida. Esto puede ser útil para identificar tendencias dominantes, saturación en ciertos nichos o la posibilidad de diversificar la oferta.
-
-### 5. Recomendaciones y Oportunidades
-
-* Identificación de zonas geográficas donde existe baja concentración de restaurantes.
-* Recomendaciones de expansión hacia nuevas regiones o ciudades.
-* Detección de categorías poco explotadas con potencial de crecimiento.
-* Propuesta de futuras integraciones con otras colecciones (reseñas, horarios, órdenes, etc.) para profundizar el análisis.

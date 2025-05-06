@@ -8,6 +8,7 @@
 db.restaurante.createIndex({ nombre: 1 })
 db.restaurante.createIndex({ nombre: "text", categoria: "text" })
 db.restaurante.createIndex({ coordenadas: "2dsphere" })
+db.restaurante.createIndex({ telefono: 1 })
 ```
 
 ### **articulo\_menu**

@@ -463,3 +463,78 @@ exports.restaurantesPorZona = async (req, res) => {
     });
   }
 };
+
+// Clasificación de restaurantes por país o región a partir del prefijo telefónico
+exports.restaurantesPorPrefijo = async (req, res) => {
+  try {
+    const { prefijo, ordenar = "desc" } = req.query;
+    const sortOrder = ordenar === "asc" ? 1 : -1;
+
+    const matchStage = {
+      telefono: { $exists: true, $type: "string", $ne: "" },
+    };
+
+    if (prefijo) {
+      const escaped = prefijo.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      matchStage.telefono = new RegExp(`^${escaped}`);
+    }
+
+    const resultado = await Restaurante.aggregate([
+      { $match: matchStage },
+      {
+        $addFields: {
+          prefijo: {
+            $arrayElemAt: [{ $split: ["$telefono", " "] }, 0],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$prefijo",
+          cantidad: { $sum: 1 },
+          telefonos: { $push: "$telefono" },
+        },
+      },
+      {
+        $project: {
+          prefijo: "$_id",
+          cantidad: 1,
+          telefonos: 1,
+          _id: 0,
+        },
+      },
+      {
+        $sort: { cantidad: sortOrder },
+      },
+    ]).option({ hint: { telefono: 1 } });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error en análisis por prefijo",
+      detalle: error.message,
+    });
+  }
+};
+
+// Top o bottom 5 categorías por número de restaurantes
+exports.categoriasTopOBottom = async (req, res) => {
+  try {
+    const { tipo = "top", limite = 5 } = req.query;
+    const sortOrder = tipo === "bottom" ? 1 : -1;
+
+    const resultado = await Restaurante.aggregate([
+      { $group: { _id: "$categoria", cantidad: { $sum: 1 } } },
+      { $project: { categoria: "$_id", cantidad: 1, _id: 0 } },
+      { $sort: { cantidad: sortOrder } },
+      { $limit: parseInt(limite) },
+    ]);
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al calcular categorías",
+      detalle: error.message,
+    });
+  }
+};
