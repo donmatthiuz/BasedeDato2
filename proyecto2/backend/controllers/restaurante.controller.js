@@ -4,6 +4,8 @@ const fs = require("fs");
 
 const upload = multer({ dest: "uploads/" });
 
+// --- CRUD RESTAURANTE ---
+
 exports.subirArchivoRestaurante = [
   upload.single("restaurante"), // nombre del campo esperado: "restaurante"
   async (req, res) => {
@@ -240,6 +242,223 @@ exports.eliminarRestaurante = async (req, res) => {
   } catch (error) {
     res.status(400).json({
       error: "Error al procesar la solicitud",
+      detalle: error.message,
+    });
+  }
+};
+
+// --- AGREGACIONES ---
+
+// Total de restaurantes registrados
+exports.totalRestaurantes = async (req, res) => {
+  try {
+    const resultado = await Restaurante.aggregate([
+      { $count: "total_restaurantes" },
+    ]);
+
+    res.status(200).json(resultado[0] || { total_restaurantes: 0 });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error al obtener el total", detalle: error.message });
+  }
+};
+
+// Cantidad por categoría
+exports.cantidadPorCategoria = async (req, res) => {
+  try {
+    const { ordenar = "desc" } = req.query;
+    const sortOrder = ordenar === "asc" ? 1 : -1;
+
+    const resultado = await Restaurante.aggregate([
+      {
+        $group: {
+          _id: "$categoria",
+          cantidad: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          categoria: "$_id",
+          cantidad: 1,
+          _id: 0,
+        },
+      },
+      {
+        $sort: { cantidad: sortOrder },
+      },
+    ]);
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al agrupar por categoría",
+      detalle: error.message,
+    });
+  }
+};
+
+// Categorías únicas disponibles
+exports.categoriasUnicas = async (req, res) => {
+  try {
+    const { ordenar = "asc" } = req.query;
+    const sortOrder = ordenar === "desc" ? -1 : 1;
+
+    const categorias = await Restaurante.distinct("categoria");
+    const categoriasOrdenadas = categorias.sort((a, b) => {
+      if (a < b) return -1 * sortOrder;
+      if (a > b) return 1 * sortOrder;
+      return 0;
+    });
+
+    res.status(200).json({
+      total: categoriasOrdenadas.length,
+      categorias: categoriasOrdenadas,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al obtener categorías únicas",
+      detalle: error.message,
+    });
+  }
+};
+
+// Clasificación de restaurantes por zona geográfica
+exports.restaurantesPorZona = async (req, res) => {
+  try {
+    const { region, ordenar = "desc" } = req.query;
+    const sortOrder = ordenar === "asc" ? 1 : -1;
+
+    const pipeline = [
+      {
+        $addFields: {
+          zona: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $and: [
+                      {
+                        $gt: [
+                          { $arrayElemAt: ["$coordenadas.coordinates", 1] },
+                          0,
+                        ],
+                      },
+                      {
+                        $gte: [
+                          { $arrayElemAt: ["$coordenadas.coordinates", 0] },
+                          0,
+                        ],
+                      },
+                    ],
+                  },
+                  then: "NE",
+                },
+                {
+                  case: {
+                    $and: [
+                      {
+                        $gt: [
+                          { $arrayElemAt: ["$coordenadas.coordinates", 1] },
+                          0,
+                        ],
+                      },
+                      {
+                        $lt: [
+                          { $arrayElemAt: ["$coordenadas.coordinates", 0] },
+                          0,
+                        ],
+                      },
+                    ],
+                  },
+                  then: "NW",
+                },
+                {
+                  case: {
+                    $and: [
+                      {
+                        $lt: [
+                          { $arrayElemAt: ["$coordenadas.coordinates", 1] },
+                          0,
+                        ],
+                      },
+                      {
+                        $lt: [
+                          { $arrayElemAt: ["$coordenadas.coordinates", 0] },
+                          0,
+                        ],
+                      },
+                    ],
+                  },
+                  then: "SW",
+                },
+                {
+                  case: {
+                    $and: [
+                      {
+                        $lt: [
+                          { $arrayElemAt: ["$coordenadas.coordinates", 1] },
+                          0,
+                        ],
+                      },
+                      {
+                        $gte: [
+                          { $arrayElemAt: ["$coordenadas.coordinates", 0] },
+                          0,
+                        ],
+                      },
+                    ],
+                  },
+                  then: "SE",
+                },
+                {
+                  case: {
+                    $gte: [
+                      { $arrayElemAt: ["$coordenadas.coordinates", 1] },
+                      0,
+                    ],
+                  },
+                  then: "N",
+                },
+                {
+                  case: {
+                    $lt: [{ $arrayElemAt: ["$coordenadas.coordinates", 1] }, 0],
+                  },
+                  then: "S",
+                },
+              ],
+              default: "Desconocido",
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$zona",
+          cantidad: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          zona: "$_id",
+          cantidad: 1,
+          _id: 0,
+        },
+      },
+      {
+        $sort: { cantidad: sortOrder },
+      },
+    ];
+
+    if (region) {
+      pipeline.push({ $match: { zona: region.toUpperCase() } });
+    }
+
+    const resultado = await Restaurante.aggregate(pipeline);
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al clasificar restaurantes por zona",
       detalle: error.message,
     });
   }

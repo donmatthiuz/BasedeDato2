@@ -6,7 +6,13 @@ const {
   subirArchivoRestaurante,
   actualizarRestaurante,
   eliminarRestaurante,
+  totalRestaurantes,
+  cantidadPorCategoria,
+  categoriasUnicas,
+  restaurantesPorZona,
 } = require("../controllers/restaurante.controller");
+
+// --- CRUD RESTAURANTE ---
 
 /**
  * @swagger
@@ -352,5 +358,146 @@ router.patch("/", actualizarRestaurante);
  *         description: Error interno del servidor
  */
 router.delete("/", eliminarRestaurante);
+
+// --- AGREGACIONES ---
+
+/**
+ * @swagger
+ * /restaurante/total:
+ *   get:
+ *     summary: Total de restaurantes registrados
+ *     tags:
+ *       - Restaurante - Agregaciones
+ *     responses:
+ *       200:
+ *         description: Total de documentos en la colección de restaurantes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                   example: 87
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/total", totalRestaurantes);
+
+/**
+ * @swagger
+ * /restaurante/categorias/conteo:
+ *   get:
+ *     summary: Cantidad de restaurantes por categoría
+ *     tags:
+ *       - Restaurante - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Ordenar por cantidad de forma ascendente o descendente
+ *     responses:
+ *       200:
+ *         description: Lista de categorías con su cantidad correspondiente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   categoria:
+ *                     type: string
+ *                     example: Mexicana
+ *                   cantidad:
+ *                     type: integer
+ *                     example: 12
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/categorias/conteo", cantidadPorCategoria);
+
+/**
+ * @swagger
+ * /restaurante/categorias/unicas:
+ *   get:
+ *     summary: Categorías únicas disponibles
+ *     tags:
+ *       - Restaurante - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: asc
+ *         description: Ordenar alfabéticamente las categorías
+ *     responses:
+ *       200:
+ *         description: Lista de categorías únicas y su total
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                   example: 8
+ *                 categorias:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: Parrillada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/categorias/unicas", categoriasUnicas);
+
+/**
+ * @swagger
+ * /restaurante/zona:
+ *   get:
+ *     summary: Clasificación de restaurantes por zona geográfica
+ *     description: Agrupa los restaurantes según su ubicación geográfica basada en las coordenadas cardinales (`N`, `S`, `E`, `W`, `NE`, `NW`, `SE`, `SW`). Se puede filtrar por una zona específica con el parámetro `region`, y ordenar por cantidad ascendente o descendente con `ordenar`.
+ *     tags:
+ *       - Restaurante - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: region
+ *         schema:
+ *           type: string
+ *           enum: [N, S, E, W, NE, NW, SE, SW]
+ *           example: SE
+ *         description: Región geográfica específica a consultar.
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           example: desc
+ *         description: Orden del resultado según la cantidad.
+ *     responses:
+ *       200:
+ *         description: Lista de zonas con la cantidad de restaurantes por cada una.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   zona:
+ *                     type: string
+ *                     example: SE
+ *                   cantidad:
+ *                     type: integer
+ *                     example: 5
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/zona", restaurantesPorZona);
 
 module.exports = router;

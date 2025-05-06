@@ -44,7 +44,7 @@ const {
  *       500:
  *         description: Error interno del servidor.
  */
-router.post("/indices", aplicarIndices);
+router.post("/", aplicarIndices);
 
 /**
  * @swagger
