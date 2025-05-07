@@ -9,6 +9,7 @@ const {
   promedioCalificacionesPorRestaurante,
   platillosMasResenados,
   resenasNegativasConComentarios,
+  usuariosMasActivosReseñando,
 } = require("../controllers/resena.controller");
 
 // --- CRUD ---
@@ -590,5 +591,51 @@ router.get("/negativas", resenasNegativasConComentarios);
  *         description: Error interno del servidor
  */
 router.get("/platillos-mas-resenados", platillosMasResenados);
+
+/**
+ * @swagger
+ * /resena/top-usuarios:
+ *   get:
+ *     summary: Usuarios más activos dejando reseñas
+ *     description: Retorna los usuarios que más reseñas han dejado, junto con su promedio de calificaciones.
+ *     tags:
+ *       - Reseña - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Número máximo de usuarios a mostrar
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Orden por cantidad de reseñas
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios con sus reseñas y calificación promedio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_usuario:
+ *                     type: string
+ *                     example: Juan Pérez
+ *                   total_reseñas:
+ *                     type: integer
+ *                     example: 15
+ *                   promedio_calificacion:
+ *                     type: number
+ *                     example: 4.3
+ *       500:
+ *         description: Error al obtener los datos
+ */
+router.get("/top-usuarios", usuariosMasActivosReseñando);
 
 module.exports = router;

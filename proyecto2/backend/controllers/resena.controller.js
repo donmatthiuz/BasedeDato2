@@ -431,3 +431,35 @@ exports.platillosMasResenados = async (req, res) => {
     });
   }
 };
+
+// Top usuarios más activos dejando reseñas
+exports.usuariosMasActivosReseñando = async (req, res) => {
+  try {
+    const { limite = 10, ordenar = "desc" } = req.query;
+    const sortOrder = ordenar === "asc" ? 1 : -1;
+
+    const resultado = await Resena.aggregate([
+      {
+        $group: {
+          _id: "$usuario_id",
+          nombre_usuario: { $first: "$nombre_usuario" },
+          total_reseñas: { $sum: 1 },
+          promedio_calificacion: { $avg: "$calificacion" },
+        },
+      },
+      {
+        $sort: { total_reseñas: sortOrder },
+      },
+      {
+        $limit: parseInt(limite),
+      },
+    ]).hint({ usuario_id: 1, fecha: -1 });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al obtener usuarios más activos reseñando",
+      detalle: error.message,
+    });
+  }
+};
