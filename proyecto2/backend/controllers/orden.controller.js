@@ -4,6 +4,8 @@ const fs = require("fs");
 
 const upload = multer({ dest: "uploads/" });
 
+// --- CRUD ---
+
 const prepararOrden = (orden) => {
   const totalCalculado = (orden.platillos || []).reduce((sum, p) => {
     return sum + p.cantidad * p.precio;
@@ -270,6 +272,362 @@ exports.eliminarOrden = async (req, res) => {
   } catch (error) {
     res.status(400).json({
       error: "Error al eliminar orden(es)",
+      detalle: error.message,
+    });
+  }
+};
+
+// --- AGREGACIONES ---
+
+exports.totalOrdenesPorRestaurante = async (req, res) => {
+  try {
+    const resultado = await Orden.aggregate([
+      {
+        $group: {
+          _id: "$restaurante_id",
+          total_ordenes: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $project: {
+          restaurante_id: "$_id",
+          nombre_restaurante: "$restaurante.nombre",
+          total_ordenes: 1,
+          _id: 0,
+        },
+      },
+    ]).hint({ restaurante_id: 1 });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al contar órdenes por restaurante",
+      detalle: error.message,
+    });
+  }
+};
+
+exports.ingresosTotalesPorRestaurante = async (req, res) => {
+  try {
+    const resultado = await Orden.aggregate([
+      {
+        $group: {
+          _id: "$restaurante_id",
+          ingresos_totales: { $sum: "$total" },
+        },
+      },
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $project: {
+          restaurante_id: "$_id",
+          nombre_restaurante: "$restaurante.nombre",
+          ingresos_totales: 1,
+          _id: 0,
+        },
+      },
+    ]).hint({ restaurante_id: 1 });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al calcular ingresos por restaurante",
+      detalle: error.message,
+    });
+  }
+};
+
+// Listado de platillos más o menos vendidos por cantidad total solicitada
+exports.topOBottomPlatillosVendidos = async (req, res) => {
+  try {
+    const { tipo = "top", limite = 5 } = req.query;
+    const sortOrder = tipo === "bottom" ? 1 : -1;
+
+    const resultado = await Orden.aggregate([
+      { $unwind: "$platillos" },
+      {
+        $group: {
+          _id: "$platillos.nombre",
+          total_vendido: { $sum: "$platillos.cantidad" },
+        },
+      },
+      {
+        $project: {
+          nombre_platillo: "$_id",
+          total_vendido: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { total_vendido: sortOrder } },
+      { $limit: parseInt(limite) },
+    ]);
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al obtener platillos vendidos",
+      detalle: error.message,
+    });
+  }
+};
+
+// Acumulado de ingresos generados por cada platillo
+exports.ingresosPorPlatillo = async (req, res) => {
+  try {
+    const { ordenar = "desc" } = req.query;
+    const sortOrder = ordenar === "asc" ? 1 : -1;
+
+    const resultado = await Orden.aggregate([
+      { $unwind: "$platillos" },
+      {
+        $group: {
+          _id: "$platillos.nombre",
+          ingresos: {
+            $sum: { $multiply: ["$platillos.precio", "$platillos.cantidad"] },
+          },
+        },
+      },
+      {
+        $project: {
+          nombre_platillo: "$_id",
+          ingresos: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { ingresos: sortOrder } },
+    ]);
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al calcular ingresos por platillo",
+      detalle: error.message,
+    });
+  }
+};
+
+// Agregación de ganancias por mes y por año
+exports.gananciasPorPeriodo = async (req, res) => {
+  try {
+    const {
+      tipo = "mensual",
+      anio,
+      mes,
+      ordenar_por = "monto_total",
+      orden = "desc",
+    } = req.query;
+
+    const sortOrder = orden === "asc" ? 1 : -1;
+
+    const exprCondiciones = [{ $eq: ["$estado", "completada"] }];
+
+    if (anio) {
+      exprCondiciones.push({
+        $eq: [{ $year: "$fecha" }, parseInt(anio)],
+      });
+    }
+
+    if (mes) {
+      const mesNum = parseInt(mes);
+      if (mesNum < 1 || mesNum > 12) {
+        return res.status(400).json({ error: "Mes debe estar entre 1 y 12" });
+      }
+      exprCondiciones.push({
+        $eq: [{ $month: "$fecha" }, mesNum],
+      });
+    }
+
+    const pipeline = [
+      {
+        $match: {
+          $expr: { $and: exprCondiciones },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            restaurante_id: "$restaurante_id",
+            ...(tipo === "mensual" && {
+              mes: { $month: "$fecha" },
+              anio: { $year: "$fecha" },
+            }),
+            ...(tipo === "anual" && {
+              anio: { $year: "$fecha" },
+            }),
+          },
+          monto_total: { $sum: "$total" },
+          promedio_ganancia: { $avg: "$total" },
+        },
+      },
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "_id.restaurante_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $project: {
+          nombre_restaurante: "$restaurante.nombre",
+          monto_total: 1,
+          promedio_ganancia: 1,
+          ...(tipo === "mensual" && {
+            mes: "$_id.mes",
+            anio: "$_id.anio",
+          }),
+          ...(tipo === "anual" && {
+            anio: "$_id.anio",
+          }),
+          _id: 0,
+        },
+      },
+      {
+        $sort: {
+          [ordenar_por]: sortOrder,
+        },
+      },
+    ];
+
+    const resultado = await Orden.aggregate(pipeline).hint({
+      restaurante_id: 1,
+    });
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al calcular ganancias",
+      detalle: error.message,
+    });
+  }
+};
+
+// Agregación de ganancias agrupadas por bloques de meses o por rango de fechas
+exports.gananciasAgrupadas = async (req, res) => {
+  try {
+    const {
+      tipo = "bloques", // bloques | rango
+      meses = 1,
+      desde,
+      hasta,
+      ordenar_por = "monto_total",
+      orden = "desc",
+    } = req.query;
+
+    const sortOrder = orden === "asc" ? 1 : -1;
+    const match = { estado: "completada" };
+    const pipeline = [];
+
+    if (tipo === "rango") {
+      if (desde || hasta) {
+        match.fecha = {};
+        if (desde) match.fecha.$gte = new Date(desde);
+        if (hasta) match.fecha.$lte = new Date(hasta);
+      }
+
+      pipeline.push({ $match: match });
+
+      pipeline.push({
+        $group: {
+          _id: "$restaurante_id",
+          monto_total: { $sum: "$total" },
+          promedio_ganancia: { $avg: "$total" },
+        },
+      });
+    } else if (tipo === "bloques") {
+      const n = parseInt(meses);
+      if (![1, 2, 3, 4, 6, 12].includes(n)) {
+        return res.status(400).json({
+          error: "Meses inválidos, permite solo: 1, 2, 3, 4, 6, 12",
+        });
+      }
+
+      pipeline.push({
+        $match: {
+          $expr: { $eq: ["$estado", "completada"] },
+        },
+      });
+
+      // Paso 1: descomponer a nivel de documento para extraer mes
+      pipeline.push({
+        $addFields: {
+          mes: { $month: "$fecha" },
+          anio: { $year: "$fecha" },
+          bloque: {
+            $ceil: { $divide: [{ $month: "$fecha" }, n] },
+          },
+        },
+      });
+
+      // Paso 2: agrupar por restaurante + año + bloque, recolectando meses únicos
+      pipeline.push({
+        $group: {
+          _id: {
+            restaurante_id: "$restaurante_id",
+            anio: "$anio",
+            bloque: "$bloque",
+          },
+          monto_total: { $sum: "$total" },
+          promedio_ganancia: { $avg: "$total" },
+          meses_incluidos: { $addToSet: "$mes" },
+        },
+      });
+    }
+
+    pipeline.push(
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "_id.restaurante_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $project: {
+          nombre_restaurante: "$restaurante.nombre",
+          monto_total: 1,
+          promedio_ganancia: 1,
+          ...(tipo === "bloques" && {
+            bloque: "$_id.bloque",
+            anio: "$_id.anio",
+            meses_incluidos: 1,
+          }),
+          _id: 0,
+        },
+      },
+      {
+        $sort: {
+          [ordenar_por]: sortOrder,
+        },
+      }
+    );
+
+    const resultado = await Orden.aggregate(pipeline).hint({
+      restaurante_id: 1,
+    });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al calcular ganancias agrupadas",
       detalle: error.message,
     });
   }

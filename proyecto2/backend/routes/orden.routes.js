@@ -6,6 +6,12 @@ const {
   subirArchivoOrden,
   actualizarOrden,
   eliminarOrden,
+  totalOrdenesPorRestaurante,
+  ingresosTotalesPorRestaurante,
+  topOBottomPlatillosVendidos,
+  ingresosPorPlatillo,
+  gananciasPorPeriodo,
+  gananciasAgrupadas,
 } = require("../controllers/orden.controller");
 
 /**
@@ -371,5 +377,302 @@ router.patch("/", actualizarOrden);
  *         description: Orden no encontrada
  */
 router.delete("/", eliminarOrden);
+
+/**
+ * @swagger
+ * /orden/total-por-restaurante:
+ *   get:
+ *     summary: Conteo total de órdenes por restaurante
+ *     tags:
+ *       - Orden - Agregaciones
+ *     description: Devuelve la cantidad total de órdenes realizadas por cada restaurante.
+ *     responses:
+ *       200:
+ *         description: Lista con conteo de órdenes por restaurante
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   restaurante_id:
+ *                     type: string
+ *                   nombre_restaurante:
+ *                     type: string
+ *                   total_ordenes:
+ *                     type: integer
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/total-por-restaurante", totalOrdenesPorRestaurante);
+
+/**
+ * @swagger
+ * /orden/ingresos-por-restaurante:
+ *   get:
+ *     summary: Suma total de ingresos por restaurante
+ *     tags:
+ *       - Orden - Agregaciones
+ *     description: Devuelve la suma total del campo `total` de todas las órdenes agrupadas por restaurante.
+ *     responses:
+ *       200:
+ *         description: Lista de ingresos generados por restaurante
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   restaurante_id:
+ *                     type: string
+ *                   nombre_restaurante:
+ *                     type: string
+ *                   ingresos_totales:
+ *                     type: number
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/ingresos-por-restaurante", ingresosTotalesPorRestaurante);
+
+/**
+ * @swagger
+ * /orden/platillos/top-bottom:
+ *   get:
+ *     summary: Platillos más o menos vendidos
+ *     description: Devuelve los N platillos más o menos vendidos por cantidad total solicitada.
+ *     tags:
+ *       - Orden - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           enum: [top, bottom]
+ *           default: top
+ *         description: Define si se devuelven los más vendidos (top) o los menos vendidos (bottom).
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 5
+ *         description: Número máximo de platillos a devolver.
+ *     responses:
+ *       200:
+ *         description: Lista de platillos con su cantidad total vendida.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_platillo:
+ *                     type: string
+ *                     example: "Tacos al pastor"
+ *                   total_vendido:
+ *                     type: integer
+ *                     example: 75
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/platillos/top-bottom", topOBottomPlatillosVendidos);
+
+/**
+ * @swagger
+ * /orden/platillos/ingresos:
+ *   get:
+ *     summary: Ingresos por platillo
+ *     description: Calcula el ingreso total generado por cada platillo (precio x cantidad). Se puede ordenar ascendentemente o descendentemente.
+ *     tags:
+ *       - Orden - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Ordenar por ingresos generados (ascendente o descendente).
+ *     responses:
+ *       200:
+ *         description: Lista de platillos con su ingreso total.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_platillo:
+ *                     type: string
+ *                     example: "Hamburguesa"
+ *                   ingresos:
+ *                     type: number
+ *                     example: 1250.75
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/platillos/ingresos", ingresosPorPlatillo);
+
+/**
+ * @swagger
+ * /orden/ganancias:
+ *   get:
+ *     summary: Ganancias por periodo (mensual o anual)
+ *     description: Retorna las ganancias totales y promedio por mes o año, agrupadas por restaurante. Solo se consideran órdenes con estado "completada".
+ *     tags:
+ *       - Orden - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           enum: [mensual, anual]
+ *           default: mensual
+ *         description: Tipo de agrupación (mensual o anual)
+ *       - in: query
+ *         name: anio
+ *         schema:
+ *           type: integer
+ *           example: 2025
+ *         description: Año específico a filtrar
+ *       - in: query
+ *         name: mes
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 12
+ *           example: 3
+ *         description: Mes específico (solo si tipo es mensual)
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           enum: [monto_total, promedio_ganancia, anio, mes]
+ *           default: monto_total
+ *         description: Campo por el cual ordenar los resultados
+ *       - in: query
+ *         name: orden
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Dirección de ordenamiento
+ *     responses:
+ *       200:
+ *         description: Lista de ganancias por periodo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_restaurante:
+ *                     type: string
+ *                     example: Taquería El Mexicano
+ *                   monto_total:
+ *                     type: number
+ *                     example: 12500
+ *                   promedio_ganancia:
+ *                     type: number
+ *                     example: 520.5
+ *                   anio:
+ *                     type: integer
+ *                     example: 2025
+ *                   mes:
+ *                     type: integer
+ *                     example: 3
+ *       400:
+ *         description: Parámetros inválidos
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/ganancias", gananciasPorPeriodo);
+
+/**
+ * @swagger
+ * /orden/ganancias-agrupadas:
+ *   get:
+ *     summary: Ganancias agrupadas por bloques de meses o por rango de fechas
+ *     description: Retorna las ganancias totales y promedio por restaurante agrupadas en bloques de meses (1, 2, 3, 4, 6, 12) o por un rango de fechas personalizado. Solo se consideran órdenes con estado "completada".
+ *     tags:
+ *       - Orden - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           enum: [bloques, rango]
+ *           default: bloques
+ *         description: Tipo de agrupación (por bloques mensuales o por rango de fechas)
+ *       - in: query
+ *         name: meses
+ *         schema:
+ *           type: integer
+ *           enum: [1, 2, 3, 4, 6, 12]
+ *           default: 1
+ *         description: Tamaño del bloque en meses (solo si tipo es 'bloques')
+ *       - in: query
+ *         name: desde
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: 2023-01-01
+ *         description: Fecha de inicio para el rango (solo si tipo es 'rango')
+ *       - in: query
+ *         name: hasta
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: 2023-03-31
+ *         description: Fecha final para el rango (solo si tipo es 'rango')
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           enum: [monto_total, promedio_ganancia, anio, bloque]
+ *           default: monto_total
+ *         description: Campo por el cual ordenar los resultados
+ *       - in: query
+ *         name: orden
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Dirección de ordenamiento
+ *     responses:
+ *       200:
+ *         description: Lista de ganancias agrupadas por bloque o rango
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_restaurante:
+ *                     type: string
+ *                     example: Pizzería Roma
+ *                   monto_total:
+ *                     type: number
+ *                     example: 4800
+ *                   promedio_ganancia:
+ *                     type: number
+ *                     example: 600
+ *                   anio:
+ *                     type: integer
+ *                     example: 2024
+ *                   bloque:
+ *                     type: integer
+ *                     example: 2
+ *       400:
+ *         description: Parámetros inválidos
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/ganancias-agrupadas", gananciasAgrupadas);
 
 module.exports = router;
