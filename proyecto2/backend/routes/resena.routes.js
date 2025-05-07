@@ -474,59 +474,6 @@ router.get("/promedios", promedioCalificacionesPorRestaurante);
 
 /**
  * @swagger
- * /resena/platillos-mas-resenados:
- *   get:
- *     summary: Listado de platillos más reseñados con promedio de calificación
- *     description: Retorna los platillos que han recibido más reseñas, incluyendo su cantidad total y su calificación promedio.
- *     tags:
- *       - Reseña - Agregaciones
- *     parameters:
- *       - in: query
- *         name: ordenar
- *         schema:
- *           type: string
- *           enum: [asc, desc]
- *           default: desc
- *         description: Dirección del ordenamiento (ascendente o descendente)
- *       - in: query
- *         name: ordenar_por
- *         schema:
- *           type: string
- *           enum: [total_resenas, promedio_calificacion]
- *           default: total_resenas
- *         description: Campo por el cual ordenar los resultados
- *       - in: query
- *         name: limite
- *         schema:
- *           type: integer
- *           default: 10
- *         description: Número máximo de resultados a devolver
- *     responses:
- *       200:
- *         description: Lista de platillos más reseñados
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   nombre_platillo:
- *                     type: string
- *                     example: "Pupusa de queso"
- *                   promedio_calificacion:
- *                     type: number
- *                     example: 4.5
- *                   total_resenas:
- *                     type: integer
- *                     example: 23
- *       500:
- *         description: Error interno del servidor
- */
-router.get("/platillos-mas-resenados", platillosMasResenados);
-
-/**
- * @swagger
  * /resena/negativas:
  *   get:
  *     summary: Reseñas con calificaciones bajas y comentarios
@@ -591,5 +538,57 @@ router.get("/platillos-mas-resenados", platillosMasResenados);
  *         description: Error interno del servidor
  */
 router.get("/negativas", resenasNegativasConComentarios);
+
+/**
+ * @swagger
+ * /resena/platillos-mas-resenados:
+ *   get:
+ *     summary: Análisis de precio vs calificación promedio de platillos
+ *     description: Retorna el precio promedio y la calificación promedio de los platillos más reseñados, agrupados por nombre del platillo.
+ *     tags:
+ *       - Reseña - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Dirección de ordenamiento
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           enum: [precio_promedio, calificacion_promedio, total_resenas]
+ *           default: calificacion_promedio
+ *         description: Campo por el cual ordenar los resultados
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *         description: Número máximo de resultados a devolver
+ *     responses:
+ *       200:
+ *         description: Lista de platillos con su precio y calificación promedio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_platillo:
+ *                     type: string
+ *                   precio_promedio:
+ *                     type: number
+ *                   calificacion_promedio:
+ *                     type: number
+ *                   total_resenas:
+ *                     type: integer
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/platillos-mas-resenados", platillosMasResenados);
 
 module.exports = router;

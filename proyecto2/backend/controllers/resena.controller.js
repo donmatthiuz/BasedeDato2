@@ -329,54 +329,6 @@ exports.promedioCalificacionesPorRestaurante = async (req, res) => {
   }
 };
 
-// Agregación de platillos más reseñados y su promedio de calificación
-exports.platillosMasResenados = async (req, res) => {
-  try {
-    const {
-      ordenar = "desc", // asc | desc
-      ordenar_por = "total_resenas", // o promedio_calificacion
-      limite = 10,
-    } = req.query;
-
-    const sortOrder = ordenar === "asc" ? 1 : -1;
-
-    const resultado = await Resena.aggregate([
-      {
-        $group: {
-          _id: "$menu.nombre",
-          promedio_calificacion: { $avg: "$calificacion" },
-          total_resenas: { $sum: 1 },
-        },
-      },
-      {
-        $project: {
-          nombre_platillo: "$_id",
-          promedio_calificacion: {
-            $round: ["$promedio_calificacion", 2],
-          },
-          total_resenas: 1,
-          _id: 0,
-        },
-      },
-      {
-        $sort: {
-          [ordenar_por]: sortOrder,
-        },
-      },
-      {
-        $limit: parseInt(limite),
-      },
-    ]).hint({ "menu.nombre": 1, calificacion: -1 });
-
-    res.status(200).json(resultado);
-  } catch (error) {
-    res.status(500).json({
-      error: "Error al obtener platillos más reseñados",
-      detalle: error.message,
-    });
-  }
-};
-
 // Reseñas con calificación baja definida por el usuario
 exports.resenasNegativasConComentarios = async (req, res) => {
   try {
@@ -434,6 +386,47 @@ exports.resenasNegativasConComentarios = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       error: "Error al obtener reseñas negativas",
+      detalle: error.message,
+    });
+  }
+};
+
+// Análisis de precio vs calificación promedio de platillos
+exports.platillosMasResenados = async (req, res) => {
+  try {
+    const {
+      ordenar = "desc",
+      ordenar_por = "calificacion_promedio",
+      limite = 50,
+    } = req.query;
+    const sortOrder = ordenar === "asc" ? 1 : -1;
+
+    const resultado = await Resena.aggregate([
+      {
+        $group: {
+          _id: "$menu.nombre",
+          precio_promedio: { $avg: "$menu.precio" },
+          calificacion_promedio: { $avg: "$calificacion" },
+          total_resenas: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          nombre_platillo: "$_id",
+          precio_promedio: 1,
+          calificacion_promedio: 1,
+          total_resenas: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { [ordenar_por]: sortOrder } },
+      { $limit: parseInt(limite) },
+    ]).hint({ "menu.nombre": 1, calificacion: -1 });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error en el análisis precio vs calificación",
       detalle: error.message,
     });
   }
