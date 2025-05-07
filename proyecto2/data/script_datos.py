@@ -23,6 +23,11 @@ def generar_nombre_restaurante(categoria):
     }
     return random.choice(nombres[categoria])
 
+def formato_fecha_mongodb(fecha_datetime):
+    return {
+        "$date": fecha_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    }
+
 def generar_datos():
     # 1. Restaurantes (1 por categoría)
     restaurantes = [{
@@ -41,7 +46,7 @@ def generar_datos():
         "direccion": fake.address(),
         "telefono": fake.phone_number(),
         "contra": fake.password(),
-        "fecha_registro": fake.date_time_between(start_date="-1y").strftime("%Y-%m-%dT%H:%M:%SZ")
+        "fecha_registro": formato_fecha_mongodb(fake.date_time_between(start_date="-1y"))
     } for _ in range(int(TOTAL_DOCS * 0.08))]
 
     # 3. Menú - Asegurando mínimo 5 platillos por categoría
@@ -93,7 +98,7 @@ def generar_datos():
             "_id": generar_id(),
             "usuario_id": usuario["_id"],
             "restaurante_id": restaurante["_id"],
-            "fecha": fake.date_time_between(start_date="-1y").strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "fecha": formato_fecha_mongodb(fake.date_time_between(start_date="-1y")),
             "estado": random.choices(["completada", "cancelada", "preparando"], weights=[0.8, 0.1, 0.1])[0],
             "platillos": platillos,
             "total": sum(p["precio_unitario"] * p["cantidad"] for p in platillos)
@@ -107,7 +112,11 @@ def generar_datos():
             break
             
         orden = random.choice(ordenes_completadas)
-        fecha_orden = datetime.strptime(orden["fecha"], "%Y-%m-%dT%H:%M:%SZ")
+        if isinstance(orden["fecha"], dict) and "$date" in orden["fecha"]:
+            fecha_orden_str = orden["fecha"]["$date"]
+            fecha_orden = datetime.strptime(fecha_orden_str, "%Y-%m-%dT%H:%M:%SZ")
+        else:
+            fecha_orden = datetime.strptime(orden["fecha"], "%Y-%m-%dT%H:%M:%SZ")
         resenas.append({
             "_id": generar_id(),
             "orden_id": orden["_id"],
@@ -115,7 +124,7 @@ def generar_datos():
             "restaurante_id": orden["restaurante_id"],
             "calificacion": random.randint(1, 5),
             "comentario": fake.paragraph(nb_sentences=2),
-            "fecha": fake.date_time_between(start_date=fecha_orden).strftime("%Y-%m-%dT%H:%M:%SZ")
+            "fecha": formato_fecha_mongodb(fake.date_time_between(start_date=fecha_orden))
         })
 
     return {
