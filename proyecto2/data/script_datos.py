@@ -35,7 +35,10 @@ def generar_datos():
         "nombre": generar_nombre_restaurante(categoria),
         "categoria": categoria,
         "direccion": fake.address(),
-        "coordenadas": [float(fake.longitude()), float(fake.latitude())],
+        "coordenadas": {
+            "type": "Point",
+            "coordinates": [float(fake.longitude()), float(fake.latitude())]
+        },
         "telefono": fake.phone_number()
     } for categoria in CATEGORIAS]
 
@@ -45,6 +48,10 @@ def generar_datos():
         "nombre": fake.name(),
         "email": fake.email(),
         "direccion": fake.address(),
+        "coordenadas": {
+            "type": "Point",
+            "coordinates": [float(fake.longitude()), float(fake.latitude())]
+        },
         "telefono": fake.phone_number(),
         "contra": fake.password(),
         "fecha_registro": formato_fecha_mongodb(fake.date_time_between(start_date="-1y"))

@@ -1,57 +1,72 @@
 [
   {
-    "_id": "9ba8ddca-f672-42a5-a3b9-6de302ec6809",
+    "_id": "d66de111-323d-4b1a-9c3a-ed6c1348a817",
     "nombre": "La Carnicería",
     "categoria": "Parrillada",
-    "direccion": "Plaza Leandra Alvarado 17\nJaén, 41271",
-    "coordenadas": [
-      -59.535875,
-      -53.6526355
-    ],
-    "telefono": "+34 826137283"
+    "direccion": "Vial de Martín Ibañez 44\nAlbacete, 32361",
+    "coordenadas": {
+      "type": "Point",
+      "coordinates": [
+        9.937587,
+        85.8396975
+      ]
+    },
+    "telefono": "+34726 39 02 45"
   },
   {
-    "_id": "caa93adc-df10-497c-a204-30a6c8758408",
-    "nombre": "Sakura",
+    "_id": "d4d9ead7-dca8-411f-9e09-63b1eeedac21",
+    "nombre": "Wok Dynasty",
     "categoria": "Asiatica",
-    "direccion": "Calle Juan José Pintor 45 Puerta 4 \nBadajoz, 20698",
-    "coordenadas": [
-      36.997341,
-      -89.8760835
-    ],
-    "telefono": "+34960 020 414"
+    "direccion": "Paseo de Anastasia Rivera 26\nMadrid, 51386",
+    "coordenadas": {
+      "type": "Point",
+      "coordinates": [
+        147.471025,
+        -73.293352
+      ]
+    },
+    "telefono": "+34 881 893 195"
   },
   {
-    "_id": "434b2890-e4c3-4b9a-b25d-b17887d9887a",
-    "nombre": "Pasta Amore",
+    "_id": "a449b86c-fc82-4f90-9009-81c97b37df59",
+    "nombre": "Cucina della Mamma",
     "categoria": "Italiana",
-    "direccion": "Ronda Sancho Mateos 5 Puerta 4 \nLas Palmas, 31791",
-    "coordenadas": [
-      121.365722,
-      16.835443
-    ],
-    "telefono": "+34 925913060"
+    "direccion": "Ronda de Kike Mir 90\nJaén, 06979",
+    "coordenadas": {
+      "type": "Point",
+      "coordinates": [
+        -67.809378,
+        -8.1360955
+      ]
+    },
+    "telefono": "+34 986437445"
   },
   {
-    "_id": "844f4472-b7d6-4a3e-af9f-df312627ecd7",
-    "nombre": "Tierra Verde",
+    "_id": "3760477c-2f19-40e3-90f0-039a723466c9",
+    "nombre": "Verde Vida",
     "categoria": "Vegetariana",
-    "direccion": "Vial Isabel Sedano 602\nTarragona, 52019",
-    "coordenadas": [
-      -47.921171,
-      5.3495195
-    ],
-    "telefono": "+34881 002 718"
+    "direccion": "Acceso de Chus Riba 28\nPontevedra, 51509",
+    "coordenadas": {
+      "type": "Point",
+      "coordinates": [
+        -14.342831,
+        44.163592
+      ]
+    },
+    "telefono": "+34 986 028 694"
   },
   {
-    "_id": "0283c344-a1bb-4864-8d16-ad199421099f",
+    "_id": "5cca1465-fed0-4faf-ba16-54bbc0780eda",
     "nombre": "Rápido y Sabroso",
     "categoria": "Rápida",
-    "direccion": "Camino de Sara Canales 222\nCiudad, 08527",
-    "coordenadas": [
-      -1.004648,
-      -22.591162
-    ],
-    "telefono": "+34 986 135 097"
+    "direccion": "Rambla Mateo Fabra 9 Puerta 4 \nSalamanca, 30626",
+    "coordenadas": {
+      "type": "Point",
+      "coordinates": [
+        36.468729,
+        53.7956025
+      ]
+    },
+    "telefono": "+34 925908940"
   }
 ]
