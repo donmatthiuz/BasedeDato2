@@ -8,6 +8,8 @@ const {
   eliminarResena,
 } = require("../controllers/resena.controller");
 
+// --- CRUD ---
+
 /**
  * @swagger
  * /resena:
@@ -411,5 +413,7 @@ router.patch("/", actualizarResena);
  *         description: Error en los datos enviados o falta de _id
  */
 router.delete("/", eliminarResena);
+
+// --- AGREGACIONES ---
 
 module.exports = router;

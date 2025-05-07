@@ -33,12 +33,7 @@ Este informe busca evaluar el comportamiento económico y operativo de los resta
 
 ### 4. Distribución de Estados de Órdenes
 
-* Conteo de órdenes por estado (`pendiente`, `completada`, `cancelada`, etc.).
+* Conteo de órdenes por estado (`pendiente`, `completada`, `cancelada`, etc.) por restaurante.
+* Identificación de los restaurantes con mayores porcentajes de órdenes canceladas o pendientes.
 
-**Análisis:** Refleja la eficiencia operativa del sistema. Un número alto de órdenes canceladas o pendientes puede indicar problemas logísticos o de atención.
-
-### 5. Productos del Menú No Ordenados
-
-* Identificación de artículos del menú que no aparecen en ninguna orden.
-
-**Análisis:** Estos datos revelan oportunidades de mejora en la oferta gastronómica. Los productos no demandados podrían promocionarse más, modificarse o eliminarse para optimizar el menú.
+**Análisis:** Refleja la eficiencia operativa del sistema. Un número alto de órdenes canceladas o pendientes puede indicar problemas logísticos o de atención. El estado de las órdenes proporciona información sobre la eficiencia operativa de cada restaurante. Un alto porcentaje de órdenes pendientes o canceladas podría indicar problemas en la gestión de pedidos, tiempos de espera largos o incluso insatisfacción del cliente. Esto proporciona a los restaurantes una visión crítica de la eficacia de sus operaciones.

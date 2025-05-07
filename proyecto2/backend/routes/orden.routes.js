@@ -15,6 +15,8 @@ const {
   gananciasPorRango,
 } = require("../controllers/orden.controller");
 
+// --- CRUD ---
+
 /**
  * @swagger
  * /orden:
@@ -378,6 +380,8 @@ router.patch("/", actualizarOrden);
  *         description: Orden no encontrada
  */
 router.delete("/", eliminarOrden);
+
+// --- AGREGACIONES ---
 
 /**
  * @swagger

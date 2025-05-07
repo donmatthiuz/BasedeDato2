@@ -25,28 +25,14 @@ Este informe tiene como objetivo evaluar el desempeño de los restaurantes regis
 
 **Análisis:** Al identificar los platillos más populares, este análisis puede ayudar a los restaurantes a conocer qué productos son más atractivos para sus clientes. Además, conocer la calificación promedio de estos productos ayuda a entender si las expectativas se están cumpliendo y si es necesario hacer ajustes en el menú.
 
-### 3. Total de Órdenes por Usuario
-
-* Número total de órdenes realizadas por cada usuario.
-* Identificación de los usuarios más frecuentes.
-
-**Análisis:** Medir la frecuencia de pedidos por usuario permite identificar patrones de comportamiento de compra y niveles de lealtad hacia los restaurantes. Este análisis también es útil para descubrir a los usuarios más recurrentes, lo que podría ofrecer oportunidades para programas de fidelización y promociones especiales.
-
-### 4. Estado de las Órdenes por Restaurante
-
-* Número de órdenes pendientes, completadas y canceladas por cada restaurante.
-* Identificación de los restaurantes con mayores porcentajes de órdenes canceladas o pendientes.
-
-**Análisis:** El estado de las órdenes proporciona información sobre la eficiencia operativa de cada restaurante. Un alto porcentaje de órdenes pendientes o canceladas podría indicar problemas en la gestión de pedidos, tiempos de espera largos o incluso insatisfacción del cliente. Esto proporciona a los restaurantes una visión crítica de la eficacia de sus operaciones.
-
-### 5. Reseñas con Baja Calificación
+### 3. Reseñas con Baja Calificación
 
 * Identificación de las reseñas con calificación de 1 o 2 estrellas.
 * Análisis de los comentarios asociados a estas reseñas.
 
 **Análisis:** Las reseñas de baja calificación proporcionan una visión clara de los puntos débiles de un restaurante. Estos comentarios permiten a los restaurantes identificar áreas de mejora y ofrecer soluciones para mejorar la experiencia del cliente, como mejorar la calidad de los platillos, el servicio o la rapidez en la atención.
 
-### 6. Usuarios Recurrentes por Restaurante
+### 4. Usuarios Recurrentes por Restaurante
 
 * Número de usuarios recurrentes que realizan múltiples pedidos en un restaurante.
 * Identificación de los restaurantes con una mayor base de clientes leales.

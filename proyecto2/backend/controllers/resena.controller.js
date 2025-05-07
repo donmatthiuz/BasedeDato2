@@ -4,6 +4,8 @@ const fs = require("fs");
 
 const upload = multer({ dest: "uploads/" });
 
+// --- CRUD ---
+
 exports.subirArchivoResena = [
   upload.single("resena"), // nombre del campo esperado: "resena"
   async (req, res) => {
@@ -266,3 +268,5 @@ exports.eliminarResena = async (req, res) => {
       .json({ error: "Error al eliminar reseña(s)", detalle: error.message });
   }
 };
+
+// --- AGREGACIONES ---
