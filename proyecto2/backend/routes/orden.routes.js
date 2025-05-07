@@ -13,6 +13,7 @@ const {
   gananciasPorPeriodo,
   gananciasPorBloques,
   gananciasPorRango,
+  estadisticasPorEstado,
 } = require("../controllers/orden.controller");
 
 // --- CRUD ---
@@ -721,5 +722,60 @@ router.get("/ganancias/bloques", gananciasPorBloques);
  *         description: Error interno del servidor
  */
 router.get("/ganancias/rango", gananciasPorRango);
+
+/**
+ * @swagger
+ * /orden/estadisticas/estado:
+ *   get:
+ *     summary: Estadísticas de órdenes por estado por restaurante
+ *     description: Retorna el porcentaje de órdenes en un estado específico (como canceladas o pendientes) agrupadas por restaurante.
+ *     tags:
+ *       - Orden - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: estado
+ *         schema:
+ *           type: string
+ *           example: cancelada
+ *         description: Estado de la orden a calcular el porcentaje (ej. completada, cancelada, pendiente)
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Dirección de ordenamiento del porcentaje
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Número de restaurantes a devolver
+ *     responses:
+ *       200:
+ *         description: Lista de restaurantes con porcentaje de órdenes en el estado indicado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_restaurante:
+ *                     type: string
+ *                     example: Restaurante El Buen Comer
+ *                   total_ordenes:
+ *                     type: integer
+ *                     example: 200
+ *                   porcentaje_estado:
+ *                     type: number
+ *                     example: 25.5
+ *                   estado:
+ *                     type: string
+ *                     example: cancelada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/estadisticas/estado", estadisticasPorEstado);
 
 module.exports = router;

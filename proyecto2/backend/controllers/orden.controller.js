@@ -665,3 +665,100 @@ exports.gananciasPorRango = async (req, res) => {
     });
   }
 };
+
+// Conteo por estado y porcentaje por restaurante
+exports.estadisticasPorEstado = async (req, res) => {
+  try {
+    const { estado = "cancelada", ordenar = "desc", limite = 10 } = req.query;
+    const sortOrder = ordenar === "asc" ? 1 : -1;
+
+    const pipeline = [
+      {
+        $group: {
+          _id: {
+            restaurante_id: "$restaurante_id",
+            estado: "$estado",
+          },
+          total: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.restaurante_id",
+          estados: {
+            $push: {
+              estado: "$_id.estado",
+              total: "$total",
+            },
+          },
+          total_ordenes: { $sum: "$total" },
+        },
+      },
+      {
+        $addFields: {
+          porcentaje_estado: {
+            $let: {
+              vars: {
+                estadoMatch: {
+                  $arrayElemAt: [
+                    {
+                      $filter: {
+                        input: "$estados",
+                        cond: { $eq: ["$$this.estado", estado] },
+                      },
+                    },
+                    0,
+                  ],
+                },
+              },
+              in: {
+                $cond: [
+                  { $ifNull: ["$$estadoMatch", false] },
+                  {
+                    $multiply: [
+                      { $divide: ["$$estadoMatch.total", "$total_ordenes"] },
+                      100,
+                    ],
+                  },
+                  0,
+                ],
+              },
+            },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $project: {
+          nombre_restaurante: "$restaurante.nombre",
+          total_ordenes: 1,
+          porcentaje_estado: 1,
+          estado: estado,
+          _id: 0,
+        },
+      },
+      { $sort: { porcentaje_estado: sortOrder } },
+      { $limit: parseInt(limite) },
+    ];
+
+    const resultado = await Orden.aggregate(pipeline).hint({
+      restaurante_id: 1,
+      estado: 1,
+    });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al calcular estadísticas por estado",
+      detalle: error.message,
+    });
+  }
+};
