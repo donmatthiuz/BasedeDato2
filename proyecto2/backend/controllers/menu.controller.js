@@ -1,10 +1,12 @@
 const Menu = require("../models/Menu");
+const Restaurante = require("../models/Restaurante");
 const multer = require("multer");
 const fs = require("fs");
 
 // Middleware para archivo
 const upload = multer({ dest: "uploads/" }); // crea carpeta si no existe
 
+// --- CRUD ---
 exports.subirArchivoMenu = [
   upload.single("menu"), // nombre del campo esperado: "menu"
   async (req, res) => {
@@ -206,6 +208,491 @@ exports.eliminarArticulo = async (req, res) => {
   } catch (error) {
     res.status(400).json({
       error: "Error al eliminar artículo(s)",
+      detalle: error.message,
+    });
+  }
+};
+
+// --- AGREGACIONES ---
+exports.cantidadArticulosPorRestaurante = async (req, res) => {
+  try {
+    const resultado = await Menu.aggregate([
+      {
+        $group: {
+          _id: "$restaurante_id",
+          cantidad_articulos: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      {
+        $unwind: "$restaurante",
+      },
+      {
+        $project: {
+          restaurante_id: "$_id",
+          nombre_restaurante: "$restaurante.nombre",
+          cantidad_articulos: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { cantidad_articulos: -1 } },
+    ]);
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al agrupar artículos por restaurante",
+      detalle: error.message,
+    });
+  }
+};
+
+exports.restaurantesSegunCantidadMenus = async (req, res) => {
+  try {
+    const {
+      min = 0,
+      max = Number.MAX_SAFE_INTEGER,
+      ordenar = "desc",
+    } = req.query;
+    const sortOrder = ordenar === "asc" ? 1 : -1;
+
+    const resultado = await Menu.aggregate([
+      {
+        $group: {
+          _id: "$restaurante_id",
+          cantidad_articulos: { $sum: 1 },
+          nombres_articulos: { $addToSet: "$nombre" },
+        },
+      },
+      {
+        $match: {
+          cantidad_articulos: {
+            $gte: parseInt(min),
+            $lte: parseInt(max),
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $project: {
+          restaurante_id: "$_id",
+          nombre_restaurante: "$restaurante.nombre",
+          cantidad_articulos: 1,
+          nombres_articulos: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { cantidad_articulos: sortOrder } },
+    ]);
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al obtener restaurantes con más/menos menús",
+      detalle: error.message,
+    });
+  }
+};
+
+// Promedio de precio del menú por restaurante
+exports.promedioPrecioPorRestaurante = async (req, res) => {
+  try {
+    const { ordenar = "desc" } = req.query;
+    const sortOrder = ordenar === "asc" ? 1 : -1;
+
+    const resultado = await Menu.aggregate([
+      {
+        $group: {
+          _id: "$restaurante_id",
+          promedio_precio: { $avg: "$precio" },
+        },
+      },
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $project: {
+          restaurante_id: "$_id",
+          nombre_restaurante: "$restaurante.nombre",
+          promedio_precio: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { promedio_precio: sortOrder } },
+    ]).hint({ restaurante_id: 1 });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al calcular promedios por restaurante",
+      detalle: error.message,
+    });
+  }
+};
+
+// Artículo más barato y más caro por restaurante
+exports.articuloExtremosPorRestaurante = async (req, res) => {
+  try {
+    const resultado = await Menu.aggregate([
+      { $sort: { precio: 1 } },
+      {
+        $group: {
+          _id: "$restaurante_id",
+          mas_barato: { $first: "$$ROOT" },
+          mas_caro: { $last: "$$ROOT" },
+        },
+      },
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $project: {
+          restaurante_id: "$_id",
+          nombre_restaurante: "$restaurante.nombre",
+          mas_barato: {
+            nombre: "$mas_barato.nombre",
+            precio: "$mas_barato.precio",
+          },
+          mas_caro: {
+            nombre: "$mas_caro.nombre",
+            precio: "$mas_caro.precio",
+          },
+          _id: 0,
+        },
+      },
+    ]).hint({ restaurante_id: 1 });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al obtener extremos de menú por restaurante",
+      detalle: error.message,
+    });
+  }
+};
+
+// Top o bottom N restaurantes por promedio de precios del menú
+exports.topOBottomRestaurantesPorPrecioPromedio = async (req, res) => {
+  try {
+    const { tipo = "top", limite = 5 } = req.query;
+    const sortOrder = tipo === "bottom" ? 1 : -1;
+
+    const resultado = await Menu.aggregate([
+      {
+        $group: {
+          _id: "$restaurante_id",
+          promedio_precio: { $avg: "$precio" },
+        },
+      },
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $project: {
+          restaurante_id: "$_id",
+          nombre_restaurante: "$restaurante.nombre",
+          promedio_precio: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { promedio_precio: sortOrder } },
+      { $limit: parseInt(limite) },
+    ]).hint({ restaurante_id: 1 });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al obtener ranking de restaurantes por precio promedio",
+      detalle: error.message,
+    });
+  }
+};
+
+// Promedio de precio por categoría de restaurante
+exports.promedioPrecioPorCategoria = async (req, res) => {
+  try {
+    const resultado = await Menu.aggregate([
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "restaurante_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $group: {
+          _id: "$restaurante.categoria",
+          promedio_precio: { $avg: "$precio" },
+          total_articulos: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          categoria: "$_id",
+          promedio_precio: 1,
+          total_articulos: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { promedio_precio: -1 } },
+    ]).hint({ restaurante_id: 1 });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al calcular el promedio de precios por categoría",
+      detalle: error.message,
+    });
+  }
+};
+
+// Distribución de precios por zona + extremos
+exports.distribucionPreciosPorZona = async (req, res) => {
+  try {
+    const { ordenar = "none", limite = 0 } = req.query;
+    const sortStage =
+      ordenar === "asc"
+        ? { $sort: { promedio_precio: 1 } }
+        : ordenar === "desc"
+        ? { $sort: { promedio_precio: -1 } }
+        : null;
+
+    const pipeline = [
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "restaurante_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $addFields: {
+          zona: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $and: [
+                      {
+                        $gt: [
+                          {
+                            $arrayElemAt: [
+                              "$restaurante.coordenadas.coordinates",
+                              1,
+                            ],
+                          },
+                          0,
+                        ],
+                      },
+                      {
+                        $gte: [
+                          {
+                            $arrayElemAt: [
+                              "$restaurante.coordenadas.coordinates",
+                              0,
+                            ],
+                          },
+                          0,
+                        ],
+                      },
+                    ],
+                  },
+                  then: "NE",
+                },
+                {
+                  case: {
+                    $and: [
+                      {
+                        $gt: [
+                          {
+                            $arrayElemAt: [
+                              "$restaurante.coordenadas.coordinates",
+                              1,
+                            ],
+                          },
+                          0,
+                        ],
+                      },
+                      {
+                        $lt: [
+                          {
+                            $arrayElemAt: [
+                              "$restaurante.coordenadas.coordinates",
+                              0,
+                            ],
+                          },
+                          0,
+                        ],
+                      },
+                    ],
+                  },
+                  then: "NW",
+                },
+                {
+                  case: {
+                    $and: [
+                      {
+                        $lt: [
+                          {
+                            $arrayElemAt: [
+                              "$restaurante.coordenadas.coordinates",
+                              1,
+                            ],
+                          },
+                          0,
+                        ],
+                      },
+                      {
+                        $lt: [
+                          {
+                            $arrayElemAt: [
+                              "$restaurante.coordenadas.coordinates",
+                              0,
+                            ],
+                          },
+                          0,
+                        ],
+                      },
+                    ],
+                  },
+                  then: "SW",
+                },
+                {
+                  case: {
+                    $and: [
+                      {
+                        $lt: [
+                          {
+                            $arrayElemAt: [
+                              "$restaurante.coordenadas.coordinates",
+                              1,
+                            ],
+                          },
+                          0,
+                        ],
+                      },
+                      {
+                        $gte: [
+                          {
+                            $arrayElemAt: [
+                              "$restaurante.coordenadas.coordinates",
+                              0,
+                            ],
+                          },
+                          0,
+                        ],
+                      },
+                    ],
+                  },
+                  then: "SE",
+                },
+                {
+                  case: {
+                    $gte: [
+                      {
+                        $arrayElemAt: [
+                          "$restaurante.coordenadas.coordinates",
+                          1,
+                        ],
+                      },
+                      0,
+                    ],
+                  },
+                  then: "N",
+                },
+                {
+                  case: {
+                    $lt: [
+                      {
+                        $arrayElemAt: [
+                          "$restaurante.coordenadas.coordinates",
+                          1,
+                        ],
+                      },
+                      0,
+                    ],
+                  },
+                  then: "S",
+                },
+              ],
+              default: "Desconocido",
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            zona: "$zona",
+            restaurante_id: "$restaurante._id",
+            nombre: "$restaurante.nombre",
+          },
+          promedio_precio: { $avg: "$precio" },
+          max_precio: { $max: "$precio" },
+          min_precio: { $min: "$precio" },
+        },
+      },
+      {
+        $project: {
+          zona: "$_id.zona",
+          restaurante_id: "$_id.restaurante_id",
+          nombre_restaurante: "$_id.nombre",
+          promedio_precio: 1,
+          max_precio: 1,
+          min_precio: 1,
+          _id: 0,
+        },
+      },
+    ];
+
+    if (sortStage) pipeline.push(sortStage);
+    if (limite > 0) pipeline.push({ $limit: parseInt(limite) });
+
+    const resultado = await Menu.aggregate(pipeline).hint({
+      restaurante_id: 1,
+    });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al analizar precios por zona",
       detalle: error.message,
     });
   }

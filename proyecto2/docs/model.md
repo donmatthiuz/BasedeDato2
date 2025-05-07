@@ -115,6 +115,15 @@ Este modelo representa un platillo o producto ofrecido en el menú de un restaur
 
    > Permite búsquedas por nombre y descripción del platillo.
 
+3. **Índice para agregaciones por precio:**
+
+   ```js
+   db.menu.createIndex({ restaurante_id: 1, precio: 1 })
+   db.menu.createIndex({ restaurante_id: 1})
+   ```
+
+   > Mejora el rendimiento de agregaciones como promedio, máximo y mínimo por restaurante.
+
 ## Usuario
 
 Este modelo representa un usuario registrado en la plataforma.

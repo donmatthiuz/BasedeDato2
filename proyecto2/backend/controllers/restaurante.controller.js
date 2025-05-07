@@ -4,7 +4,7 @@ const fs = require("fs");
 
 const upload = multer({ dest: "uploads/" });
 
-// --- CRUD RESTAURANTE ---
+// --- CRUD ---
 
 exports.subirArchivoRestaurante = [
   upload.single("restaurante"), // nombre del campo esperado: "restaurante"

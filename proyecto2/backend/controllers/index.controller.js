@@ -23,6 +23,8 @@ exports.aplicarIndices = async (req, res) => {
       db
         .collection("menu")
         .createIndex({ nombre: "text", descripcion: "text" }),
+      db.collection("menu").createIndex({ restaurante_id: 1 }),
+      db.collection("menu").createIndex({ restaurante_id: 1, precio: 1 }),
 
       // Usuario
       db

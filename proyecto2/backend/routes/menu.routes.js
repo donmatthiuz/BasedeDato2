@@ -6,6 +6,13 @@ const {
   subirArchivoMenu,
   actualizarArticulo,
   eliminarArticulo,
+  cantidadArticulosPorRestaurante,
+  restaurantesSegunCantidadMenus,
+  promedioPrecioPorRestaurante,
+  articuloExtremosPorRestaurante,
+  topOBottomRestaurantesPorPrecioPromedio,
+  promedioPrecioPorCategoria,
+  distribucionPreciosPorZona,
 } = require("../controllers/menu.controller");
 
 /**
@@ -299,5 +306,299 @@ router.patch("/", actualizarArticulo);
  *         description: Error al procesar la solicitud de eliminación
  */
 router.delete("/", eliminarArticulo);
+
+/**
+ * @swagger
+ * /menu/cantidad-por-restaurante:
+ *   get:
+ *     summary: Obtener la cantidad de artículos del menú por restaurante
+ *     tags:
+ *       - Menú - Agregaciones
+ *     responses:
+ *       200:
+ *         description: Lista de restaurantes con la cantidad de artículos del menú.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   restaurante_id:
+ *                     type: string
+ *                     example: "663bc7a917bac5271c712ca1"
+ *                   nombre_restaurante:
+ *                     type: string
+ *                     example: "La Parrilla del Chef"
+ *                   cantidad_articulos:
+ *                     type: integer
+ *                     example: 12
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/cantidad-por-restaurante", cantidadArticulosPorRestaurante);
+
+/**
+ * @swagger
+ * /menu/restaurantes-por-menu:
+ *   get:
+ *     summary: Restaurantes con mayor o menor número de platillos
+ *     tags:
+ *       - Menú - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: min
+ *         schema:
+ *           type: integer
+ *           example: 5
+ *         description: Mínimo número de platillos registrados (opcional)
+ *       - in: query
+ *         name: max
+ *         schema:
+ *           type: integer
+ *           example: 20
+ *         description: Máximo número de platillos registrados (opcional)
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           example: desc
+ *         description: Orden ascendente o descendente por cantidad
+ *     responses:
+ *       200:
+ *         description: Lista de restaurantes con detalle de artículos según cantidad de menús
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   restaurante_id:
+ *                     type: string
+ *                     example: "663bc7a917bac5271c712ca1"
+ *                   nombre_restaurante:
+ *                     type: string
+ *                     example: "La Parrilla del Chef"
+ *                   cantidad_articulos:
+ *                     type: integer
+ *                     example: 15
+ *                   nombres_articulos:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                       example: "Taco al Pastor"
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/restaurantes-por-menu", restaurantesSegunCantidadMenus);
+
+/**
+ * @swagger
+ * /menu/promedio:
+ *   get:
+ *     summary: Promedio de precios por restaurante
+ *     description: Calcula el precio promedio de artículos del menú por restaurante.
+ *     tags:
+ *       - Menú - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *         description: Orden del promedio (ascendente o descendente)
+ *     responses:
+ *       200:
+ *         description: Lista de restaurantes con precio promedio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   restaurante_id:
+ *                     type: string
+ *                   nombre_restaurante:
+ *                     type: string
+ *                   promedio_precio:
+ *                     type: number
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/promedio", promedioPrecioPorRestaurante);
+
+/**
+ * @swagger
+ * /menu/extremos:
+ *   get:
+ *     summary: Artículo más barato y más caro por restaurante
+ *     description: Devuelve el platillo más barato y más caro para cada restaurante.
+ *     tags:
+ *       - Menú - Agregaciones
+ *     responses:
+ *       200:
+ *         description: Lista con extremos de precio por restaurante
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   restaurante_id:
+ *                     type: string
+ *                   nombre_restaurante:
+ *                     type: string
+ *                   mas_barato:
+ *                     type: object
+ *                     properties:
+ *                       nombre:
+ *                         type: string
+ *                       precio:
+ *                         type: number
+ *                   mas_caro:
+ *                     type: object
+ *                     properties:
+ *                       nombre:
+ *                         type: string
+ *                       precio:
+ *                         type: number
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/extremos", articuloExtremosPorRestaurante);
+
+/**
+ * @swagger
+ * /menu/precios/top-bottom:
+ *   get:
+ *     summary: Restaurantes con precios promedio más altos o bajos
+ *     description: Retorna los N restaurantes cuyo precio promedio es mayor (`top`) o menor (`bottom`), según el parámetro `tipo`.
+ *     tags:
+ *       - Menú - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           enum: [top, bottom]
+ *           default: top
+ *         description: Define si se devuelven los de precios más altos (`top`) o bajos (`bottom`)
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 5
+ *         description: Número máximo de restaurantes a devolver
+ *     responses:
+ *       200:
+ *         description: Lista de restaurantes con su precio promedio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   restaurante_id:
+ *                     type: string
+ *                   nombre_restaurante:
+ *                     type: string
+ *                   promedio_precio:
+ *                     type: number
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/precios/top-bottom", topOBottomRestaurantesPorPrecioPromedio);
+
+/**
+ * @swagger
+ * /menu/promedio-por-categoria:
+ *   get:
+ *     summary: Promedio de precios por categoría de restaurante
+ *     description: Calcula el precio promedio de los artículos de menú agrupados por la categoría del restaurante.
+ *     tags:
+ *       - Menú - Agregaciones
+ *     responses:
+ *       200:
+ *         description: Lista de categorías con su precio promedio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   categoria:
+ *                     type: string
+ *                     example: Mexicana
+ *                   promedio_precio:
+ *                     type: number
+ *                     example: 85.25
+ *                   total_articulos:
+ *                     type: integer
+ *                     example: 12
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/promedio-por-categoria", promedioPrecioPorCategoria);
+
+/**
+ * @swagger
+ * /menu/precios/zona:
+ *   get:
+ *     summary: Distribución de precios de menú por región geográfica
+ *     description: Calcula el promedio, precio mínimo y máximo de menú por restaurante agrupado por zona (N, S, NE, NW, SE, SW). Se puede ordenar por precio promedio y limitar resultados.
+ *     tags:
+ *       - Menú - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Orden de los precios promedios
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           example: 5
+ *         description: Límite de resultados por región
+ *     responses:
+ *       200:
+ *         description: Distribución de precios por zona
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   zona:
+ *                     type: string
+ *                     example: NE
+ *                   restaurantes:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         restaurante_id:
+ *                           type: string
+ *                         nombre_restaurante:
+ *                           type: string
+ *                         promedio_precio:
+ *                           type: number
+ *                         precio_min:
+ *                           type: number
+ *                         precio_max:
+ *                           type: number
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/precios/zona", distribucionPreciosPorZona);
 
 module.exports = router;

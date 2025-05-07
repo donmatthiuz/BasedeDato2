@@ -27,20 +27,13 @@ Este análisis es útil tanto para la administración interna como para diseñar
 
 **Análisis:** Aquí se evalúan las políticas de precios de cada restaurante, facilitando la comparación entre locales económicos, intermedios y premium. También se detectan posibles inconsistencias o estrategias de valor en la estructura de precios interna.
 
-### 3. Disponibilidad Operativa del Menú
-
-* Restaurantes con mayor cantidad de artículos disponibles.
-* Restaurantes con todos sus artículos no disponibles.
-
-**Análisis:** Esta sección permite evaluar el nivel de operatividad o actividad comercial en cada restaurante. Una alta disponibilidad refleja capacidad de servicio activa; la ausencia total puede ser señal de cierres, falta de mantenimiento de datos o errores de carga.
-
-### 4. Comparativa por Categoría Gastronómica
+### 3. Comparativa por Categoría Gastronómica
 
 * Promedio de precio por categoría de restaurante.
 
 **Análisis:** Al agrupar por tipo de cocina, se pueden observar tendencias de precios comunes a ciertas categorías. Esto facilita el análisis de mercado y la identificación de posicionamientos diferenciados por estilo gastronómico.
 
-### 5. Geolocalización y Precios
+### 4. Geolocalización y Precios
 
 * Distribución de precios de menú por región (norte, sur, este, oeste).
 * Restaurantes con precios extremos (muy altos o muy bajos) según ubicación.
