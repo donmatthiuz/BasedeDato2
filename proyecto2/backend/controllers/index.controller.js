@@ -35,6 +35,9 @@ exports.aplicarIndices = async (req, res) => {
       // Orden
       db.collection("orden").createIndex({ usuario_id: 1, fecha: -1 }),
       db.collection("orden").createIndex({ restaurante_id: 1 }),
+      db.collection("orden").createIndex({ fecha: 1, restaurante_id: 1 }),
+      db.collection("orden").createIndex({ restaurante_id: 1, estado: 1 }),
+      db.collection("orden").createIndex({ usuario_id: 1, restaurante_id: 1 }),
 
       // Reseña
       db
@@ -44,6 +47,9 @@ exports.aplicarIndices = async (req, res) => {
       db.collection("resena").createIndex({ nombre_usuario: 1 }),
       db.collection("resena").createIndex({ "menu.nombre": 1 }),
       db.collection("resena").createIndex({ "menu.precio": 1 }),
+      db
+        .collection("resena")
+        .createIndex({ "menu.nombre": 1, calificacion: -1 }),
     ]);
 
     res.status(200).json({ status: "Índices aplicados correctamente" });

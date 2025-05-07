@@ -6,7 +6,13 @@ const {
   subirArchivoResena,
   actualizarResena,
   eliminarResena,
+  promedioCalificacionesPorRestaurante,
+  platillosMasResenados,
+  resenasNegativasConComentarios,
+  usuariosMasActivosReseñando,
 } = require("../controllers/resena.controller");
+
+// --- CRUD ---
 
 /**
  * @swagger
@@ -411,5 +417,225 @@ router.patch("/", actualizarResena);
  *         description: Error en los datos enviados o falta de _id
  */
 router.delete("/", eliminarResena);
+
+// --- AGREGACIONES ---
+/**
+ * @swagger
+ * /resena/promedios:
+ *   get:
+ *     summary: Promedio de calificaciones por restaurante
+ *     description: Calcula el promedio y total de reseñas por restaurante, y retorna los mejores valorados según el orden indicado.
+ *     tags:
+ *       - Reseña - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Dirección del ordenamiento
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           enum: [promedio_calificacion, total_resenas]
+ *           default: promedio_calificacion
+ *         description: Campo por el cual ordenar los resultados
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Número máximo de restaurantes a mostrar
+ *     responses:
+ *       200:
+ *         description: Lista de restaurantes con su promedio de calificación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   restaurante_id:
+ *                     type: string
+ *                   nombre_restaurante:
+ *                     type: string
+ *                   promedio_calificacion:
+ *                     type: number
+ *                     example: 4.67
+ *                   total_resenas:
+ *                     type: integer
+ *                     example: 15
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/promedios", promedioCalificacionesPorRestaurante);
+
+/**
+ * @swagger
+ * /resena/negativas:
+ *   get:
+ *     summary: Reseñas con calificaciones bajas y comentarios
+ *     description: Retorna reseñas con comentarios y calificación en el rango indicado (por defecto 1 y 2). Permite ordenar y limitar resultados.
+ *     tags:
+ *       - Reseña - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: calificacion_in
+ *         schema:
+ *           type: string
+ *           example: "1,2,3"
+ *         description: Lista de calificaciones consideradas negativas, separadas por coma (por defecto 1,2)
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           enum: [fecha, calificacion, nombre_usuario]
+ *           default: fecha
+ *         description: Campo por el cual ordenar los resultados
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Dirección de ordenamiento
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *         description: Número máximo de resultados a devolver
+ *     responses:
+ *       200:
+ *         description: Lista de reseñas negativas con comentarios
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_restaurante:
+ *                     type: string
+ *                     example: Taquería El Mexicano
+ *                   nombre_usuario:
+ *                     type: string
+ *                     example: Juan Pérez
+ *                   calificacion:
+ *                     type: integer
+ *                     example: 2
+ *                   comentario:
+ *                     type: string
+ *                     example: El servicio fue muy lento.
+ *                   fecha:
+ *                     type: string
+ *                     format: date-time
+ *       400:
+ *         description: Parámetros inválidos
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/negativas", resenasNegativasConComentarios);
+
+/**
+ * @swagger
+ * /resena/platillos-mas-resenados:
+ *   get:
+ *     summary: Análisis de precio vs calificación promedio de platillos
+ *     description: Retorna el precio promedio y la calificación promedio de los platillos más reseñados, agrupados por nombre del platillo.
+ *     tags:
+ *       - Reseña - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Dirección de ordenamiento
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           enum: [precio_promedio, calificacion_promedio, total_resenas]
+ *           default: calificacion_promedio
+ *         description: Campo por el cual ordenar los resultados
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *         description: Número máximo de resultados a devolver
+ *     responses:
+ *       200:
+ *         description: Lista de platillos con su precio y calificación promedio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_platillo:
+ *                     type: string
+ *                   precio_promedio:
+ *                     type: number
+ *                   calificacion_promedio:
+ *                     type: number
+ *                   total_resenas:
+ *                     type: integer
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/platillos-mas-resenados", platillosMasResenados);
+
+/**
+ * @swagger
+ * /resena/top-usuarios:
+ *   get:
+ *     summary: Usuarios más activos dejando reseñas
+ *     description: Retorna los usuarios que más reseñas han dejado, junto con su promedio de calificaciones.
+ *     tags:
+ *       - Reseña - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Número máximo de usuarios a mostrar
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Orden por cantidad de reseñas
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios con sus reseñas y calificación promedio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_usuario:
+ *                     type: string
+ *                     example: Juan Pérez
+ *                   total_reseñas:
+ *                     type: integer
+ *                     example: 15
+ *                   promedio_calificacion:
+ *                     type: number
+ *                     example: 4.3
+ *       500:
+ *         description: Error al obtener los datos
+ */
+router.get("/top-usuarios", usuariosMasActivosReseñando);
 
 module.exports = router;

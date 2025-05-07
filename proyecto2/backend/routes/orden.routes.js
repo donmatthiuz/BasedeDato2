@@ -6,7 +6,18 @@ const {
   subirArchivoOrden,
   actualizarOrden,
   eliminarOrden,
+  totalOrdenesPorRestaurante,
+  ingresosTotalesPorRestaurante,
+  topOBottomPlatillosVendidos,
+  ingresosPorPlatillo,
+  gananciasPorPeriodo,
+  gananciasPorBloques,
+  gananciasPorRango,
+  estadisticasPorEstado,
+  usuariosRecurrentesPorRestaurante,
 } = require("../controllers/orden.controller");
+
+// --- CRUD ---
 
 /**
  * @swagger
@@ -371,5 +382,466 @@ router.patch("/", actualizarOrden);
  *         description: Orden no encontrada
  */
 router.delete("/", eliminarOrden);
+
+// --- AGREGACIONES ---
+
+/**
+ * @swagger
+ * /orden/total-por-restaurante:
+ *   get:
+ *     summary: Conteo total de órdenes por restaurante
+ *     tags:
+ *       - Orden - Agregaciones
+ *     description: Devuelve la cantidad total de órdenes realizadas por cada restaurante.
+ *     responses:
+ *       200:
+ *         description: Lista con conteo de órdenes por restaurante
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   restaurante_id:
+ *                     type: string
+ *                   nombre_restaurante:
+ *                     type: string
+ *                   total_ordenes:
+ *                     type: integer
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/total-por-restaurante", totalOrdenesPorRestaurante);
+
+/**
+ * @swagger
+ * /orden/ingresos-por-restaurante:
+ *   get:
+ *     summary: Suma total de ingresos por restaurante
+ *     tags:
+ *       - Orden - Agregaciones
+ *     description: Devuelve la suma total del campo `total` de todas las órdenes agrupadas por restaurante.
+ *     responses:
+ *       200:
+ *         description: Lista de ingresos generados por restaurante
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   restaurante_id:
+ *                     type: string
+ *                   nombre_restaurante:
+ *                     type: string
+ *                   ingresos_totales:
+ *                     type: number
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/ingresos-por-restaurante", ingresosTotalesPorRestaurante);
+
+/**
+ * @swagger
+ * /orden/platillos/top-bottom:
+ *   get:
+ *     summary: Platillos más o menos vendidos
+ *     description: Devuelve los N platillos más o menos vendidos por cantidad total solicitada.
+ *     tags:
+ *       - Orden - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           enum: [top, bottom]
+ *           default: top
+ *         description: Define si se devuelven los más vendidos (top) o los menos vendidos (bottom).
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 5
+ *         description: Número máximo de platillos a devolver.
+ *     responses:
+ *       200:
+ *         description: Lista de platillos con su cantidad total vendida.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_platillo:
+ *                     type: string
+ *                     example: "Tacos al pastor"
+ *                   total_vendido:
+ *                     type: integer
+ *                     example: 75
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/platillos/top-bottom", topOBottomPlatillosVendidos);
+
+/**
+ * @swagger
+ * /orden/platillos/ingresos:
+ *   get:
+ *     summary: Ingresos por platillo
+ *     description: Calcula el ingreso total generado por cada platillo (precio x cantidad). Se puede ordenar ascendentemente o descendentemente.
+ *     tags:
+ *       - Orden - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Ordenar por ingresos generados (ascendente o descendente).
+ *     responses:
+ *       200:
+ *         description: Lista de platillos con su ingreso total.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_platillo:
+ *                     type: string
+ *                     example: "Hamburguesa"
+ *                   ingresos:
+ *                     type: number
+ *                     example: 1250.75
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/platillos/ingresos", ingresosPorPlatillo);
+
+/**
+ * @swagger
+ * /orden/ganancias:
+ *   get:
+ *     summary: Ganancias por periodo (mensual o anual)
+ *     description: Retorna las ganancias totales y promedio por mes o año, agrupadas por restaurante. Solo se consideran órdenes con estado "completada".
+ *     tags:
+ *       - Orden - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           enum: [mensual, anual]
+ *           default: mensual
+ *         description: Tipo de agrupación (mensual o anual)
+ *       - in: query
+ *         name: anio
+ *         schema:
+ *           type: integer
+ *           example: 2025
+ *         description: Año específico a filtrar
+ *       - in: query
+ *         name: mes
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 12
+ *           example: 3
+ *         description: Mes específico (solo si tipo es mensual)
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           enum: [monto_total, promedio_ganancia, anio, mes]
+ *           default: monto_total
+ *         description: Campo por el cual ordenar los resultados
+ *       - in: query
+ *         name: orden
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Dirección de ordenamiento
+ *     responses:
+ *       200:
+ *         description: Lista de ganancias por periodo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_restaurante:
+ *                     type: string
+ *                     example: Taquería El Mexicano
+ *                   monto_total:
+ *                     type: number
+ *                     example: 12500
+ *                   promedio_ganancia:
+ *                     type: number
+ *                     example: 520.5
+ *                   anio:
+ *                     type: integer
+ *                     example: 2025
+ *                   mes:
+ *                     type: integer
+ *                     example: 3
+ *       400:
+ *         description: Parámetros inválidos
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/ganancias", gananciasPorPeriodo);
+
+/**
+ * @swagger
+ * /orden/ganancias/bloques:
+ *   get:
+ *     summary: Ganancias agrupadas por bloques de meses
+ *     description: Retorna las ganancias totales y promedio agrupadas por bloques de meses (ej. mensual, bimestral, trimestral, etc.) por restaurante. Solo se consideran órdenes con estado "completada".
+ *     tags:
+ *       - Orden - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: meses
+ *         schema:
+ *           type: integer
+ *           enum: [1, 2, 3, 4, 6, 12]
+ *           default: 1
+ *         description: Tamaño del bloque en meses para la agrupación
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           enum: [monto_total, promedio_ganancia, bloque, anio]
+ *           default: monto_total
+ *         description: Campo por el cual ordenar los resultados
+ *       - in: query
+ *         name: orden
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Dirección del ordenamiento
+ *     responses:
+ *       200:
+ *         description: Lista de ganancias por bloques de meses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_restaurante:
+ *                     type: string
+ *                     example: Taquería El Mexicano
+ *                   monto_total:
+ *                     type: number
+ *                     example: 12500
+ *                   promedio_ganancia:
+ *                     type: number
+ *                     example: 520.5
+ *                   anio:
+ *                     type: integer
+ *                     example: 2025
+ *                   bloque:
+ *                     type: integer
+ *                     example: 1
+ *                   meses_incluidos:
+ *                     type: array
+ *                     items:
+ *                       type: integer
+ *                       example: 1
+ *       400:
+ *         description: Parámetros inválidos
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/ganancias/bloques", gananciasPorBloques);
+
+/**
+ * @swagger
+ * /orden/ganancias/rango:
+ *   get:
+ *     summary: Ganancias por rango de fechas
+ *     description: Retorna las ganancias totales y promedio de cada restaurante dentro del rango de fechas especificado. Solo se consideran órdenes con estado "completada".
+ *     tags:
+ *       - Orden - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: desde
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: 2024-01-01
+ *         description: Fecha inicial del rango (inclusive)
+ *       - in: query
+ *         name: hasta
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: 2024-12-31
+ *         description: Fecha final del rango (inclusive)
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           enum: [monto_total, promedio_ganancia]
+ *           default: monto_total
+ *         description: Campo por el cual ordenar los resultados
+ *       - in: query
+ *         name: orden
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Dirección del ordenamiento
+ *     responses:
+ *       200:
+ *         description: Lista de ganancias por restaurante en el rango especificado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_restaurante:
+ *                     type: string
+ *                   monto_total:
+ *                     type: number
+ *                   promedio_ganancia:
+ *                     type: number
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/ganancias/rango", gananciasPorRango);
+
+/**
+ * @swagger
+ * /orden/estadisticas/estado:
+ *   get:
+ *     summary: Estadísticas de órdenes por estado por restaurante
+ *     description: Retorna el porcentaje y el conteo de órdenes de un estado específico agrupadas por restaurante. Permite ordenar por porcentaje o cantidad.
+ *     tags:
+ *       - Orden - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: estado
+ *         schema:
+ *           type: string
+ *           example: cancelada
+ *         description: Estado de las órdenes a evaluar (ej. completada, cancelada, pendiente)
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           enum: [porcentaje_estado, total_ordenes]
+ *           default: porcentaje_estado
+ *         description: Campo por el cual ordenar los resultados
+ *       - in: query
+ *         name: ordenar
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Dirección del ordenamiento
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Número máximo de restaurantes a retornar
+ *     responses:
+ *       200:
+ *         description: Lista de restaurantes con estadísticas del estado indicado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_restaurante:
+ *                     type: string
+ *                     example: Taquería La Esquina
+ *                   total_ordenes:
+ *                     type: integer
+ *                     example: 120
+ *                   porcentaje_estado:
+ *                     type: number
+ *                     example: 27.5
+ *                   estado:
+ *                     type: string
+ *                     example: cancelada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/estadisticas/estado", estadisticasPorEstado);
+
+/**
+ * @swagger
+ * /orden/clientes-leales:
+ *   get:
+ *     summary: Restaurantes con mayor número de clientes leales
+ *     description: |
+ *       Muestra los restaurantes con mayor cantidad de clientes que han hecho múltiples pedidos.
+ *       Un cliente leal se define como un usuario que ha realizado al menos `min_pedidos` en el mismo restaurante.
+ *     tags:
+ *       - Orden - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: min_pedidos
+ *         schema:
+ *           type: integer
+ *           default: 2
+ *         description: Mínimo de pedidos que un usuario debe haber realizado para ser considerado leal
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           enum: [clientes_leales, nombre_restaurante]
+ *           default: clientes_leales
+ *         description: Campo por el cual ordenar los resultados
+ *       - in: query
+ *         name: orden
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Dirección de ordenamiento (ascendente o descendente)
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Número máximo de resultados a retornar
+ *     responses:
+ *       200:
+ *         description: Lista de restaurantes con número de clientes leales
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   restaurante_id:
+ *                     type: string
+ *                   nombre_restaurante:
+ *                     type: string
+ *                   clientes_leales:
+ *                     type: integer
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/clientes-leales", usuariosRecurrentesPorRestaurante);
 
 module.exports = router;

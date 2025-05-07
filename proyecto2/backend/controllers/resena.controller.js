@@ -4,6 +4,8 @@ const fs = require("fs");
 
 const upload = multer({ dest: "uploads/" });
 
+// --- CRUD ---
+
 exports.subirArchivoResena = [
   upload.single("resena"), // nombre del campo esperado: "resena"
   async (req, res) => {
@@ -264,5 +266,200 @@ exports.eliminarResena = async (req, res) => {
     res
       .status(400)
       .json({ error: "Error al eliminar reseña(s)", detalle: error.message });
+  }
+};
+
+// --- AGREGACIONES ---
+
+// Promedio de calificaciones e identificación de restaurantes mejor valorados
+exports.promedioCalificacionesPorRestaurante = async (req, res) => {
+  try {
+    const {
+      ordenar = "desc", // asc | desc
+      ordenar_por = "promedio_calificacion", // o total_resenas
+      limite = 10,
+    } = req.query;
+
+    const sortOrder = ordenar === "asc" ? 1 : -1;
+
+    const resultado = await Resena.aggregate([
+      {
+        $group: {
+          _id: "$restaurante_id",
+          promedio_calificacion: { $avg: "$calificacion" },
+          total_resenas: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $project: {
+          restaurante_id: "$_id",
+          nombre_restaurante: "$restaurante.nombre",
+          promedio_calificacion: {
+            $round: ["$promedio_calificacion", 2],
+          },
+          total_resenas: 1,
+          _id: 0,
+        },
+      },
+      {
+        $sort: {
+          [ordenar_por]: sortOrder,
+        },
+      },
+      {
+        $limit: parseInt(limite),
+      },
+    ]).hint({ restaurante_id: 1, calificacion: -1 });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al calcular promedio de calificaciones",
+      detalle: error.message,
+    });
+  }
+};
+
+// Reseñas con calificación baja definida por el usuario
+exports.resenasNegativasConComentarios = async (req, res) => {
+  try {
+    const {
+      ordenar = "desc",
+      ordenar_por = "fecha",
+      limite = 50,
+      calificacion_in = "1,2",
+    } = req.query;
+
+    const sortOrder = ordenar === "asc" ? 1 : -1;
+
+    const calificaciones = calificacion_in
+      .split(",")
+      .map((c) => parseInt(c))
+      .filter((c) => !isNaN(c));
+
+    if (!calificaciones.length) {
+      return res.status(400).json({
+        error: "Parámetro calificacion_in inválido o vacío",
+      });
+    }
+
+    const resultado = await Resena.aggregate([
+      {
+        $match: {
+          calificacion: { $in: calificaciones },
+          comentario: { $exists: true, $ne: "" },
+        },
+      },
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "restaurante_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $project: {
+          nombre_restaurante: "$restaurante.nombre",
+          nombre_usuario: 1,
+          calificacion: 1,
+          comentario: 1,
+          fecha: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { [ordenar_por]: sortOrder } },
+      { $limit: parseInt(limite) },
+    ]).hint({ restaurante_id: 1, calificacion: -1 });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al obtener reseñas negativas",
+      detalle: error.message,
+    });
+  }
+};
+
+// Análisis de precio vs calificación promedio de platillos
+exports.platillosMasResenados = async (req, res) => {
+  try {
+    const {
+      ordenar = "desc",
+      ordenar_por = "calificacion_promedio",
+      limite = 50,
+    } = req.query;
+    const sortOrder = ordenar === "asc" ? 1 : -1;
+
+    const resultado = await Resena.aggregate([
+      {
+        $group: {
+          _id: "$menu.nombre",
+          precio_promedio: { $avg: "$menu.precio" },
+          calificacion_promedio: { $avg: "$calificacion" },
+          total_resenas: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          nombre_platillo: "$_id",
+          precio_promedio: 1,
+          calificacion_promedio: 1,
+          total_resenas: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { [ordenar_por]: sortOrder } },
+      { $limit: parseInt(limite) },
+    ]).hint({ "menu.nombre": 1, calificacion: -1 });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error en el análisis precio vs calificación",
+      detalle: error.message,
+    });
+  }
+};
+
+// Top usuarios más activos dejando reseñas
+exports.usuariosMasActivosReseñando = async (req, res) => {
+  try {
+    const { limite = 10, ordenar = "desc" } = req.query;
+    const sortOrder = ordenar === "asc" ? 1 : -1;
+
+    const resultado = await Resena.aggregate([
+      {
+        $group: {
+          _id: "$usuario_id",
+          nombre_usuario: { $first: "$nombre_usuario" },
+          total_reseñas: { $sum: 1 },
+          promedio_calificacion: { $avg: "$calificacion" },
+        },
+      },
+      {
+        $sort: { total_reseñas: sortOrder },
+      },
+      {
+        $limit: parseInt(limite),
+      },
+    ]).hint({ usuario_id: 1, fecha: -1 });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al obtener usuarios más activos reseñando",
+      detalle: error.message,
+    });
   }
 };

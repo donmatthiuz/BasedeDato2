@@ -33,12 +33,14 @@ Este informe busca evaluar el comportamiento económico y operativo de los resta
 
 ### 4. Distribución de Estados de Órdenes
 
-* Conteo de órdenes por estado (`pendiente`, `completada`, `cancelada`, etc.).
+* Conteo de órdenes por estado (`pendiente`, `completada`, `cancelada`, etc.) por restaurante.
+* Identificación de los restaurantes con mayores porcentajes de órdenes canceladas o pendientes.
 
-**Análisis:** Refleja la eficiencia operativa del sistema. Un número alto de órdenes canceladas o pendientes puede indicar problemas logísticos o de atención.
+**Análisis:** Refleja la eficiencia operativa del sistema. Un número alto de órdenes canceladas o pendientes puede indicar problemas logísticos o de atención. El estado de las órdenes proporciona información sobre la eficiencia operativa de cada restaurante. Un alto porcentaje de órdenes pendientes o canceladas podría indicar problemas en la gestión de pedidos, tiempos de espera largos o incluso insatisfacción del cliente. Esto proporciona a los restaurantes una visión crítica de la eficacia de sus operaciones.
 
-### 5. Productos del Menú No Ordenados
+### 5. Usuarios Recurrentes por Restaurante
 
-* Identificación de artículos del menú que no aparecen en ninguna orden.
+* Número de usuarios recurrentes que realizan múltiples pedidos en un restaurante.
+* Identificación de los restaurantes con una mayor base de clientes leales.
 
-**Análisis:** Estos datos revelan oportunidades de mejora en la oferta gastronómica. Los productos no demandados podrían promocionarse más, modificarse o eliminarse para optimizar el menú.
+**Análisis:** Los usuarios recurrentes son una señal clara de la lealtad de los clientes. Los restaurantes con un alto número de usuarios recurrentes suelen ofrecer una experiencia satisfactoria que genera fidelidad. Este análisis ayuda a los restaurantes a identificar sus bases de clientes más leales y puede guiar decisiones estratégicas como la personalización de servicios y la creación de programas de fidelización.

@@ -15,6 +15,8 @@ const {
   distribucionPreciosPorZona,
 } = require("../controllers/menu.controller");
 
+// --- CRUD ---
+
 /**
  * @swagger
  * /menu:
@@ -306,6 +308,8 @@ router.patch("/", actualizarArticulo);
  *         description: Error al procesar la solicitud de eliminación
  */
 router.delete("/", eliminarArticulo);
+
+// --- AGREGACIONES ---
 
 /**
  * @swagger

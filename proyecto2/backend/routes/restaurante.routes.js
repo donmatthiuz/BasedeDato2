@@ -14,7 +14,7 @@ const {
   categoriasTopOBottom,
 } = require("../controllers/restaurante.controller");
 
-// --- CRUD RESTAURANTE ---
+// --- CRUD ---
 
 /**
  * @swagger

@@ -8,6 +8,8 @@ const {
   eliminarUsuario,
 } = require("../controllers/usuario.controller");
 
+// --- CRUD ---
+
 /**
  * @swagger
  * /usuario:
