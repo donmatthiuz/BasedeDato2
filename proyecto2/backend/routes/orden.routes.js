@@ -728,7 +728,7 @@ router.get("/ganancias/rango", gananciasPorRango);
  * /orden/estadisticas/estado:
  *   get:
  *     summary: Estadísticas de órdenes por estado por restaurante
- *     description: Retorna el porcentaje de órdenes en un estado específico (como canceladas o pendientes) agrupadas por restaurante.
+ *     description: Retorna el porcentaje y el conteo de órdenes de un estado específico agrupadas por restaurante. Permite ordenar por porcentaje o cantidad.
  *     tags:
  *       - Orden - Agregaciones
  *     parameters:
@@ -737,23 +737,30 @@ router.get("/ganancias/rango", gananciasPorRango);
  *         schema:
  *           type: string
  *           example: cancelada
- *         description: Estado de la orden a calcular el porcentaje (ej. completada, cancelada, pendiente)
+ *         description: Estado de las órdenes a evaluar (ej. completada, cancelada, pendiente)
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           enum: [porcentaje_estado, total_ordenes]
+ *           default: porcentaje_estado
+ *         description: Campo por el cual ordenar los resultados
  *       - in: query
  *         name: ordenar
  *         schema:
  *           type: string
  *           enum: [asc, desc]
  *           default: desc
- *         description: Dirección de ordenamiento del porcentaje
+ *         description: Dirección del ordenamiento
  *       - in: query
  *         name: limite
  *         schema:
  *           type: integer
  *           default: 10
- *         description: Número de restaurantes a devolver
+ *         description: Número máximo de restaurantes a retornar
  *     responses:
  *       200:
- *         description: Lista de restaurantes con porcentaje de órdenes en el estado indicado
+ *         description: Lista de restaurantes con estadísticas del estado indicado
  *         content:
  *           application/json:
  *             schema:
@@ -763,13 +770,13 @@ router.get("/ganancias/rango", gananciasPorRango);
  *                 properties:
  *                   nombre_restaurante:
  *                     type: string
- *                     example: Restaurante El Buen Comer
+ *                     example: Taquería La Esquina
  *                   total_ordenes:
  *                     type: integer
- *                     example: 200
+ *                     example: 120
  *                   porcentaje_estado:
  *                     type: number
- *                     example: 25.5
+ *                     example: 27.5
  *                   estado:
  *                     type: string
  *                     example: cancelada

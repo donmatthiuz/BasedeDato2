@@ -435,7 +435,7 @@ exports.gananciasPorPeriodo = async (req, res) => {
 
     const sortOrder = orden === "asc" ? 1 : -1;
 
-    const exprCondiciones = [{ $eq: ["$estado", "completada"] }];
+    const exprCondiciones = [{ $eq: ["$estado", "cancelada"] }];
 
     if (anio) {
       exprCondiciones.push({
@@ -538,7 +538,7 @@ exports.gananciasPorBloques = async (req, res) => {
     const pipeline = [
       {
         $match: {
-          $expr: { $eq: ["$estado", "completada"] },
+          $expr: { $eq: ["$estado", "cancelada"] },
         },
       },
       {
@@ -612,7 +612,7 @@ exports.gananciasPorRango = async (req, res) => {
     } = req.query;
 
     const sortOrder = orden === "asc" ? 1 : -1;
-    const match = { estado: "completada" };
+    const match = { estado: "cancelada" };
 
     if (desde || hasta) {
       match.fecha = {};
@@ -669,61 +669,45 @@ exports.gananciasPorRango = async (req, res) => {
 // Conteo por estado y porcentaje por restaurante
 exports.estadisticasPorEstado = async (req, res) => {
   try {
-    const { estado = "cancelada", ordenar = "desc", limite = 10 } = req.query;
+    const {
+      estado = "cancelada",
+      ordenar = "desc",
+      ordenar_por = "porcentaje_estado", // porcentaje_estado | total_ordenes
+      limite = 10,
+    } = req.query;
+
     const sortOrder = ordenar === "asc" ? 1 : -1;
 
-    const pipeline = [
+    const resultado = await Orden.aggregate([
       {
         $group: {
-          _id: {
-            restaurante_id: "$restaurante_id",
-            estado: "$estado",
-          },
-          total: { $sum: 1 },
-        },
-      },
-      {
-        $group: {
-          _id: "$_id.restaurante_id",
-          estados: {
-            $push: {
-              estado: "$_id.estado",
-              total: "$total",
+          _id: "$restaurante_id",
+          total_ordenes: { $sum: 1 },
+          estado_count: {
+            $sum: {
+              $cond: [{ $eq: ["$estado", estado] }, 1, 0],
             },
           },
-          total_ordenes: { $sum: "$total" },
         },
       },
       {
         $addFields: {
           porcentaje_estado: {
-            $let: {
-              vars: {
-                estadoMatch: {
-                  $arrayElemAt: [
-                    {
-                      $filter: {
-                        input: "$estados",
-                        cond: { $eq: ["$$this.estado", estado] },
-                      },
-                    },
-                    0,
-                  ],
-                },
-              },
-              in: {
-                $cond: [
-                  { $ifNull: ["$$estadoMatch", false] },
+            $cond: [
+              { $gt: ["$total_ordenes", 0] },
+              {
+                $round: [
                   {
                     $multiply: [
-                      { $divide: ["$$estadoMatch.total", "$total_ordenes"] },
+                      { $divide: ["$estado_count", "$total_ordenes"] },
                       100,
                     ],
                   },
-                  0,
+                  2,
                 ],
               },
-            },
+              0,
+            ],
           },
         },
       },
@@ -741,18 +725,17 @@ exports.estadisticasPorEstado = async (req, res) => {
           nombre_restaurante: "$restaurante.nombre",
           total_ordenes: 1,
           porcentaje_estado: 1,
-          estado: estado,
+          estado: { $literal: estado },
           _id: 0,
         },
       },
-      { $sort: { porcentaje_estado: sortOrder } },
+      {
+        $sort: {
+          [ordenar_por]: sortOrder,
+        },
+      },
       { $limit: parseInt(limite) },
-    ];
-
-    const resultado = await Orden.aggregate(pipeline).hint({
-      restaurante_id: 1,
-      estado: 1,
-    });
+    ]).hint({ restaurante_id: 1, estado: 1 });
 
     res.status(200).json(resultado);
   } catch (error) {
