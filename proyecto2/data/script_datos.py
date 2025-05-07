@@ -35,6 +35,7 @@ def generar_datos():
         "nombre": generar_nombre_restaurante(categoria),
         "categoria": categoria,
         "direccion": fake.address(),
+        "coordenadas": [float(fake.longitude()), float(fake.latitude())],
         "telefono": fake.phone_number()
     } for categoria in CATEGORIAS]
 

@@ -1,37 +1,57 @@
 [
   {
-    "_id": "c3f3bb5f-93a2-4bc8-b15f-085b684e6f62",
+    "_id": "9ba8ddca-f672-42a5-a3b9-6de302ec6809",
     "nombre": "La Carnicería",
     "categoria": "Parrillada",
-    "direccion": "Plaza Olegario Dueñas 1 Apt. 84 \nLa Coruña, 04962",
-    "telefono": "+34 928 766 724"
+    "direccion": "Plaza Leandra Alvarado 17\nJaén, 41271",
+    "coordenadas": [
+      -59.535875,
+      -53.6526355
+    ],
+    "telefono": "+34 826137283"
   },
   {
-    "_id": "08b0176d-6ec7-438e-814b-da630b9a34f0",
-    "nombre": "Wok Dynasty",
+    "_id": "caa93adc-df10-497c-a204-30a6c8758408",
+    "nombre": "Sakura",
     "categoria": "Asiatica",
-    "direccion": "Ronda Renata Ricart 21\nZamora, 18482",
-    "telefono": "+34 823 426 755"
+    "direccion": "Calle Juan José Pintor 45 Puerta 4 \nBadajoz, 20698",
+    "coordenadas": [
+      36.997341,
+      -89.8760835
+    ],
+    "telefono": "+34960 020 414"
   },
   {
-    "_id": "fe8b0c30-c333-4a50-a9a6-3823cb041d92",
-    "nombre": "Bella Napoli",
+    "_id": "434b2890-e4c3-4b9a-b25d-b17887d9887a",
+    "nombre": "Pasta Amore",
     "categoria": "Italiana",
-    "direccion": "Plaza de Benigno Cisneros 92 Puerta 2 \nMálaga, 26361",
-    "telefono": "+34 814 905 164"
+    "direccion": "Ronda Sancho Mateos 5 Puerta 4 \nLas Palmas, 31791",
+    "coordenadas": [
+      121.365722,
+      16.835443
+    ],
+    "telefono": "+34 925913060"
   },
   {
-    "_id": "84862c31-461c-4706-b43d-d60487400588",
-    "nombre": "Jardín Orgánico",
+    "_id": "844f4472-b7d6-4a3e-af9f-df312627ecd7",
+    "nombre": "Tierra Verde",
     "categoria": "Vegetariana",
-    "direccion": "Pasaje Cristina Blanes 70\nPontevedra, 15508",
-    "telefono": "+34984 68 69 65"
+    "direccion": "Vial Isabel Sedano 602\nTarragona, 52019",
+    "coordenadas": [
+      -47.921171,
+      5.3495195
+    ],
+    "telefono": "+34881 002 718"
   },
   {
-    "_id": "22e49f7d-c7d9-42c0-9785-1507f2003c19",
-    "nombre": "Taco Box",
+    "_id": "0283c344-a1bb-4864-8d16-ad199421099f",
+    "nombre": "Rápido y Sabroso",
     "categoria": "Rápida",
-    "direccion": "C. Rolando Bosch 4\nValencia, 04815",
-    "telefono": "+34820 020 807"
+    "direccion": "Camino de Sara Canales 222\nCiudad, 08527",
+    "coordenadas": [
+      -1.004648,
+      -22.591162
+    ],
+    "telefono": "+34 986 135 097"
   }
 ]
