@@ -382,6 +382,14 @@ De lo contrario, las fechas se almacenarán como simples strings y no podrán se
 
    > Para filtros de precio del menú.
 
+6. **Índice compuesto:**
+
+   ```js
+   db.resena.createIndex({"menu.nombre": 1, calificacion: -1 });
+   ```
+
+   > Para filtros ordenar por total de reseñas o calificación promedio.
+
 ![Diagrama de Modelo de Datos NoSQL](../../../images/diagrama_final.png "Diagrama de Modelo de Datos NoSQL")
 
 ## Justificación de estructuras embebidas vs referenciadas

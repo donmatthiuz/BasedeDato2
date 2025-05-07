@@ -44,6 +44,7 @@ db.resena.createIndex({ usuario_id: 1, fecha: -1 })
 db.resena.createIndex({ nombre_usuario: 1 })
 db.resena.createIndex({ "menu.nombre": 1 });
 db.resena.createIndex({ "menu.precio": 1 });
+db.resena.createIndex({ "menu.nombre": 1, calificacion: -1});
 ```
 
 ## Ver los atributos de una colección

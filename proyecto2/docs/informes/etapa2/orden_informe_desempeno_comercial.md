@@ -37,3 +37,10 @@ Este informe busca evaluar el comportamiento económico y operativo de los resta
 * Identificación de los restaurantes con mayores porcentajes de órdenes canceladas o pendientes.
 
 **Análisis:** Refleja la eficiencia operativa del sistema. Un número alto de órdenes canceladas o pendientes puede indicar problemas logísticos o de atención. El estado de las órdenes proporciona información sobre la eficiencia operativa de cada restaurante. Un alto porcentaje de órdenes pendientes o canceladas podría indicar problemas en la gestión de pedidos, tiempos de espera largos o incluso insatisfacción del cliente. Esto proporciona a los restaurantes una visión crítica de la eficacia de sus operaciones.
+
+### 5. Usuarios Recurrentes por Restaurante
+
+* Número de usuarios recurrentes que realizan múltiples pedidos en un restaurante.
+* Identificación de los restaurantes con una mayor base de clientes leales.
+
+**Análisis:** Los usuarios recurrentes son una señal clara de la lealtad de los clientes. Los restaurantes con un alto número de usuarios recurrentes suelen ofrecer una experiencia satisfactoria que genera fidelidad. Este análisis ayuda a los restaurantes a identificar sus bases de clientes más leales y puede guiar decisiones estratégicas como la personalización de servicios y la creación de programas de fidelización.

@@ -31,10 +31,3 @@ Este informe tiene como objetivo evaluar el desempeño de los restaurantes regis
 * Análisis de los comentarios asociados a estas reseñas.
 
 **Análisis:** Las reseñas de baja calificación proporcionan una visión clara de los puntos débiles de un restaurante. Estos comentarios permiten a los restaurantes identificar áreas de mejora y ofrecer soluciones para mejorar la experiencia del cliente, como mejorar la calidad de los platillos, el servicio o la rapidez en la atención.
-
-### 4. Usuarios Recurrentes por Restaurante
-
-* Número de usuarios recurrentes que realizan múltiples pedidos en un restaurante.
-* Identificación de los restaurantes con una mayor base de clientes leales.
-
-**Análisis:** Los usuarios recurrentes son una señal clara de la lealtad de los clientes. Los restaurantes con un alto número de usuarios recurrentes suelen ofrecer una experiencia satisfactoria que genera fidelidad. Este análisis ayuda a los restaurantes a identificar sus bases de clientes más leales y puede guiar decisiones estratégicas como la personalización de servicios y la creación de programas de fidelización.
