@@ -16,6 +16,8 @@ db.restaurante.createIndex({ telefono: 1 })
 ```js
 db.menu.createIndex({ restaurante_id: 1, disponible: 1 })
 db.menu.createIndex({ nombre: "text", descripcion: "text" })
+db.menu.createIndex({ restaurante_id: 1, precio: 1 })
+db.menu.createIndex({ restaurante_id: 1})
 ```
 
 ### **usuario**
