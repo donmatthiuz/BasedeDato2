@@ -260,9 +260,13 @@ De lo contrario, las fechas se almacenarán como simples strings y no podrán se
 
    > Filtrado de órdenes por restaurante.
 
-Aquí tienes la documentación de `resena` actualizada con el formato uniforme que siguen los demás modelos:
+3. **Índice compuesto:**
 
----
+   ```js
+   db.orden.createIndex({ fecha: 1, restaurante_id: 1 })
+   ```
+
+   > Filtrado de órdenes por fecha y restaurante.
 
 ## Reseña (`Resena`)
 

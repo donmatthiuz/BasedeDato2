@@ -518,54 +518,30 @@ exports.gananciasPorPeriodo = async (req, res) => {
   }
 };
 
-// Agregación de ganancias agrupadas por bloques de meses o por rango de fechas
-exports.gananciasAgrupadas = async (req, res) => {
+// Agregación de ganancias agrupadas por bloques de meses
+exports.gananciasPorBloques = async (req, res) => {
   try {
     const {
-      tipo = "bloques", // bloques | rango
       meses = 1,
-      desde,
-      hasta,
       ordenar_por = "monto_total",
       orden = "desc",
     } = req.query;
 
     const sortOrder = orden === "asc" ? 1 : -1;
-    const match = { estado: "completada" };
-    const pipeline = [];
-
-    if (tipo === "rango") {
-      if (desde || hasta) {
-        match.fecha = {};
-        if (desde) match.fecha.$gte = new Date(desde);
-        if (hasta) match.fecha.$lte = new Date(hasta);
-      }
-
-      pipeline.push({ $match: match });
-
-      pipeline.push({
-        $group: {
-          _id: "$restaurante_id",
-          monto_total: { $sum: "$total" },
-          promedio_ganancia: { $avg: "$total" },
-        },
+    const n = parseInt(meses);
+    if (![1, 2, 3, 4, 6, 12].includes(n)) {
+      return res.status(400).json({
+        error: "Meses inválidos, permite solo: 1, 2, 3, 4, 6, 12",
       });
-    } else if (tipo === "bloques") {
-      const n = parseInt(meses);
-      if (![1, 2, 3, 4, 6, 12].includes(n)) {
-        return res.status(400).json({
-          error: "Meses inválidos, permite solo: 1, 2, 3, 4, 6, 12",
-        });
-      }
+    }
 
-      pipeline.push({
+    const pipeline = [
+      {
         $match: {
           $expr: { $eq: ["$estado", "completada"] },
         },
-      });
-
-      // Paso 1: descomponer a nivel de documento para extraer mes
-      pipeline.push({
+      },
+      {
         $addFields: {
           mes: { $month: "$fecha" },
           anio: { $year: "$fecha" },
@@ -573,10 +549,8 @@ exports.gananciasAgrupadas = async (req, res) => {
             $ceil: { $divide: [{ $month: "$fecha" }, n] },
           },
         },
-      });
-
-      // Paso 2: agrupar por restaurante + año + bloque, recolectando meses únicos
-      pipeline.push({
+      },
+      {
         $group: {
           _id: {
             restaurante_id: "$restaurante_id",
@@ -587,10 +561,7 @@ exports.gananciasAgrupadas = async (req, res) => {
           promedio_ganancia: { $avg: "$total" },
           meses_incluidos: { $addToSet: "$mes" },
         },
-      });
-    }
-
-    pipeline.push(
+      },
       {
         $lookup: {
           from: "restaurante",
@@ -605,11 +576,9 @@ exports.gananciasAgrupadas = async (req, res) => {
           nombre_restaurante: "$restaurante.nombre",
           monto_total: 1,
           promedio_ganancia: 1,
-          ...(tipo === "bloques" && {
-            bloque: "$_id.bloque",
-            anio: "$_id.anio",
-            meses_incluidos: 1,
-          }),
+          bloque: "$_id.bloque",
+          anio: "$_id.anio",
+          meses_incluidos: 1,
           _id: 0,
         },
       },
@@ -617,17 +586,81 @@ exports.gananciasAgrupadas = async (req, res) => {
         $sort: {
           [ordenar_por]: sortOrder,
         },
-      }
-    );
+      },
+    ];
 
     const resultado = await Orden.aggregate(pipeline).hint({
       restaurante_id: 1,
     });
-
     res.status(200).json(resultado);
   } catch (error) {
     res.status(500).json({
-      error: "Error al calcular ganancias agrupadas",
+      error: "Error al calcular ganancias por bloques",
+      detalle: error.message,
+    });
+  }
+};
+
+// Agregación de ganancias por rango de fechas
+exports.gananciasPorRango = async (req, res) => {
+  try {
+    const {
+      desde,
+      hasta,
+      ordenar_por = "monto_total",
+      orden = "desc",
+    } = req.query;
+
+    const sortOrder = orden === "asc" ? 1 : -1;
+    const match = { estado: "completada" };
+
+    if (desde || hasta) {
+      match.fecha = {};
+      if (desde) match.fecha.$gte = new Date(desde);
+      if (hasta) match.fecha.$lte = new Date(hasta);
+    }
+
+    const pipeline = [
+      { $match: match },
+      {
+        $group: {
+          _id: "$restaurante_id",
+          monto_total: { $sum: "$total" },
+          promedio_ganancia: { $avg: "$total" },
+        },
+      },
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $project: {
+          nombre_restaurante: "$restaurante.nombre",
+          monto_total: 1,
+          promedio_ganancia: 1,
+          _id: 0,
+        },
+      },
+      {
+        $sort: {
+          [ordenar_por]: sortOrder,
+        },
+      },
+    ];
+
+    const resultado = await Orden.aggregate(pipeline).hint({
+      fecha: 1,
+      restaurante_id: 1,
+    });
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al calcular ganancias por rango de fechas",
       detalle: error.message,
     });
   }

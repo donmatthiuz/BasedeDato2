@@ -11,7 +11,8 @@ const {
   topOBottomPlatillosVendidos,
   ingresosPorPlatillo,
   gananciasPorPeriodo,
-  gananciasAgrupadas,
+  gananciasPorBloques,
+  gananciasPorRango,
 } = require("../controllers/orden.controller");
 
 /**
@@ -594,46 +595,25 @@ router.get("/ganancias", gananciasPorPeriodo);
 
 /**
  * @swagger
- * /orden/ganancias-agrupadas:
+ * /orden/ganancias/bloques:
  *   get:
- *     summary: Ganancias agrupadas por bloques de meses o por rango de fechas
- *     description: Retorna las ganancias totales y promedio por restaurante agrupadas en bloques de meses (1, 2, 3, 4, 6, 12) o por un rango de fechas personalizado. Solo se consideran órdenes con estado "completada".
+ *     summary: Ganancias agrupadas por bloques de meses
+ *     description: Retorna las ganancias totales y promedio agrupadas por bloques de meses (ej. mensual, bimestral, trimestral, etc.) por restaurante. Solo se consideran órdenes con estado "completada".
  *     tags:
  *       - Orden - Agregaciones
  *     parameters:
- *       - in: query
- *         name: tipo
- *         schema:
- *           type: string
- *           enum: [bloques, rango]
- *           default: bloques
- *         description: Tipo de agrupación (por bloques mensuales o por rango de fechas)
  *       - in: query
  *         name: meses
  *         schema:
  *           type: integer
  *           enum: [1, 2, 3, 4, 6, 12]
  *           default: 1
- *         description: Tamaño del bloque en meses (solo si tipo es 'bloques')
- *       - in: query
- *         name: desde
- *         schema:
- *           type: string
- *           format: date
- *           example: 2023-01-01
- *         description: Fecha de inicio para el rango (solo si tipo es 'rango')
- *       - in: query
- *         name: hasta
- *         schema:
- *           type: string
- *           format: date
- *           example: 2023-03-31
- *         description: Fecha final para el rango (solo si tipo es 'rango')
+ *         description: Tamaño del bloque en meses para la agrupación
  *       - in: query
  *         name: ordenar_por
  *         schema:
  *           type: string
- *           enum: [monto_total, promedio_ganancia, anio, bloque]
+ *           enum: [monto_total, promedio_ganancia, bloque, anio]
  *           default: monto_total
  *         description: Campo por el cual ordenar los resultados
  *       - in: query
@@ -642,10 +622,10 @@ router.get("/ganancias", gananciasPorPeriodo);
  *           type: string
  *           enum: [asc, desc]
  *           default: desc
- *         description: Dirección de ordenamiento
+ *         description: Dirección del ordenamiento
  *     responses:
  *       200:
- *         description: Lista de ganancias agrupadas por bloque o rango
+ *         description: Lista de ganancias por bloques de meses
  *         content:
  *           application/json:
  *             schema:
@@ -655,24 +635,87 @@ router.get("/ganancias", gananciasPorPeriodo);
  *                 properties:
  *                   nombre_restaurante:
  *                     type: string
- *                     example: Pizzería Roma
+ *                     example: Taquería El Mexicano
  *                   monto_total:
  *                     type: number
- *                     example: 4800
+ *                     example: 12500
  *                   promedio_ganancia:
  *                     type: number
- *                     example: 600
+ *                     example: 520.5
  *                   anio:
  *                     type: integer
- *                     example: 2024
+ *                     example: 2025
  *                   bloque:
  *                     type: integer
- *                     example: 2
+ *                     example: 1
+ *                   meses_incluidos:
+ *                     type: array
+ *                     items:
+ *                       type: integer
+ *                       example: 1
  *       400:
  *         description: Parámetros inválidos
  *       500:
  *         description: Error interno del servidor
  */
-router.get("/ganancias-agrupadas", gananciasAgrupadas);
+router.get("/ganancias/bloques", gananciasPorBloques);
+
+/**
+ * @swagger
+ * /orden/ganancias/rango:
+ *   get:
+ *     summary: Ganancias por rango de fechas
+ *     description: Retorna las ganancias totales y promedio de cada restaurante dentro del rango de fechas especificado. Solo se consideran órdenes con estado "completada".
+ *     tags:
+ *       - Orden - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: desde
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: 2024-01-01
+ *         description: Fecha inicial del rango (inclusive)
+ *       - in: query
+ *         name: hasta
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: 2024-12-31
+ *         description: Fecha final del rango (inclusive)
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           enum: [monto_total, promedio_ganancia]
+ *           default: monto_total
+ *         description: Campo por el cual ordenar los resultados
+ *       - in: query
+ *         name: orden
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Dirección del ordenamiento
+ *     responses:
+ *       200:
+ *         description: Lista de ganancias por restaurante en el rango especificado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombre_restaurante:
+ *                     type: string
+ *                   monto_total:
+ *                     type: number
+ *                   promedio_ganancia:
+ *                     type: number
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/ganancias/rango", gananciasPorRango);
 
 module.exports = router;
