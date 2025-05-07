@@ -14,6 +14,7 @@ const {
   gananciasPorBloques,
   gananciasPorRango,
   estadisticasPorEstado,
+  usuariosRecurrentesPorRestaurante,
 } = require("../controllers/orden.controller");
 
 // --- CRUD ---
@@ -784,5 +785,63 @@ router.get("/ganancias/rango", gananciasPorRango);
  *         description: Error interno del servidor
  */
 router.get("/estadisticas/estado", estadisticasPorEstado);
+
+/**
+ * @swagger
+ * /orden/clientes-leales:
+ *   get:
+ *     summary: Restaurantes con mayor número de clientes leales
+ *     description: |
+ *       Muestra los restaurantes con mayor cantidad de clientes que han hecho múltiples pedidos.
+ *       Un cliente leal se define como un usuario que ha realizado al menos `min_pedidos` en el mismo restaurante.
+ *     tags:
+ *       - Orden - Agregaciones
+ *     parameters:
+ *       - in: query
+ *         name: min_pedidos
+ *         schema:
+ *           type: integer
+ *           default: 2
+ *         description: Mínimo de pedidos que un usuario debe haber realizado para ser considerado leal
+ *       - in: query
+ *         name: ordenar_por
+ *         schema:
+ *           type: string
+ *           enum: [clientes_leales, nombre_restaurante]
+ *           default: clientes_leales
+ *         description: Campo por el cual ordenar los resultados
+ *       - in: query
+ *         name: orden
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Dirección de ordenamiento (ascendente o descendente)
+ *       - in: query
+ *         name: limite
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Número máximo de resultados a retornar
+ *     responses:
+ *       200:
+ *         description: Lista de restaurantes con número de clientes leales
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   restaurante_id:
+ *                     type: string
+ *                   nombre_restaurante:
+ *                     type: string
+ *                   clientes_leales:
+ *                     type: integer
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/clientes-leales", usuariosRecurrentesPorRestaurante);
 
 module.exports = router;

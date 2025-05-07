@@ -37,6 +37,7 @@ exports.aplicarIndices = async (req, res) => {
       db.collection("orden").createIndex({ restaurante_id: 1 }),
       db.collection("orden").createIndex({ fecha: 1, restaurante_id: 1 }),
       db.collection("orden").createIndex({ restaurante_id: 1, estado: 1 }),
+      db.collection("orden").createIndex({ usuario_id: 1, restaurante_id: 1 }),
 
       // Reseña
       db

@@ -745,3 +745,63 @@ exports.estadisticasPorEstado = async (req, res) => {
     });
   }
 };
+
+// Clientes leales por restaurante
+exports.usuariosRecurrentesPorRestaurante = async (req, res) => {
+  try {
+    const {
+      min_pedidos = 2,
+      ordenar_por = "clientes_leales",
+      orden = "desc",
+      limite = 10,
+    } = req.query;
+
+    const sortOrder = orden === "asc" ? 1 : -1;
+
+    const resultado = await Orden.aggregate([
+      {
+        $group: {
+          _id: { restaurante_id: "$restaurante_id", usuario_id: "$usuario_id" },
+          total_pedidos: { $sum: 1 },
+        },
+      },
+      {
+        $match: {
+          total_pedidos: { $gte: parseInt(min_pedidos) },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.restaurante_id",
+          clientes_leales: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: "restaurante",
+          localField: "_id",
+          foreignField: "_id",
+          as: "restaurante",
+        },
+      },
+      { $unwind: "$restaurante" },
+      {
+        $project: {
+          restaurante_id: "$_id",
+          nombre_restaurante: "$restaurante.nombre",
+          clientes_leales: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { [ordenar_por]: sortOrder } },
+      { $limit: parseInt(limite) },
+    ]).hint({ usuario_id: 1, restaurante_id: 1 });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al calcular clientes leales",
+      detalle: error.message,
+    });
+  }
+};

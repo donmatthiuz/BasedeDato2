@@ -34,6 +34,7 @@ db.orden.createIndex({ usuario_id: 1, fecha: -1 })
 db.orden.createIndex({ restaurante_id: 1 })
 db.orden.createIndex({ fecha: 1, restaurante_id: 1 })
 db.orden.createIndex({ restaurante_id: 1, estado: 1 })
+db.orden.createIndex({ usuario_id: 1, restaurante_id: 1 })
 ```
 
 ### **resena**

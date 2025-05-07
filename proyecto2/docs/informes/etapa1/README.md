@@ -290,6 +290,14 @@ De lo contrario, las fechas se almacenarán como simples strings y no podrán se
 
    > Filtrado de órdenes por restaurante y estado de la orden.
 
+5. **Índice compuesto:**
+
+   ```js
+   db.orden.createIndex({ usuario_id: 1, restaurante_id: 1 })
+   ```
+
+   > Filtrado de órdenes restaurantes y sus usuarios.
+
 ### Reseña (`Resena`)
 
 Este modelo representa la calificación y comentario que un usuario deja sobre un platillo consumido en un restaurante.
