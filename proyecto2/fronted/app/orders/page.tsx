@@ -1,25 +1,49 @@
-import { Suspense } from "react"
+"use client"
+
+import { Suspense, useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { OrderCard } from "@/components/order-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getUserOrders } from "@/lib/data"
+import useID from "@/hooks/useID"
+import useApi from "@/hooks/useApi"
+import source_link from "@/repositori/source_repo"
+
+
+interface Platillo {
+  menu_item_id: string;
+  nombre: string;
+  cantidad: number;
+  precio_unitario: number;
+}
+
+interface Orden {
+  _id: string;
+  usuario_id: string;
+  restaurante_id: string;
+  fecha: string; // o Date si la parseas
+  estado: string;
+  platillos: Platillo[];
+  total: number;
+}
+
 
 export default function OrdersPage({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  const status = (searchParams.status as string) || "all"
+    const status = (searchParams.status as string) || "all"
+
+    
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My Orders</h1>
-        <Link href="/restaurants">
-          <Button>Order Food</Button>
-        </Link>
+        
       </div>
 
       <Tabs defaultValue={status} className="w-full">
@@ -31,12 +55,61 @@ export default function OrdersPage({
   )
 }
 
-async function OrdersList({ status }: { status: string }) {
-  const orders = await getUserOrders(status)
+function OrdersList({ status }: { status: string }) {
+  const [orders, setOrders] = useState<Orden[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { userID, setUserID } = useID();
+  const {llamado_whit_link: getordenes} = useApi(``)
+
+
+  const {llamado: orden_seted } = useApi(`${source_link}/api/orden`)
+
+  const pay = async() =>{
+
+    for (const orden of orders) {
+      await orden_seted(
+        {
+          _id: orden._id,
+          estado: "completada",
+          platillos: orden.platillos
+        },
+        "PATCH"
+      );
+    }
+
+     window.location.href = "/orders"
+
+  }
+
+  useEffect(() => {
+      
+    const getOrdenes_d = async() => {
+      if (userID) {
+        const response = await getordenes(`${source_link}/api/orden?usuario_id=${userID}&estado=pendiente`,"GET")
+
+        console.log(response)
+
+        setOrders(response)
+
+        setLoading(false)
+
+      } else {
+
+        
+        
+      }
+    }
+
+    getOrdenes_d();
+
+  }, [userID])
+
+  if (loading) return <OrdersLoadingSkeleton />;
 
   if (orders.length === 0) {
     return (
       <div className="text-center py-12">
+        
         <h2 className="text-xl font-medium mb-2">No orders found</h2>
         <p className="text-muted-foreground mb-4">
           {status === "all" ? "You haven't placed any orders yet" : `You don't have any ${status} orders`}
@@ -45,17 +118,21 @@ async function OrdersList({ status }: { status: string }) {
           <Button>Browse Restaurants</Button>
         </Link>
       </div>
-    )
+    );
   }
 
   return (
     <div className="space-y-4">
+      <Button onClick={pay}>Pagar todo</Button>
       {orders.map((order) => (
-        <OrderCard key={order.id} order={order} />
+        <OrderCard  
+          key={order._id}
+        orden={order} />
       ))}
     </div>
-  )
+  );
 }
+
 
 function OrdersLoadingSkeleton() {
   return (

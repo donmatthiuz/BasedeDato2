@@ -1,70 +1,113 @@
+"use client"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Star, Clock, MapPin, DollarSign } from "lucide-react"
+import { Star, Clock, MapPin, DollarSign, Phone } from "lucide-react"
 import { RestaurantMenu } from "@/components/restaurant-menu"
 import { RestaurantReviews } from "@/components/restaurant-reviews"
 import { getRestaurantById } from "@/lib/data"
+import { useEffect, useState } from "react"
+import useApi from "@/hooks/useApi"
+import source_link from "@/repositori/source_repo"
 
-export default async function RestaurantPage({ params }: { params: { id: string } }) {
-  const restaurant = await getRestaurantById(params.id)
-
-  if (!restaurant) {
-    notFound()
+export default function RestaurantPage({ params }: { params: { id: string } }) {
+  interface Restaurante {
+    _id: string;
+    nombre: string;
+    categoria: string;
+    direccion: string;
+    coordenadas: {
+      type: "Point";
+      coordinates: [number, number]; // [longitud, latitud]
+    };
+    telefono: string;
   }
+
+  const [restaurante, setRestaurante] = useState<Restaurante | null>(null);
+  const {llamado_whit_link: getResta} = useApi(``)
+  const [promedio, setPromedio] = useState(0)
+
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    
+    const getretaurante = async() => {
+      
+        const response = await getResta(`${source_link}/api/restaurante?_id=${params.id}`,"GET")
+        const response_rate = await getResta(`${source_link}/api/resena/promedios?ordenar=asc&ordenar_por=promedio_calificacion`
+          ,"GET")
+        setRestaurante(response[0])
+        console.log(response_rate)
+        const resumen = response_rate.find(r => r.restaurante_id === params.id);
+
+        const promedio = resumen?.promedio_calificacion ?? 0;
+
+        const total = resumen?.total_resenas ?? 0;
+        setCount(total)
+
+        setPromedio(promedio)
+
+
+        
+
+     }
+
+     getretaurante();
+
+  }, [])
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="relative h-64 md:h-80 w-full rounded-lg overflow-hidden mb-6">
-        <Image
-          src={restaurant.image || "/placeholder.svg?height=320&width=1280"}
-          alt={restaurant.name}
-          fill
-          className="object-cover"
-        />
+      
       </div>
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold">{restaurant.name}</h1>
+          <h1 className="text-3xl font-bold">{restaurante?.nombre}</h1>
           <div className="flex flex-wrap gap-2 mt-2">
             <Badge variant="secondary" className="flex items-center gap-1">
               <Star className="h-3 w-3 fill-current" />
-              {restaurant.rating.toFixed(1)} ({restaurant.reviewCount} reviews)
+              {promedio.toFixed(1)}  ({count} reviews)
             </Badge>
-            <Badge variant="outline" className="flex items-center gap-1">
+            {/* <Badge variant="outline" className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
               {restaurant.deliveryTime} min
-            </Badge>
-            <Badge variant="outline">{restaurant.cuisine}</Badge>
+            </Badge> */}
+            {/* <Badge variant="outline">{restaurant.cuisine}</Badge>
             {restaurant.tags.map((tag) => (
               <Badge key={tag} variant="outline">
                 {tag}
               </Badge>
-            ))}
+            ))} */}
           </div>
           <div className="flex items-center gap-2 mt-3 text-muted-foreground">
             <MapPin className="h-4 w-4" />
-            <span>{restaurant.address}</span>
+            <span>{restaurante?.direccion}</span>
+          </div>
+          <div className="flex items-center gap-2 mt-3 text-muted-foreground">
+            <Phone className="h-4 w-4" />
+            <span>{restaurante?.telefono}</span>
           </div>
         </div>
 
-        <div className="flex gap-2">
-          <Button>Place Order</Button>
-          <Button variant="outline">Save</Button>
-        </div>
+        
       </div>
 
       <Tabs defaultValue="menu">
         <TabsList className="mb-6">
           <TabsTrigger value="menu">Menu</TabsTrigger>
           <TabsTrigger value="reviews">Reviews</TabsTrigger>
-          <TabsTrigger value="info">Info</TabsTrigger>
+         
         </TabsList>
-
+        <TabsContent value="reviews">
+          <RestaurantReviews restaurantId={params.id} />
+        </TabsContent>
         <TabsContent value="menu">
+          <RestaurantMenu restaurantId={params.id} />
+        </TabsContent>
+        {/* <TabsContent value="menu">
           <RestaurantMenu restaurantId={restaurant.id} />
         </TabsContent>
 
@@ -109,7 +152,7 @@ export default async function RestaurantPage({ params }: { params: { id: string 
               </div>
             </div>
           </div>
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </div>
   )

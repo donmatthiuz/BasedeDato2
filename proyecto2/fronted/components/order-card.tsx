@@ -1,21 +1,61 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
+import { useEffect, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { ChevronDown, ChevronUp, Clock } from "lucide-react"
-import type { Order } from "@/lib/types"
+import source_link from "@/repositori/source_repo"
+import useApi from "@/hooks/useApi"
 
-interface OrderCardProps {
-  order: Order
+interface Platillo {
+  menu_item_id: string;
+  nombre: string;
+  cantidad: number;
+  precio_unitario: number;
 }
 
-export function OrderCard({ order }: OrderCardProps) {
+interface Orden {
+  _id: string;
+  usuario_id: string;
+  restaurante_id: string;
+  fecha: string;
+  estado: string;
+  platillos: Platillo[];
+  total: number;
+}
+
+interface OrderCardProps {
+  orden: Orden;
+  restauranteNombre?: string;
+  restauranteImagen?: string;
+  deliveryTime?: string; // opcional si lo tienes
+}
+
+export function OrderCard({ orden, restauranteNombre = "Restaurante", restauranteImagen = "/placeholder.svg", deliveryTime = "45 min" }: OrderCardProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const {llamado_whit_link: getName} = useApi(``)
+  const [nombreres, setNombreres] = useState('')
+  useEffect(() => {
+      
+    const nombre_restaurante = async() => {
+     
+      const response = await getName(`${source_link}/api/restaurante?_id=${orden.restaurante_id}`,"GET")
+      
+      let nombre = response[0].nombre
+
+      setNombreres(nombre)
+       
+
+      
+    }
+
+    nombre_restaurante();
+
+  }, [])
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -37,34 +77,30 @@ export function OrderCard({ order }: OrderCardProps) {
       <CardContent className="p-4">
         <div className="flex justify-between items-start">
           <div>
-            <Link href={`/restaurants/${order.restaurant.id}`} className="font-medium text-lg hover:underline">
-              {order.restaurant.name}
-            </Link>
+            <div className="font-medium text-lg">
+              {nombreres}
+            </div>
             <div className="text-sm text-muted-foreground mt-1">
-              Order #{order.id.slice(-6)} • {new Date(order.date).toLocaleDateString()}
+              Order #{orden._id.slice(-6)} • {new Date(orden.fecha).toLocaleDateString()}
             </div>
           </div>
-          <Badge className={getStatusColor(order.status)}>
-            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+          <Badge className={getStatusColor(orden.estado)}>
+            {orden.estado.charAt(0).toUpperCase() + orden.estado.slice(1)}
           </Badge>
         </div>
 
         <div className="flex items-center gap-2 mt-4">
           <div className="relative h-12 w-12 rounded-full overflow-hidden border">
             <Image
-              src={order.restaurant.image || "/placeholder.svg?height=48&width=48"}
-              alt={order.restaurant.name}
+              src={restauranteImagen}
+              alt={restauranteNombre}
               fill
               className="object-cover"
             />
           </div>
           <div className="flex-1">
             <div className="text-sm">
-              {order.items.length} {order.items.length === 1 ? "item" : "items"} • ${order.total.toFixed(2)}
-            </div>
-            <div className="text-sm text-muted-foreground flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              {order.status === "completed" ? "Delivered" : "Estimated delivery"}: {order.deliveryTime}
+              {orden.platillos.length} {orden.platillos.length === 1 ? "item" : "items"} • Q{orden.total.toFixed(2)}
             </div>
           </div>
         </div>
@@ -87,34 +123,20 @@ export function OrderCard({ order }: OrderCardProps) {
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className="mt-4 space-y-3 border-t pt-3">
-              {order.items.map((item, index) => (
+              {orden.platillos.map((item, index) => (
                 <div key={index} className="flex justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="font-medium">{item.quantity}x</div>
-                    <div>{item.name}</div>
+                    <div className="font-medium">{item.cantidad}x</div>
+                    <div>{item.nombre}</div>
                   </div>
-                  <div>${(item.price * item.quantity).toFixed(2)}</div>
+                  <div>Q{((item.precio ?? item.precio_unitario) * item.cantidad).toFixed(2)}</div>
                 </div>
               ))}
 
               <div className="border-t pt-3 space-y-1">
-                <div className="flex justify-between text-sm">
-                  <div>Subtotal</div>
-                  <div>${order.subtotal.toFixed(2)}</div>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <div>Delivery Fee</div>
-                  <div>${order.deliveryFee.toFixed(2)}</div>
-                </div>
-                {order.discount > 0 && (
-                  <div className="flex justify-between text-sm text-green-600">
-                    <div>Discount</div>
-                    <div>-${order.discount.toFixed(2)}</div>
-                  </div>
-                )}
                 <div className="flex justify-between font-medium pt-1">
                   <div>Total</div>
-                  <div>${order.total.toFixed(2)}</div>
+                  <div>Q{orden.total.toFixed(2)}</div>
                 </div>
               </div>
             </div>
@@ -123,25 +145,7 @@ export function OrderCard({ order }: OrderCardProps) {
       </CardContent>
 
       <CardFooter className="p-4 pt-0 flex gap-2">
-        {order.status === "completed" && !order.reviewed && (
-          <Link href={`/restaurants/${order.restaurant.id}/review?orderId=${order.id}`} className="flex-1">
-            <Button variant="outline" className="w-full">
-              Write a Review
-            </Button>
-          </Link>
-        )}
-
-        {order.status !== "cancelled" && order.status !== "completed" && (
-          <Button variant="outline" className="flex-1">
-            Track Order
-          </Button>
-        )}
-
-        <Link href={`/orders/${order.id}`} className="flex-1">
-          <Button variant="secondary" className="w-full">
-            Order Details
-          </Button>
-        </Link>
+        {/* Si deseas agregar botón de reseña u otras acciones, puedes hacerlo aquí */}
       </CardFooter>
     </Card>
   )

@@ -3,45 +3,55 @@ import Image from "next/image"
 import { Star } from "lucide-react"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import type { Restaurant } from "@/lib/types"
-
-interface RestaurantCardProps {
-  restaurant: Restaurant
+import { getRated } from "@/lib/data"
+interface Restaurante {
+  _id: string;
+  nombre: string;
+  categoria: string;
+  direccion: string;
+  coordenadas: {
+    type: "Point";
+    coordinates: [number, number]; // [longitud, latitud]
+  };
+  telefono: string;
 }
 
-export function RestaurantCard({ restaurant }: RestaurantCardProps) {
+
+interface RestaurantCardProps {
+  restaurant: Restaurante
+}
+
+export async function RestaurantCard({ restaurant }: RestaurantCardProps) {
+
+  const resenas = await getRated()
+  const resumen = resenas.find(r => r.restaurante_id === restaurant._id);
+  const promedio = resumen?.promedio_calificacion ?? 0;
+ 
   return (
-    <Link href={`/restaurants/${restaurant.id}`}>
+    <Link href={`/restaurants/${restaurant._id}`}>
       <Card className="overflow-hidden h-full hover:shadow-md transition-shadow">
-        <div className="relative h-48 w-full">
-          <Image
-            src={restaurant.image || "/placeholder.svg?height=192&width=384"}
-            alt={restaurant.name}
-            fill
-            className="object-cover"
-          />
-        </div>
+        
         <CardContent className="p-4">
           <div className="flex justify-between items-start">
-            <h3 className="font-semibold text-lg line-clamp-1">{restaurant.name}</h3>
+            <h3 className="font-semibold text-lg line-clamp-1">{restaurant.nombre}</h3>
             <div className="flex items-center gap-1 text-amber-500">
               <Star className="h-4 w-4 fill-current" />
-              <span className="text-sm font-medium">{restaurant.rating.toFixed(1)}</span>
+              <span className="text-sm font-medium">{promedio.toFixed(1)}</span>
             </div>
           </div>
-          <p className="text-muted-foreground text-sm mt-1">{restaurant.cuisine}</p>
+          <p className="text-muted-foreground text-sm mt-1">{restaurant.categoria}</p>
           <div className="flex gap-2 mt-2">
-            {restaurant.tags.map((tag) => (
-              <Badge key={tag} variant="outline" className="text-xs">
-                {tag}
+           
+              <Badge  variant="outline" className="text-xs">
+                {restaurant.telefono}
               </Badge>
-            ))}
+           
           </div>
         </CardContent>
-        <CardFooter className="p-4 pt-0 text-sm text-muted-foreground">
+        {/* <CardFooter className="p-4 pt-0 text-sm text-muted-foreground">
           {restaurant.deliveryTime} min •{" "}
           {restaurant.deliveryFee ? `$${restaurant.deliveryFee.toFixed(2)} delivery` : "Free delivery"}
-        </CardFooter>
+        </CardFooter> */}
       </Card>
     </Link>
   )

@@ -1,58 +1,147 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
-import Link from "next/link"
+import React, { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Eye, EyeOff, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import useID from "@/hooks/useID"
+import useApi from "@/hooks/useApi"
+import source_link from "@/repositori/source_repo"
 
-export default function LoginPage() {
+// Define a type for the form data to help TypeScript
+interface FormData {
+  nombre: string;
+  email: string;
+  direccion: string;
+  telefono: string;
+  contra: string;
+  tipo: string;
+}
+
+export default function SignupPage() {
   const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
+  const { setUserID } = useID()
+
+  const {llamado: crear_cuenta} = useApi(`${source_link}/api/usuario`)
+
+  const [formData, setFormData] = useState<FormData>({
+    nombre: "",
+    email: "",
+    direccion: "",
+    telefono: "",
+    contra: "",
+    tipo: "cliente", // Set a default value
+  })
+
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    
+    // Make sure TypeScript knows this is a valid key of FormData
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    
+    console.log(`Changed ${name} to ${value}`); // Add debug log
+  };
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+    setIsLoading(true)
 
-    if (!email || !password) {
-      setError("Please fill in all fields")
+    if (!navigator.geolocation) {
+      setError("Tu navegador no soporta geolocalización.")
+      setIsLoading(false)
       return
     }
 
-    try {
-      setIsLoading(true)
-      // In a real application, this would be an API call to authenticate
-      await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate API call
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords
 
-      // Simulate successful login
-      router.push("/")
-    } catch (err) {
-      setError("Invalid email or password")
-    } finally {
-      setIsLoading(false)
-    }
+        const body = {
+          ...formData,
+          coordenadas: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          fecha_registro: new Date().toISOString(),
+        }
+
+        try {
+
+
+          
+          // const res = await fetch("http://localhost:3000/api/usuario", {
+          //   method: "POST",
+          //   headers: {
+          //     "Content-Type": "application/json",
+          //   },
+          //   body: JSON.stringify(body),
+          // })
+
+          // if (!res.ok) {
+          //   throw new Error("Error al registrar el usuario")
+          // }
+
+          // const data = await res.json()
+          // setUserID(data._id)
+
+          const respuesta = await  crear_cuenta(body, "POST");
+          
+          if(respuesta.nombre == formData.nombre){
+
+            setUserID(respuesta._id)
+            if (formData.tipo == 'restaurante'){
+              const query = new URLSearchParams({
+                nombre: formData.nombre,
+                email: formData.email,
+                direccion: formData.direccion,
+                telefono: formData.telefono,
+                contra: formData.contra,
+                tipo: formData.tipo,
+                lat: latitude.toString(),
+                lng: longitude.toString(),
+                fecha_registro: new Date().toISOString(),
+              }).toString()
+              
+              router.push(`/restaurant_log?${query}`)
+    
+            }else{
+              window.location.href = "/"
+            }
+          }else{
+            setError("Error al crear cuenta")
+          }
+ 
+
+         
+        } catch (err) {
+          setError("Error al registrar. Intenta más tarde.")
+        } finally {
+          setIsLoading(false)
+        }
+      },
+      () => {
+        setError("Permiso de ubicación denegado.")
+        setIsLoading(false)
+      }
+    )
   }
 
   return (
     <div className="container mx-auto px-4 py-12 flex justify-center items-center min-h-[80vh]">
       <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Crear Cuenta</CardTitle>
-          <CardDescription className="text-center">
-            Crea tu cuenta con tus datos.
-          </CardDescription>
+        <CardHeader>
+          <CardTitle className="text-2xl text-center">Crear Cuenta</CardTitle>
+          <CardDescription className="text-center">Llena tus datos para registrarte</CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
@@ -61,86 +150,47 @@ export default function LoginPage() {
             </Alert>
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="user">Usuario</Label>
-              <Input
-                id="text"
-                type="text"
-                placeholder="example"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-
-          <Label htmlFor="email">Email</Label>
-              <Input
-                id="text"
-                type="email"
-                placeholder="example@gmail.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-
-
-              <Label htmlFor="email">Telefono</Label>
-              <Input
-                id="text"
-                type="number"
-                placeholder=""
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-
-
-
-
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                
-              </div>
-              <div className="relative">
+            {[
+              { label: "Nombre", name: "nombre", type: "text" },
+              { label: "Email", name: "email", type: "email" },
+              { label: "Dirección", name: "direccion", type: "text" },
+              { label: "Teléfono", name: "telefono", type: "tel" },
+              { label: "Contraseña", name: "contra", type: "password" },
+            ].map((field) => (
+              <div key={field.name} className="space-y-2">
+                <Label htmlFor={field.name}>{field.label}</Label>
                 <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  id={field.name}
+                  name={field.name}
+                  type={field.type}
                   required
+                  value={formData[field.name as keyof FormData]}
+                  onChange={handleChange}
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full px-3"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  <span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
-                </Button>
               </div>
-            </div>
-            
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Iniciar Sesion..." : "Iniciar Sesion"}
-            </Button>
-          </form>
+            ))}
 
-         
-
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t"></div>
-            </div>
-          
+          <div className="space-y-2">
+            <Label htmlFor="tipo">Tipo de usuario</Label>
+            <select
+              id="tipo"
+              name="tipo"
+              className="w-full border rounded-md p-2"
+              value={formData.tipo}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Seleccione tipo</option>
+              <option value="cliente">Cliente</option>
+              <option value="restaurante">Restaurante</option>
+            </select>
           </div>
 
-          
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Registrando..." : "Crear Cuenta"}
+            </Button>
+          </form>
         </CardContent>
-       
       </Card>
     </div>
   )

@@ -12,10 +12,16 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import useApi from "@/hooks/useApi"
+import useID from "@/hooks/useID"
+import source_link from "@/repositori/source_repo"
 
 export default function LoginPage() {
+  
   const router = useRouter()
+  const { userID, setUserID } = useID();
   const [email, setEmail] = useState("")
+  const {llamadowithoutbody: login_usuario } =  useApi(`${source_link}/api/usuario?email=${email}`);
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
@@ -36,10 +42,24 @@ export default function LoginPage() {
       // In a real application, this would be an API call to authenticate
       await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate API call
 
+      
+
+      const respuesta = await login_usuario('GET');
+
+      if (respuesta[0].contra == password) {
+        setUserID(respuesta[0]._id)
+
+        window.location.href = "/"
+      }else {
+        setError("Contraseña o usuario incorrectos")
+      }
+
+      console.log(respuesta)
       // Simulate successful login
-      router.push("/")
+      
     } catch (err) {
       setError("Invalid email or password")
+      console.log(err)
     } finally {
       setIsLoading(false)
     }
@@ -51,7 +71,7 @@ export default function LoginPage() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
           <CardDescription className="text-center">
-            Coloca tu usuario y contraseña para entrar
+            Coloca tu email y contraseña para entrar
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -62,7 +82,7 @@ export default function LoginPage() {
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="user">Usuario</Label>
+              <Label htmlFor="user">Email</Label>
               <Input
                 id="text"
                 type="text"
