@@ -1,4 +1,5 @@
 const Resena = require("../models/Resena");
+const mongoose = require("mongoose");
 const multer = require("multer");
 const fs = require("fs");
 
@@ -67,6 +68,14 @@ exports.obtenerResenas = async (req, res) => {
     const filtro = {};
 
     // --- Filtros simples ---
+    if (query._id) {
+      if (!mongoose.Types.ObjectId.isValid(query._id)) {
+        return res
+          .status(400)
+          .json({ error: "El _id proporcionado no es válido" });
+      }
+      filtro._id = new mongoose.Types.ObjectId(query._id);
+    }
     if (query.restaurante_id) filtro.restaurante_id = query.restaurante_id;
     if (query.usuario_id) filtro.usuario_id = query.usuario_id;
     if (query.orden_id) filtro.orden_id = query.orden_id;

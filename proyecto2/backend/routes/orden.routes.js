@@ -158,6 +158,12 @@ router.post("/upload", subirArchivoOrden);
  *      - Orden
  *     parameters:
  *       - in: query
+ *         name: _id
+ *         schema:
+ *           type: string
+ *           example: 681741a5a913f0b464ef950f
+ *         description: ID de la orden
+ *       - in: query
  *         name: usuario_id
  *         schema:
  *           type: string

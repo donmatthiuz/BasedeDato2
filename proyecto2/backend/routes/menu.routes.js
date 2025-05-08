@@ -220,6 +220,12 @@ router.post("/upload", subirArchivoMenu);
  *      - Menu
  *     parameters:
  *       - in: query
+ *         name: _id
+ *         schema:
+ *           type: string
+ *           example: 681741a5a913f0b464ef950f
+ *         description: ID del artículo de menú
+ *       - in: query
  *         name: restaurante_id
  *         schema:
  *           type: string

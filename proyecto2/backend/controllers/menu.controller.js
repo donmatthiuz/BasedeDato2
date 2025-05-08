@@ -121,12 +121,10 @@ exports.actualizarImagenDeMenu = [
       fileReadStream
         .pipe(uploadStream)
         .on("error", (err) => {
-          return res
-            .status(500)
-            .json({
-              error: "Error al guardar nueva imagen",
-              detalle: err.message,
-            });
+          return res.status(500).json({
+            error: "Error al guardar nueva imagen",
+            detalle: err.message,
+          });
         })
         .on("finish", async () => {
           const nuevaImagenId = uploadStream.id;
@@ -205,9 +203,18 @@ exports.crearArticulo = async (req, res) => {
 exports.obtenerArticulos = async (req, res) => {
   try {
     const query = req.query;
+    const filtro = {};
 
     // --- Filtros flexibles ---
-    const filtro = {};
+    if (query._id) {
+      if (!mongoose.Types.ObjectId.isValid(query._id)) {
+        return res
+          .status(400)
+          .json({ error: "El _id proporcionado no es válido" });
+      }
+      filtro._id = new mongoose.Types.ObjectId(query._id);
+    }
+
     if (query.restaurante_id) {
       filtro.restaurante_id = query.restaurante_id;
     }

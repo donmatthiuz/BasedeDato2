@@ -1,4 +1,5 @@
 const Restaurante = require("../models/Restaurante");
+const mongoose = require("mongoose");
 const multer = require("multer");
 const fs = require("fs");
 
@@ -58,6 +59,15 @@ exports.obtenerRestaurantes = async (req, res) => {
     const filtro = {};
 
     // --- Filtros simples ---
+    if (query._id) {
+      if (!mongoose.Types.ObjectId.isValid(query._id)) {
+        return res
+          .status(400)
+          .json({ error: "El _id proporcionado no es válido" });
+      }
+      filtro._id = new mongoose.Types.ObjectId(query._id);
+    }
+
     if (query.nombre) filtro.nombre = new RegExp(query.nombre, "i");
     if (query.categoria) filtro.categoria = query.categoria;
     if (query.telefono) filtro.telefono = query.telefono;

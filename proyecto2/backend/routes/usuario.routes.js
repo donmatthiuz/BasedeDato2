@@ -179,7 +179,7 @@ router.post("/upload", subirArchivoUsuario);
  *         schema:
  *           type: string
  *           example: 66551509f5275a9d88c17258
- *         description: ID exacto del usuario (Mongo ObjectId)
+ *         description: ID del usuario
  *       - in: query
  *         name: nombre
  *         schema:

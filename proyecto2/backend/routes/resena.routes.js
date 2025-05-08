@@ -153,6 +153,12 @@ router.post("/upload", subirArchivoResena);
  *      - Reseña
  *     parameters:
  *       - in: query
+ *         name: _id
+ *         schema:
+ *           type: string
+ *           example: 681741a5a913f0b464ef950f
+ *         description: ID de la reseña
+ *       - in: query
  *         name: restaurante_id
  *         schema:
  *           type: string
