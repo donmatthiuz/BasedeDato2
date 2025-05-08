@@ -275,12 +275,6 @@ router.post("/upload", subirArchivoUsuario);
  *     responses:
  *       200:
  *         description: Lista de usuarios
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Usuario'
  *       400:
  *         description: Error de validación en los parámetros
  *       500:
