@@ -11,6 +11,11 @@ const MenuSchema = new mongoose.Schema(
       ref: "Restaurante",
       required: true,
     },
+    imagen_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "imagenesMenu",
+      required: false,
+    },
   },
   {
     collection: "menu",

@@ -1,10 +1,166 @@
 const Menu = require("../models/Menu");
-const Restaurante = require("../models/Restaurante");
+const mongoose = require("mongoose");
+const { GridFSBucket } = require("mongodb");
 const multer = require("multer");
 const fs = require("fs");
+const path = require("path");
 
 // Middleware para archivo
 const upload = multer({ dest: "uploads/" }); // crea carpeta si no existe
+const uploadImagen = multer({ dest: "uploads/" });
+
+// --- IMAGEN ---
+exports.subirImagenAMenu = [
+  uploadImagen.single("imagen"),
+  async (req, res) => {
+    try {
+      const menuId = req.params.id;
+
+      if (!req.file) {
+        return res.status(400).json({ error: "No se envió una imagen válida" });
+      }
+
+      const conn = mongoose.connection;
+      const bucket = new mongoose.mongo.GridFSBucket(conn.db, {
+        bucketName: "imagenesMenu",
+      });
+
+      const imagenPath = path.join(__dirname, "..", req.file.path);
+      const uploadStream = bucket.openUploadStream(req.file.originalname);
+      const fileReadStream = fs.createReadStream(imagenPath);
+
+      fileReadStream
+        .pipe(uploadStream)
+        .on("error", (err) => {
+          return res.status(500).json({
+            error: "Error al guardar en GridFS",
+            detalle: err.message,
+          });
+        })
+        .on("finish", async () => {
+          const imagenId = uploadStream.id;
+
+          const actualizado = await Menu.findByIdAndUpdate(
+            menuId,
+            { imagen_id: imagenId },
+            { new: true }
+          );
+
+          try {
+            fs.unlinkSync(imagenPath);
+          } catch (e) {
+            console.warn("No se pudo eliminar archivo temporal:", imagenPath);
+          }
+
+          if (!actualizado) {
+            return res.status(404).json({ error: "Menú no encontrado" });
+          }
+
+          res.status(200).json(actualizado);
+        });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error: "Error al subir imagen", detalle: error.message });
+    }
+  },
+];
+
+exports.obtenerImagenDeMenu = async (req, res) => {
+  try {
+    const menu = await Menu.findById(req.params.id);
+
+    if (!menu || !menu.imagen_id) {
+      return res.status(404).json({ error: "Menú sin imagen" });
+    }
+
+    const conn = mongoose.connection;
+    const bucket = new mongoose.mongo.GridFSBucket(conn.db, {
+      bucketName: "imagenesMenu",
+    });
+
+    const stream = bucket.openDownloadStream(menu.imagen_id);
+
+    res.set({
+      "Content-Type": "image/jpeg",
+      "Content-Disposition": "inline", // usa "attachment" si quieres forzar descarga
+    });
+
+    stream.on("error", () => {
+      res.status(404).json({ error: "Imagen no encontrada" });
+    });
+
+    stream.pipe(res);
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al obtener imagen desde menú",
+      detalle: error.message,
+    });
+  }
+};
+
+exports.actualizarImagenDeMenu = [
+  uploadImagen.single("imagen"),
+  async (req, res) => {
+    try {
+      const menuId = req.params.id;
+
+      if (!req.file) {
+        return res.status(400).json({ error: "No se envió una imagen válida" });
+      }
+
+      const conn = mongoose.connection;
+      const bucket = new mongoose.mongo.GridFSBucket(conn.db, {
+        bucketName: "imagenesMenu",
+      });
+
+      const imagenPath = req.file.path;
+      const uploadStream = bucket.openUploadStream(req.file.originalname);
+      const fileReadStream = fs.createReadStream(imagenPath);
+
+      fileReadStream
+        .pipe(uploadStream)
+        .on("error", (err) => {
+          return res
+            .status(500)
+            .json({
+              error: "Error al guardar nueva imagen",
+              detalle: err.message,
+            });
+        })
+        .on("finish", async () => {
+          const nuevaImagenId = uploadStream.id;
+
+          // Buscar menú actual
+          const menu = await Menu.findById(menuId);
+          if (!menu) {
+            fs.unlinkSync(imagenPath);
+            return res.status(404).json({ error: "Menú no encontrado" });
+          }
+
+          // Eliminar imagen anterior si existe
+          if (menu.imagen_id) {
+            try {
+              await bucket.delete(menu.imagen_id);
+            } catch (e) {
+              console.warn("No se pudo eliminar imagen anterior:", e.message);
+            }
+          }
+
+          // Guardar nueva imagen
+          menu.imagen_id = nuevaImagenId;
+          await menu.save();
+
+          fs.unlinkSync(imagenPath); // limpia archivo temporal
+          res.status(200).json(menu);
+        });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error: "Error al actualizar imagen", detalle: error.message });
+    }
+  },
+];
 
 // --- CRUD ---
 exports.subirArchivoMenu = [

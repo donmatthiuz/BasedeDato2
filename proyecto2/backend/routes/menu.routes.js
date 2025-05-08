@@ -13,10 +13,118 @@ const {
   topOBottomRestaurantesPorPrecioPromedio,
   promedioPrecioPorCategoria,
   distribucionPreciosPorZona,
+  subirImagenAMenu,
+  obtenerImagenDeMenu,
+  actualizarImagenDeMenu,
 } = require("../controllers/menu.controller");
 
-// --- CRUD ---
+// --- IMAGEN ---
+/**
+ * @swagger
+ * /menu/{id}/imagen:
+ *   post:
+ *     summary: Subir o actualizar imagen de un artículo del menú
+ *     tags:
+ *       - Menu
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del artículo de menú
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               imagen:
+ *                 type: string
+ *                 format: binary
+ *                 description: Archivo de imagen
+ *     responses:
+ *       200:
+ *         description: Imagen cargada y vinculada al menú
+ *       400:
+ *         description: Error en los datos
+ *       404:
+ *         description: Menú no encontrado
+ */
+router.post("/:id/imagen", subirImagenAMenu);
 
+/**
+ * @swagger
+ * /menu/{id}/imagen:
+ *   get:
+ *     summary: Ver imagen asociada a un menú
+ *     description: Devuelve la imagen desde GridFS asociada al menú identificado por su `_id`.
+ *     tags:
+ *       - Menu
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID del menú
+ *         schema:
+ *           type: string
+ *           example: 663be2b3c3b6f212e68a77a4
+ *     responses:
+ *       200:
+ *         description: Imagen encontrada (servida como stream)
+ *         content:
+ *           image/jpeg:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       404:
+ *         description: Menú o imagen no encontrada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/:id/imagen", obtenerImagenDeMenu);
+
+/**
+ * @swagger
+ * /menu/{id}/imagen:
+ *   patch:
+ *     summary: Reemplazar la imagen de un menú
+ *     description: Sube una nueva imagen al menú y elimina la anterior si existía.
+ *     tags:
+ *       - Menu
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID del menú
+ *         schema:
+ *           type: string
+ *           example: 663be2b3c3b6f212e68a77a4
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               imagen:
+ *                 type: string
+ *                 format: binary
+ *                 description: Nueva imagen a subir
+ *     responses:
+ *       200:
+ *         description: Imagen actualizada exitosamente
+ *       400:
+ *         description: Imagen no válida
+ *       404:
+ *         description: Menú no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.patch("/:id/imagen", actualizarImagenDeMenu);
+
+// --- CRUD ---
 /**
  * @swagger
  * /menu:
