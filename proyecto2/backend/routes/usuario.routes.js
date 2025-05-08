@@ -172,8 +172,14 @@ router.post("/upload", subirArchivoUsuario);
  *   get:
  *     summary: Obtener todos los usuarios
  *     tags:
- *      - Usuario
+ *       - Usuario
  *     parameters:
+ *       - in: query
+ *         name: _id
+ *         schema:
+ *           type: string
+ *           example: 66551509f5275a9d88c17258
+ *         description: ID exacto del usuario (Mongo ObjectId)
  *       - in: query
  *         name: nombre
  *         schema:
@@ -269,8 +275,16 @@ router.post("/upload", subirArchivoUsuario);
  *     responses:
  *       200:
  *         description: Lista de usuarios
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Usuario'
+ *       400:
+ *         description: Error de validación en los parámetros
  *       500:
- *         description: Consulta no válida o sin índice
+ *         description: Consulta no válida o error del servidor
  */
 router.get("/", obtenerUsuarios);
 
