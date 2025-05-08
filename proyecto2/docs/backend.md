@@ -55,7 +55,7 @@ npm install
 1. Inicia el servidor con el siguiente comando:
 
 ```bash
-npm run dev
+npm start
 ```
 
 Este comando iniciará el servicio y te informará si la conexión a la base de datos se realizó con éxito. También te indicará en qué puerto está escuchando el servidor.
