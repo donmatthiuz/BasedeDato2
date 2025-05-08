@@ -1,5 +1,6 @@
 import json
-from uuid import uuid4
+import os
+from bson import ObjectId
 from faker import Faker
 import random
 from datetime import datetime
@@ -9,10 +10,17 @@ fake = Faker("es_ES")
 # Configuración
 TOTAL_DOCS = 50000
 CATEGORIAS = ["Parrillada", "Asiatica", "Italiana", "Vegetariana", "Rápida"]
+TIPOS_USUARIO = { #tipo usuario y porcentaje de cantidad
+    "cliente": 0.85,
+    "repartidor": 0.10,
+    "administrador": 0.03,
+    "dueño_restaurante": 0.02
+}
 
 def generar_id():
-    return str(uuid4())
+    return str(ObjectId())
 
+#generacion de datos prefijos
 def generar_nombre_restaurante(categoria):
     nombres = {
         "Parrillada": ["El Asador", "Brasas Maestras", "La Carnicería", "Parrilla Don José", "Los Carbones"],
@@ -22,6 +30,11 @@ def generar_nombre_restaurante(categoria):
         "Rápida": ["Rápido y Sabroso", "El Rincón Express", "WacDonalds", "Pizza Queen", "Taco Box"]
     }
     return random.choice(nombres[categoria])
+def generar_tipo_usuario():
+    return random.choices(
+        list(TIPOS_USUARIO.keys()),
+        weights=list(TIPOS_USUARIO.values())
+    )[0]
 
 def formato_fecha_mongodb(fecha_datetime):
     return {
@@ -31,7 +44,7 @@ def formato_fecha_mongodb(fecha_datetime):
 def generar_datos():
     # 1. Restaurantes (1 por categoría)
     restaurantes = [{
-        "_id": generar_id(),
+        "_id": ObjectId(),
         "nombre": generar_nombre_restaurante(categoria),
         "categoria": categoria,
         "direccion": fake.address(),
@@ -44,7 +57,7 @@ def generar_datos():
 
     # 2. Clientes (8% del total = 4,000)
     usuarios = [{
-        "_id": generar_id(),
+        "_id": ObjectId(),
         "nombre": fake.name(),
         "email": fake.email(),
         "direccion": fake.address(),
@@ -54,7 +67,8 @@ def generar_datos():
         },
         "telefono": fake.phone_number(),
         "contra": fake.password(),
-        "fecha_registro": formato_fecha_mongodb(fake.date_time_between(start_date="-1y"))
+        "fecha_registro": formato_fecha_mongodb(fake.date_time_between(start_date="-1y")),
+        "tipo": generar_tipo_usuario()
     } for _ in range(int(TOTAL_DOCS * 0.08))]
 
     # 3. Menú - Asegurando mínimo 5 platillos por categoría
@@ -74,7 +88,7 @@ def generar_datos():
         
         for platillo in platillos:
             articulos_menu.append({
-                "_id": generar_id(),
+                "_id": ObjectId(),
                 "nombre": platillo,
                 "precio": random.randint(50, 150),
                 "descripcion": f"{platillo} con acompañamientos",
@@ -103,7 +117,7 @@ def generar_datos():
             })
         
         ordenes.append({
-            "_id": generar_id(),
+            "_id": ObjectId(),
             "usuario_id": usuario["_id"],
             "restaurante_id": restaurante["_id"],
             "fecha": formato_fecha_mongodb(fake.date_time_between(start_date="-1y")),
@@ -126,13 +140,18 @@ def generar_datos():
         else:
             fecha_orden = datetime.strptime(orden["fecha"], "%Y-%m-%dT%H:%M:%SZ")
         resenas.append({
-            "_id": generar_id(),
-            "orden_id": orden["_id"],
-            "usuario_id": orden["usuario_id"],
-            "restaurante_id": orden["restaurante_id"],
+            "_id": ObjectId(),
+            "menu": {
+                "nombre": articulo["nombre"],
+                "precio": articulo["precio"],
+                "descripcion": articulo["descripcion"]
+            },
+            "nombre_usuario": usuario["nombre"],
             "calificacion": random.randint(1, 5),
             "comentario": fake.paragraph(nb_sentences=2),
-            "fecha": formato_fecha_mongodb(fake.date_time_between(start_date=fecha_orden))
+            "fecha": formato_fecha_mongodb(fake.date_time_between(start_date=fecha_orden)),
+            "usuario_id": orden["usuario_id"],
+            "restaurante_id": orden["restaurante_id"]
         })
 
     return {
@@ -144,35 +163,79 @@ def generar_datos():
     }
 
 def guardar_datos(datos):
-    # Guardar en archivos separados
+    # Función para serializar ObjectId y fechas
+    def serializar(obj):
+        if isinstance(obj, ObjectId):
+            return {"$oid": str(obj)}
+        elif isinstance(obj, datetime):
+            return {"$date": obj.strftime("%Y-%m-%dT%H:%M:%SZ")}
+        return obj
+
+    # Guardar restaurantes (con GeoJSON)
     with open('restaurantes.json', 'w', encoding='utf-8') as f:
-        json.dump(datos["restaurantes"], f, indent=2, ensure_ascii=False)
+        json.dump(
+            datos["restaurantes"], 
+            f, 
+            indent=2, 
+            ensure_ascii=False,
+            default=serializar
+        )
     
+    # Guardar usuarios (con tipo y GeoJSON)
     with open('usuarios.json', 'w', encoding='utf-8') as f:
-        json.dump(datos["usuarios"], f, indent=2, ensure_ascii=False)
+        json.dump(
+            datos["usuarios"], 
+            f, 
+            indent=2, 
+            ensure_ascii=False,
+            default=serializar
+        )
     
+    # Guardar menú
     with open('articulos_menu.json', 'w', encoding='utf-8') as f:
-        json.dump(datos["articulos_menu"], f, indent=2, ensure_ascii=False)
+        json.dump(
+            datos["articulos_menu"], 
+            f, 
+            indent=2, 
+            ensure_ascii=False,
+            default=serializar
+        )
     
-    # Dividir órdenes en archivos de 10,000
+    # Dividir órdenes (con serialización)
     for i in range(0, len(datos["ordenes"]), 10000):
         with open(f'ordenes_{i//10000}.json', 'w', encoding='utf-8') as f:
-            json.dump(datos["ordenes"][i:i+10000], f, indent=2, ensure_ascii=False)
+            json.dump(
+                datos["ordenes"][i:i+10000], 
+                f, 
+                indent=2, 
+                ensure_ascii=False,
+                default=serializar
+            )
     
+    # Guardar reseñas (con estructura corregida)
     with open('resenas.json', 'w', encoding='utf-8') as f:
-        json.dump(datos["resenas"], f, indent=2, ensure_ascii=False)
+        json.dump(
+            datos["resenas"], 
+            f, 
+            indent=2, 
+            ensure_ascii=False,
+            default=serializar
+        )
 
-# Ejecución
+# Ejecución (con verificación)
 print("Generando 50,000 documentos...")
-datos_generados = generar_datos()
-print("Guardando archivos...")
-guardar_datos(datos_generados)
-
-print(f"""
-Generación completada:
-- Restaurantes: {len(datos_generados["restaurantes"])} (1 por categoría)
-- Usuarios: {len(datos_generados["usuarios"])} (8%)
-- Artículos de menú: {len(datos_generados["articulos_menu"])}
-- Órdenes: {len(datos_generados["ordenes"])} (90%)
-- Reseñas: {len(datos_generados["resenas"])} (2% de órdenes completadas)
-""")
+try:
+    datos_generados = generar_datos()
+    print("Guardando archivos...")
+    guardar_datos(datos_generados)
+    
+    print(f"""
+    Generación completada:
+    - Restaurantes: {len(datos_generados["restaurantes"])} (1 por categoría)
+    - Usuarios: {len(datos_generados["usuarios"])} (8%)
+    - Artículos de menú: {len(datos_generados["articulos_menu"])}
+    - Órdenes: {len(datos_generados["ordenes"])} (90%)
+    - Reseñas: {len(datos_generados["resenas"])} (2% de órdenes completadas)
+    """)
+except Exception as e:
+    print(f"Error durante la generación: {str(e)}")
