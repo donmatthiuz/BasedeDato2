@@ -62,11 +62,11 @@ export function MainNav() {
       label: "Home",
       active: pathname === "/",
     },
-    {
-      href: "/restaurants",
-      label: "Restaurants",
-      active: pathname === "/restaurants",
-    },
+    // {
+    //   href: "/restaurants",
+    //   label: "Restaurants",
+    //   active: pathname === "/restaurants",
+    // },
     
      ...(rol === "restaurante"
     ? [

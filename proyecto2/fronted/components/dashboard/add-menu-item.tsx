@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, Save, XCircle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import useApi from "@/hooks/useApi";
+import source_link from "@/repositori/source_repo";
+import useID from "@/hooks/useID";
 
 // In a real app, this would come from an API or database
 const CATEGORIES = [
@@ -18,8 +21,73 @@ const CATEGORIES = [
   "Sides"
 ];
 
+interface MenuItem {
+  _id: string;
+  nombre: string;
+  precio: number;
+  descripcion: string;
+  disponible: boolean;
+  restaurante_id: string;
+  imagen_id: string;
+}
+
+
+
 const AddMenuItem = () => {
+  const { userID, setUserID } = useID();
+  const {llamado_whit_link: getUsuario} = useApi(``)
+  const {llamado: insertMenu} = useApi(`${source_link}/api/menu`)
+
+  const [menus_items_d, setMenusitemsD] = useState<MenuItem[]>([])
   const [menuItems, setMenuItems] = useState([]);
+
+  useEffect(() => {
+
+    const fetchMenuItems = async () => {
+      const response = await getUsuario(`${source_link}/api/usuario?_id=${userID}`, "GET")
+
+      
+
+      const nombre = response[0].nombre
+  
+      const respuesta_id = await getUsuario(`${source_link}/api/restaurante?nombre=${nombre}`, "GET")
+
+      console.log("Respuesta id", respuesta_id)
+  
+      
+      const respuesta = await getUsuario(`${source_link}/api/menu?restaurante_id=${respuesta_id[0]._id}`, "GET")
+
+      console.log(respuesta)
+      setMenusitemsD(respuesta)
+  
+    }
+
+
+    fetchMenuItems()
+
+   
+
+  }, [])
+
+
+  const delete_menu = async(id_menu: string) =>{
+
+    const respuesta = await insertMenu({
+      _id: id_menu
+    },"DELETE")
+
+
+    if (respuesta){
+
+      alert('ELIMINADO DE MANERA EXITOSA')
+      
+
+    }
+
+
+
+  }
+
   const [newItem, setNewItem] = useState({
     name: "",
     description: "",
@@ -38,9 +106,33 @@ const AddMenuItem = () => {
     setNewItem({ ...newItem, category: value });
   };
 
-  const handleAddItem = () => {
+
+  
+
+  const handleAddItem = async() => {
+
+    const response = await getUsuario(`${source_link}/api/usuario?_id=${userID}`, "GET")
+
+    const nombre = response[0].nombre
+
+    const respuesta_id = await getUsuario(`${source_link}/api/restaurante?nombre=${nombre}`, "GET")
+
+    console.log(respuesta_id[0]._id)
+
+    const respuesta_menu = await insertMenu({
+      nombre: newItem.name,
+      descripcion: newItem.description,
+      precio: newItem.price,
+      disponible: true,
+      restaurante_id: respuesta_id[0]._id
+    },"POST")
+
+    if (respuesta_menu){
+      alert("Insertado de manera exitosa");
+    }
+    
     // Basic validation
-    if (!newItem.name || !newItem.price || !newItem.category) {
+    if (!newItem.name || !newItem.price ) {
       alert("Please fill in all required fields");
       return;
     }
@@ -93,10 +185,7 @@ const AddMenuItem = () => {
             <PlusCircle className="mr-2 h-4 w-4" />
             Add Item
           </Button>
-          <Button variant="outline" onClick={handleSaveMenu}>
-            <Save className="mr-2 h-4 w-4" />
-            Save Menu
-          </Button>
+          
         </div>
       </div>
 
@@ -120,7 +209,7 @@ const AddMenuItem = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="price">Price ($) *</Label>
+                <Label htmlFor="price">Price (Q) *</Label>
                 <Input 
                   id="price" 
                   name="price" 
@@ -135,24 +224,7 @@ const AddMenuItem = () => {
               </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="category">Category *</Label>
-              <Select 
-                value={newItem.category} 
-                onValueChange={handleCategoryChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map(category => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            
             
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
@@ -179,58 +251,36 @@ const AddMenuItem = () => {
         </Card>
       )}
 
-      {menuItems.length > 0 ? (
-        <Tabs defaultValue={Object.keys(groupedItems)[0] || ""} className="space-y-4">
-          <TabsList>
-            {Object.keys(groupedItems).map(category => (
-              <TabsTrigger key={category} value={category}>
-                {category} ({groupedItems[category].length})
-              </TabsTrigger>
-            ))}
-          </TabsList>
 
-          {Object.keys(groupedItems).map(category => (
-            <TabsContent key={category} value={category} className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {groupedItems[category].map(item => (
-                  <Card key={item.id}>
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-start">
-                        <CardTitle className="text-lg">{item.name}</CardTitle>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-8 w-8 p-0" 
-                          onClick={() => handleRemoveItem(item.id)}
-                        >
-                          <XCircle className="h-4 w-4 text-red-500" />
-                          <span className="sr-only">Remove</span>
-                        </Button>
-                      </div>
-                      <CardDescription className="text-sm">${item.price.toFixed(2)}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        {item.description || "No description provided"}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-12">
-          <p className="text-lg text-muted-foreground mb-4">No menu items added yet</p>
-          {!isAdding && (
-            <Button onClick={() => setIsAdding(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add Your First Menu Item
+  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    {menus_items_d.map(item => (
+      <Card key={item._id}>
+        <CardHeader className="pb-2">
+          <div className="flex justify-between items-start">
+            <CardTitle className="text-lg">{item.nombre}</CardTitle>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 w-8 p-0" 
+              onClick={() => delete_menu(item._id)}
+            >
+              <XCircle className="h-4 w-4 text-red-500" />
+              <span className="sr-only">Remove</span>
             </Button>
-          )}
-        </div>
-      )}
+          </div>
+          <CardDescription className="text-sm">
+            ${item.precio.toFixed(2)}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            {item.descripcion || "Sin descripción"}
+          </p>
+        </CardContent>
+      </Card>
+    ))}
+  </div>
+
     </div>
   );
 };
