@@ -1,4 +1,5 @@
 const Usuario = require("../models/Usuario");
+const mongoose = require("mongoose");
 const multer = require("multer");
 const fs = require("fs");
 
@@ -62,6 +63,16 @@ exports.obtenerUsuarios = async (req, res) => {
     const query = req.query;
     const filtro = {};
 
+    // --- Filtro por _id ---
+    if (query._id) {
+      if (!mongoose.Types.ObjectId.isValid(query._id)) {
+        return res
+          .status(400)
+          .json({ error: "El _id proporcionado no es válido" });
+      }
+      filtro._id = new mongoose.Types.ObjectId(query._id);
+    }
+
     // --- Filtros simples ---
     if (query.nombre) filtro.nombre = new RegExp(query.nombre, "i");
     if (query.email) filtro.email = query.email;
@@ -81,12 +92,10 @@ exports.obtenerUsuarios = async (req, res) => {
     // --- Filtro por rango de fechas de registro ---
     if (query.fecha_inicio || query.fecha_fin) {
       filtro.fecha_registro = {};
-
       if (query.fecha_inicio) {
         const inicio = new Date(`${query.fecha_inicio}T00:00:00.000Z`);
         filtro.fecha_registro.$gte = inicio;
       }
-
       if (query.fecha_fin) {
         const fin = new Date(`${query.fecha_fin}T23:59:59.999Z`);
         filtro.fecha_registro.$lte = fin;
@@ -109,9 +118,8 @@ exports.obtenerUsuarios = async (req, res) => {
       campos.forEach((campo) => {
         proyeccion[campo] = 1;
       });
-
       if (!campos.includes("_id")) {
-        proyeccion["_id"] = 0; // excluye _id si no fue solicitado
+        proyeccion["_id"] = 0;
       }
     }
 
@@ -131,7 +139,7 @@ exports.obtenerUsuarios = async (req, res) => {
       .sort(sort)
       .skip(skip)
       .limit(limit)
-      .hint({ nombre: 1, direccion: 1 })
+      .hint({ nombre: 1, tipo: 1, fecha_registro: -1 })
       .lean();
 
     res.json(usuarios);
