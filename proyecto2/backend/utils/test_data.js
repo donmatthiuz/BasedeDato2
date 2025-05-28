@@ -1,0 +1,232 @@
+const restaurantData = [
+  {
+    nombre: "La Carnicería",
+    direccion: "Plaza Olegario Dueñas 1 Apt. 84 \nLa Coruña, 04962",
+    telefono: "+34 928 766 724",
+    categoria: "Parrillada",
+    coordenadas: [-90.51234, 14.62345],
+  },
+  {
+    nombre: "El Gourmet",
+    direccion: "Av. Los Reyes, 23 \nMadrid, 28013",
+    telefono: "+34 912 345 678",
+    categoria: "Gastronomía Moderna",
+    coordenadas: [-3.7038, 40.4168], // Centro
+  },
+  {
+    nombre: "Tapas Madrid",
+    direccion: "Calle Mayor 10 \nMadrid, España",
+    telefono: "+34 911 234 567",
+    categoria: "Tapas",
+    coordenadas: [-3.7045, 40.417], // Muy cerca
+  },
+  {
+    nombre: "Paella Real",
+    direccion: "Gran Vía 55 \nMadrid, España",
+    telefono: "+34 910 987 654",
+    categoria: "Valenciana",
+    coordenadas: [-3.7052, 40.4155], // Muy cerca
+  },
+  {
+    nombre: "Café del Sol",
+    direccion: "Puerta del Sol, Madrid",
+    telefono: "+34 913 000 111",
+    categoria: "Café",
+    coordenadas: [-3.702, 40.4175], // Muy cerca
+  },
+  {
+    nombre: "Madrid Bites",
+    direccion: "Calle de Atocha, Madrid",
+    telefono: "+34 914 222 333",
+    categoria: "Fusión",
+    coordenadas: [-3.6995, 40.414], // Muy cerca
+  },
+
+  {
+    nombre: "Sushi World",
+    direccion: "Calle Sushi 45 \nTokio, Japón",
+    telefono: "+81 3 1234 5678",
+    categoria: "Sushi",
+    coordenadas: [139.6917, 35.6895],
+  },
+  {
+    nombre: "Pasta Express",
+    direccion: "Via della Pasta, 12 \nRoma, Italia",
+    telefono: "+39 06 1234 5678",
+    categoria: "Italiana",
+    coordenadas: [12.4964, 41.9028],
+  },
+  {
+    nombre: "Tacos Don Pepe",
+    direccion: "Calle Reforma 123 \nCiudad de México, México",
+    telefono: "+52 55 1234 5678",
+    categoria: "Mexicana",
+    coordenadas: [-99.1332, 19.4326],
+  },
+  {
+    nombre: "Wursthaus",
+    direccion: "Bahnhofstrasse 10 \nMúnich, Alemania",
+    telefono: "+49 89 123456",
+    categoria: "Alemana",
+    coordenadas: [11.581, 48.1351],
+  },
+  {
+    nombre: "Peking Delight",
+    direccion: "Dongcheng Qu, Beijing, China",
+    telefono: "+86 10 1234 5678",
+    categoria: "China",
+    coordenadas: [116.4074, 39.9042],
+  },
+  {
+    nombre: "Biryani Palace",
+    direccion: "MG Road, Bangalore, India",
+    telefono: "+91 80 1234 5678",
+    categoria: "India",
+    coordenadas: [77.5946, 12.9716],
+  },
+  {
+    nombre: "Chez Pierre",
+    direccion: "Rue de Rivoli, París, Francia",
+    telefono: "+33 1 2345 6789",
+    categoria: "Francesa",
+    coordenadas: [2.3522, 48.8566],
+  },
+  {
+    nombre: "The Steakhouse",
+    direccion: "Wall Street, New York, USA",
+    telefono: "+1 212 555 1234",
+    categoria: "Americana",
+    coordenadas: [-74.006, 40.7128],
+  },
+  {
+    nombre: "Churrascaria Brasil",
+    direccion: "Av. Atlântica, Río de Janeiro, Brasil",
+    telefono: "+55 21 99999 8888",
+    categoria: "Brasileña",
+    coordenadas: [-43.1729, -22.9068],
+  },
+  {
+    nombre: "Fusion Nikkei",
+    direccion: "Miraflores, Lima, Perú",
+    telefono: "+51 1 444 8888",
+    categoria: "Peruana - Japonesa",
+    coordenadas: [-77.0428, -12.0464],
+  },
+  {
+    nombre: "Asado Argentino",
+    direccion: "San Telmo, Buenos Aires, Argentina",
+    telefono: "+54 11 4444 8888",
+    categoria: "Argentina",
+    coordenadas: [-58.3816, -34.6037],
+  },
+  {
+    nombre: "Nordic Bites",
+    direccion: "Karl Johans gate 25 \nOslo, Noruega",
+    telefono: "+47 22 44 55 66",
+    categoria: "Escandinava",
+    coordenadas: [10.7522, 59.9139],
+  },
+  {
+    nombre: "Kebab Istanbul",
+    direccion: "Istiklal Caddesi 101 \nEstambul, Turquía",
+    telefono: "+90 212 555 1234",
+    categoria: "Turca",
+    coordenadas: [28.9744, 41.0082],
+  },
+  {
+    nombre: "Thai Orchid",
+    direccion: "Sukhumvit Road, Bangkok, Tailandia",
+    telefono: "+66 2 123 4567",
+    categoria: "Tailandesa",
+    coordenadas: [100.5018, 13.7563],
+  },
+  {
+    nombre: "Couscous Casablanca",
+    direccion: "Rue de Fès, Casablanca, Marruecos",
+    telefono: "+212 522 123456",
+    categoria: "Marroquí",
+    coordenadas: [-7.5898, 33.5731],
+  },
+  {
+    nombre: "Outback BBQ",
+    direccion: "George Street 99 \nSídney, Australia",
+    telefono: "+61 2 9876 5432",
+    categoria: "Australiana",
+    coordenadas: [151.2093, -33.8688],
+  },
+  {
+    nombre: "Savannah Soul",
+    direccion: "Peachtree Street, Atlanta, Georgia, USA",
+    telefono: "+1 404 555 7788",
+    categoria: "Sureña",
+    coordenadas: [-84.388, 33.749],
+  },
+  {
+    nombre: "Balkan Grill",
+    direccion: "Knez Mihailova, Belgrado, Serbia",
+    telefono: "+381 11 1234567",
+    categoria: "Balcánica",
+    coordenadas: [20.4573, 44.7866],
+  },
+  {
+    nombre: "Crêperie Belle Vie",
+    direccion: "Quai Saint-Michel, Estrasburgo, Francia",
+    telefono: "+33 3 8888 7777",
+    categoria: "Crêperie",
+    coordenadas: [7.7521, 48.5734],
+  },
+  {
+    nombre: "Tapas Barcelona",
+    direccion: "La Rambla 35 \nBarcelona, España",
+    telefono: "+34 931 000 123",
+    categoria: "Tapas",
+    coordenadas: [2.1734, 41.3851],
+  },
+  {
+    nombre: "Korean Seoul Food",
+    direccion: "Gangnam-gu, Seúl, Corea del Sur",
+    telefono: "+82 2 1234 5678",
+    categoria: "Coreana",
+    coordenadas: [127.0276, 37.4979],
+  },
+  {
+    nombre: "Alpen Küche",
+    direccion: "Innsbrucker Strasse, Salzburgo, Austria",
+    telefono: "+43 662 123456",
+    categoria: "Austríaca",
+    coordenadas: [13.04399, 47.8095],
+  },
+  {
+    nombre: "Afrika Taste",
+    direccion: "Ikeja, Lagos, Nigeria",
+    telefono: "+234 1 271 1234",
+    categoria: "Africana",
+    coordenadas: [3.3792, 6.5244],
+  },
+  {
+    nombre: "Smörgåsbord",
+    direccion: "Drottninggatan 85 \nEstocolmo, Suecia",
+    telefono: "+46 8 123 456",
+    categoria: "Sueca",
+    coordenadas: [18.0686, 59.3293],
+  },
+  {
+    nombre: "Pho Hanoi",
+    direccion: "Hoan Kiem, Hanói, Vietnam",
+    telefono: "+84 24 1234 5678",
+    categoria: "Vietnamita",
+    coordenadas: [105.8544, 21.0285],
+  },
+  {
+    nombre: "Greek Taverna",
+    direccion: "Plaka, Atenas, Grecia",
+    telefono: "+30 21 0321 4321",
+    categoria: "Griega",
+    coordenadas: [23.7275, 37.9838],
+  },
+];
+
+// Esta función se usará para enviar los datos al mapa
+function getRestaurantData() {
+  return restaurantData;
+}

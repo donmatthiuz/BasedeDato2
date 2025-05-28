@@ -1,0 +1,242 @@
+[
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec77747c"
+    },
+    "nombre": "Punta de Anca",
+    "precio": 128,
+    "descripcion": "Punta de Anca con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764d7"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec77747d"
+    },
+    "nombre": "Lomo",
+    "precio": 86,
+    "descripcion": "Lomo con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764d7"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec77747e"
+    },
+    "nombre": "Carne Asada",
+    "precio": 123,
+    "descripcion": "Carne Asada con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764d7"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec77747f"
+    },
+    "nombre": "Costilla",
+    "precio": 60,
+    "descripcion": "Costilla con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764d7"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec777480"
+    },
+    "nombre": "Chuleta",
+    "precio": 105,
+    "descripcion": "Chuleta con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764d7"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec777481"
+    },
+    "nombre": "Ramen",
+    "precio": 52,
+    "descripcion": "Ramen con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764d8"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec777482"
+    },
+    "nombre": "Pad Thai",
+    "precio": 62,
+    "descripcion": "Pad Thai con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764d8"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec777483"
+    },
+    "nombre": "Gimbap",
+    "precio": 85,
+    "descripcion": "Gimbap con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764d8"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec777484"
+    },
+    "nombre": "Pollo Teriyaki",
+    "precio": 117,
+    "descripcion": "Pollo Teriyaki con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764d8"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec777485"
+    },
+    "nombre": "Dumplings",
+    "precio": 54,
+    "descripcion": "Dumplings con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764d8"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec777486"
+    },
+    "nombre": "Risotto",
+    "precio": 108,
+    "descripcion": "Risotto con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764d9"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec777487"
+    },
+    "nombre": "Pizza Margherita",
+    "precio": 95,
+    "descripcion": "Pizza Margherita con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764d9"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec777488"
+    },
+    "nombre": "Ravioli",
+    "precio": 90,
+    "descripcion": "Ravioli con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764d9"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec777489"
+    },
+    "nombre": "Curry de Verduras",
+    "precio": 87,
+    "descripcion": "Curry de Verduras con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764da"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec77748a"
+    },
+    "nombre": "Falafel",
+    "precio": 113,
+    "descripcion": "Falafel con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764da"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec77748b"
+    },
+    "nombre": "Quinoa Bowl",
+    "precio": 62,
+    "descripcion": "Quinoa Bowl con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764da"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec77748c"
+    },
+    "nombre": "Ensalada César",
+    "precio": 113,
+    "descripcion": "Ensalada César con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764da"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec77748d"
+    },
+    "nombre": "Burrito",
+    "precio": 78,
+    "descripcion": "Burrito con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764db"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec77748e"
+    },
+    "nombre": "Papas Fritas",
+    "precio": 87,
+    "descripcion": "Papas Fritas con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764db"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "681c022ed0dbecc7ec77748f"
+    },
+    "nombre": "Sandwich",
+    "precio": 92,
+    "descripcion": "Sandwich con acompañamientos",
+    "disponible": true,
+    "restaurante_id": {
+      "$oid": "681c022bd0dbecc7ec7764db"
+    }
+  }
+]

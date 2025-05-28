@@ -1,0 +1,82 @@
+[
+  {
+    "_id": {
+      "$oid": "681c022bd0dbecc7ec7764d7"
+    },
+    "nombre": "La Carnicería",
+    "categoria": "Parrillada",
+    "direccion": "C. de Cristian Perez 24 Puerta 4 \nAlicante, 20675",
+    "coordenadas": {
+      "type": "Point",
+      "coordinates": [
+        -118.103916,
+        34.8237275
+      ]
+    },
+    "telefono": "+34819 97 24 55"
+  },
+  {
+    "_id": {
+      "$oid": "681c022bd0dbecc7ec7764d8"
+    },
+    "nombre": "Bambú Oriental",
+    "categoria": "Asiatica",
+    "direccion": "Rambla Hilario Osuna 46 Piso 1 \nMadrid, 13608",
+    "coordenadas": {
+      "type": "Point",
+      "coordinates": [
+        -22.423122,
+        -18.4505865
+      ]
+    },
+    "telefono": "+34 877262645"
+  },
+  {
+    "_id": {
+      "$oid": "681c022bd0dbecc7ec7764d9"
+    },
+    "nombre": "Cucina della Mamma",
+    "categoria": "Italiana",
+    "direccion": "Urbanización Cirino Iriarte 165\nCáceres, 36362",
+    "coordenadas": {
+      "type": "Point",
+      "coordinates": [
+        -49.250548,
+        -60.086073
+      ]
+    },
+    "telefono": "+34828 415 732"
+  },
+  {
+    "_id": {
+      "$oid": "681c022bd0dbecc7ec7764da"
+    },
+    "nombre": "Tierra Verde",
+    "categoria": "Vegetariana",
+    "direccion": "Cañada de Aitor Reig 616 Piso 4 \nLugo, 16849",
+    "coordenadas": {
+      "type": "Point",
+      "coordinates": [
+        -138.906482,
+        77.1851595
+      ]
+    },
+    "telefono": "+34 924433939"
+  },
+  {
+    "_id": {
+      "$oid": "681c022bd0dbecc7ec7764db"
+    },
+    "nombre": "Rápido y Sabroso",
+    "categoria": "Rápida",
+    "direccion": "Alameda de Dominga Benavent 38\nGirona, 32903",
+    "coordenadas": {
+      "type": "Point",
+      "coordinates": [
+        174.310052,
+        11.987021
+      ]
+    },
+    "telefono": "+34 984246398"
+  }
+]

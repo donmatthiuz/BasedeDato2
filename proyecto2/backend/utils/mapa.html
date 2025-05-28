@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mapa de Restaurantes - Clustering</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      html,
+      body,
+      #map {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="test_data.js"></script>
+    <script src="kmeans.js"></script>
+    <script src="distanceCluster.js"></script>
+
+    <script>
+      const minDistanceMeters = null; // Cambia este valor para activar clustering por distancia
+
+      const map = L.map("map");
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      // Crear un pane detrás de los marcadores para los círculos de agrupación
+      map.createPane("clusterCircles");
+      map.getPane("clusterCircles").style.zIndex = 399; // debajo de los marcadores (default: 400)
+
+      const restaurants = getRestaurantData();
+      const coords = restaurants.map((r) => [
+        r.coordenadas[1],
+        r.coordenadas[0],
+      ]); // [lat, lon]
+
+      let centroids, assignments;
+      if (minDistanceMeters) {
+        console.log(
+          "Clustering por distancia: " + minDistanceMeters + " metros"
+        );
+        ({ centroids, assignments } = distanceBasedClustering(
+          coords,
+          minDistanceMeters
+        ));
+      } else {
+        const distortions = elbowMethod(coords, 10);
+        const bestK = findBestK(distortions);
+        ({ centroids, assignments } = kmeans(coords, bestK));
+      }
+
+      // Generador de colores únicos
+      function generateDistinctColors(n) {
+        const colors = [];
+        const step = 360 / n;
+        for (let i = 0; i < n; i++) {
+          const hue = Math.round(i * step);
+          colors.push(`hsl(${hue}, 80%, 45%)`);
+        }
+        return colors;
+      }
+
+      const uniqueClusters = [...new Set(assignments)];
+      const colors = generateDistinctColors(uniqueClusters.length);
+
+      const bounds = L.latLngBounds([]);
+
+      // Agregar marcadores
+      restaurants.forEach((r, i) => {
+        const clusterId = assignments[i];
+        const color = colors[clusterId];
+        const latlng = [r.coordenadas[1], r.coordenadas[0]];
+        bounds.extend(latlng);
+
+        const marker = L.circleMarker(latlng, {
+          radius: 6,
+          color: color,
+          fillColor: color,
+          fillOpacity: 0.9,
+        }).addTo(map);
+
+        marker.bindPopup(`
+          <h3>${r.nombre}</h3>
+          <p><strong>Dirección:</strong> ${r.direccion}</p>
+          <p><strong>Teléfono:</strong> ${r.telefono}</p>
+          <p><strong>Categoría:</strong> ${r.categoria}</p>
+        `);
+      });
+
+      // Dibujar círculos envolventes detrás de los puntos
+      centroids.forEach((centroid, idx) => {
+        const clusterPoints = coords.filter((_, i) => assignments[i] === idx);
+        let maxDist = 0;
+        clusterPoints.forEach((p) => {
+          const dist = map.distance(centroid, p);
+          if (dist > maxDist) maxDist = dist;
+        });
+
+        const radius = Math.max(maxDist + 100000, 500000);
+
+        L.circle(centroid, {
+          pane: "clusterCircles",
+          radius: radius,
+          color: colors[idx],
+          fillColor: colors[idx],
+          fillOpacity: 0.15,
+        }).addTo(map);
+      });
+
+      // Ajustar el zoom para mostrar todos los puntos
+      map.fitBounds(bounds, { padding: [30, 30] });
+    </script>
+  </body>
+</html>
