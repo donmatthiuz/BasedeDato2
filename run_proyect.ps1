@@ -4,9 +4,9 @@ python -m venv .venv
 
 pm2 delete all
 
-pip install -r proyecto1\requirements.txt
+pip install -r backend\requirements.txt
 
-pm2 start proyecto1\server.py
+pm2 start backend\server.py
 
 cd fronted
 
