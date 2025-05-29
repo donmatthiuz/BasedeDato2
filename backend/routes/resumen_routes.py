@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from utils.conexion_neo4j import Neo4jConnection
 
 router = APIRouter()
@@ -41,3 +41,17 @@ def obtenerRelacionesActivas():
     with driver.session() as session:
         result = session.run(query)
         return [record.data() for record in result]
+    
+@router.post("/reset")
+def resetear_armado():
+    """
+    Cambia el estado de todas las piezas a 'libre'.
+    Ideal para reiniciar el proceso de ensamblaje.
+    """
+    query = "MATCH (p:Pieza) SET p.estado = 'libre'"
+    try:
+        with driver.session() as session:
+            session.run(query)
+        return {"mensaje": "Todos los nodos fueron reiniciados a 'libre' exitosamente."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al resetear armado: {e}")
