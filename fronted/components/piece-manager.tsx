@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,6 +12,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Edit, Save, X } from "lucide-react"
 import type { Puzzle, PuzzlePiece, PuzzleConnection } from "@/types/puzzle"
+import useApi from "@/hooks/useApi"
+import source_link from "@/repositori/source_repo"
 
 interface PieceManagerProps {
   selectedPuzzle: Puzzle | null
@@ -33,6 +35,8 @@ export function PieceManager({ selectedPuzzle, onAddPiece, onUpdatePiece }: Piec
     edgeType: "",
     notes: "",
   })
+
+  const { llamado, llamadowithoutbody } = useApi(`${source_link}/puzzle/${selectedPuzzle?.id}/piece`)
 
   const resetForm = () => {
     setFormData({
@@ -67,7 +71,7 @@ export function PieceManager({ selectedPuzzle, onAddPiece, onUpdatePiece }: Piec
     setConnections((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedPuzzle || !formData.number) return
 
@@ -90,9 +94,11 @@ export function PieceManager({ selectedPuzzle, onAddPiece, onUpdatePiece }: Piec
     }
 
     if (editingPiece !== null) {
+      await llamado(piece, "PUT")
       onUpdatePiece(selectedPuzzle.id, editingPiece, piece)
       setEditingPiece(null)
     } else {
+      await llamado(piece, "POST")
       onAddPiece(selectedPuzzle.id, piece)
     }
 
@@ -115,6 +121,17 @@ export function PieceManager({ selectedPuzzle, onAddPiece, onUpdatePiece }: Piec
     setEditingPiece(piece.number)
     setShowForm(true)
   }
+
+  useEffect(() => {
+    const fetchPieces = async () => {
+      if (!selectedPuzzle) return
+      const data = await llamadowithoutbody("GET")
+      if (data && Array.isArray(data.pieces)) {
+        data.pieces.forEach((p: PuzzlePiece) => onAddPiece(selectedPuzzle.id, p))
+      }
+    }
+    fetchPieces()
+  }, [selectedPuzzle])
 
   if (!selectedPuzzle) {
     return (
