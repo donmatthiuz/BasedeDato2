@@ -54,14 +54,19 @@ def sugerir_siguiente(driver, pieza_id):
             if lado_opuesto in vecino["bordes"]:
                 continue
 
-            picos = list(range(pieza["cantidad_picos"]))
+            
+            # Picos en orden horario desde esquina superior izquierda
+            total_picos = pieza["cantidad_picos"]
+            picos_disponibles = list(range(total_picos))
+
+            # TODO: evitar usados si llevas registro
+            pico = picos_disponibles[0]
+
+
+            # Hendiduras en orden antihorario desde abajo-izquierda
             hendiduras = [chr(97 + i) for i in range(vecino["cantidad_hendiduras"])]
+            hendidura = hendiduras[0] if hendiduras else "a"
 
-            if not picos or not hendiduras:
-                continue
-
-            pico = picos[0]
-            hendidura = hendiduras[0]
 
             # Cambiar estado de la pieza sugerida
             pieza_model.actualizar_pieza(vecino["id"], {"estado": "ensamblada"})
