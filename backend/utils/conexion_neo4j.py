@@ -9,10 +9,12 @@ class Neo4jConnection:
         self._driver = None
 
     def conectar(self):
-        if self._driver is None:
+        if not self._driver:
             self._driver = GraphDatabase.driver(
-                self._uri, auth=(self._user, self._password)
+                self._uri,
+                auth=(self._user, self._password)
             )
+        return self._driver 
 
     def cerrar(self):
         if self._driver:
