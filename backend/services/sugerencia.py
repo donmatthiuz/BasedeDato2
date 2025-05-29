@@ -1,5 +1,6 @@
 from models.pieza_model import PiezaModel
 from models.relacion_model import RelacionModel
+import json
 
 LADOS = ["top", "right", "bottom", "left"]
 LADO_OPUESTO = {
@@ -9,34 +10,37 @@ LADO_OPUESTO = {
     "right": "left"
 }
 
-def sugerir_siguiente(driver, id_pieza):
-    pieza_model = PiezaModel(driver)
-    relacion_model = RelacionModel(driver)
+def sugerirSiguiente(driver, idPieza):
+    piezaModel = PiezaModel(driver)
+    piezaActual = piezaModel.obtenerPieza(idPieza)
 
-    pieza_actual = pieza_model.obtener_pieza(id_pieza)
-    if not pieza_actual:
+    if not piezaActual:
         return {"error": "Pieza no encontrada"}
 
-    pieza = pieza_actual["p"]
+    pieza = piezaActual["p"]
     if pieza["estado"] != "ensamblada":
         return {"error": "La pieza base debe estar ensamblada"}
 
-    coord_x = pieza["coordenada_x"]
-    coord_y = pieza["coordenada_y"]
-
-    vecinos_pos = {
-        "top":    (coord_x, coord_y - 1),
-        "right":  (coord_x + 1, coord_y),
-        "bottom": (coord_x, coord_y + 1),
-        "left":   (coord_x - 1, coord_y)
+    coordX = pieza["coordenada_x"]
+    coordY = pieza["coordenada_y"]
+    vecinosPos = {
+        "top":    (coordX, coordY - 1),
+        "right":  (coordX + 1, coordY),
+        "bottom": (coordX, coordY + 1),
+        "left":   (coordX - 1, coordY)
     }
+
+    try:
+        picos = json.loads(pieza.get("picos", "{}"))
+    except:
+        return {"error": "Formato inválido de picos en pieza actual"}
 
     with driver.session() as session:
         for lado in LADOS:
             if lado in pieza.get("bordes", []):
                 continue
 
-            x, y = vecinos_pos[lado]
+            x, y = vecinosPos[lado]
             result = session.run("""
                 MATCH (v:Pieza {coordenada_x: $x, coordenada_y: $y})
                 RETURN v
@@ -49,30 +53,40 @@ def sugerir_siguiente(driver, id_pieza):
             if vecino["estado"] != "libre":
                 continue
 
-            lado_opuesto = LADO_OPUESTO[lado]
-            if lado_opuesto in vecino.get("bordes", []):
+            ladoOpuesto = LADO_OPUESTO[lado]
+            if ladoOpuesto in vecino.get("bordes", []):
                 continue
 
-            # Picos en orden horario desde esquina superior izquierda
-            total_picos = pieza["cantidad_picos"]
-            picos_disponibles = list(range(total_picos))
-            pico = picos_disponibles[0]
+            try:
+                hendiduras = json.loads(vecino.get("hendiduras", "{}"))
+            except:
+                continue
 
-            # Hendiduras en orden antihorario desde abajo-izquierda
-            hendiduras = [chr(97 + i) for i in range(vecino["cantidad_hendiduras"])]
-            hendidura = hendiduras[0] if hendiduras else "a"
+            picoLado = picos.get(lado, [])
+            hendiduraLado = hendiduras.get(ladoOpuesto, [])
 
-            # Cambiar estado de la pieza sugerida
-            pieza_model.actualizar_pieza(vecino["id_pieza"], {"estado": "ensamblada"})
+            if not picoLado or not hendiduraLado:
+                continue
+
+            pico = picoLado[0]
+            hendidura = hendiduraLado[0]
 
             return {
                 "pieza_actual": pieza["id_pieza"],
                 "pieza_siguiente": vecino["id_pieza"],
                 "lado_actual": lado,
-                "lado_vecino": lado_opuesto,
+                "lado_vecino": ladoOpuesto,
                 "pico": pico,
                 "hendidura": hendidura,
-                "instruccion": f"Conecta la pieza {vecino['id_pieza']} al lado {lado} de la pieza {pieza['id_pieza']} usando el pico {pico} y la hendidura '{hendidura}'"
+                "instruccion": (
+                    f"🔧 Conecta la pieza {vecino['id_pieza']} al lado '{lado}' de la pieza {pieza['id_pieza']}.\n"
+                    f"👉 Usa el pico #{pico} del lado '{lado}' de la pieza {pieza['id_pieza']} y "
+                    f"la hendidura #{hendidura} del lado '{ladoOpuesto}' de la pieza {vecino['id_pieza']}.\n"
+                    f"📌 Asegúrate de que ambos lados no sean bordes y que el orden sea "
+                    f"{'horario' if lado in ['top', 'right'] else 'antihorario'} para picos y "
+                    f"{'antihorario' if ladoOpuesto in ['bottom', 'left'] else 'horario'} para hendiduras."
+                )
+
             }
 
     return {"mensaje": "No hay piezas disponibles para ensamblar desde esta ubicación"}

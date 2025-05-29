@@ -1,13 +1,22 @@
 from models.pieza_model import PiezaModel
 from models.relacion_model import RelacionModel
 
-def cambiar_estado_pieza(driver, id_pieza, nuevo_estado):
-    pieza_model = PiezaModel(driver)
-    relacion_model = RelacionModel(driver)
+def cambiarEstadoPieza(driver, idPieza, nuevoEstado):
+    """
+    Cambia el estado de una pieza en la base de datos.
+    Si el nuevo estado es 'omitida', se invalidan las relaciones de conexión de la pieza.
 
-    # Actualizar estado
-    pieza_model.actualizar_pieza(id_pieza, {"estado": nuevo_estado})
+    Parámetros:
+        driver: Conexión activa a Neo4j.
+        idPieza (int): ID único de la pieza.
+        nuevoEstado (str): Nuevo estado a asignar ('libre', 'ensamblada', 'omitida', etc.).
+    """
+    piezaModel = PiezaModel(driver)
+    relacionModel = RelacionModel(driver)
 
-    # Si se omite, invalidar conexiones
-    if nuevo_estado == "omitida":
-        relacion_model.invalidar_conexiones_por_pieza(id_pieza)
+    # Actualizar el estado de la pieza
+    piezaModel.actualizarPieza(idPieza, {"estado": nuevoEstado})
+
+    # Invalidar conexiones si el nuevo estado es 'omitida'
+    if nuevoEstado == "omitida":
+        relacionModel.invalidarConexionesPorPieza(idPieza)

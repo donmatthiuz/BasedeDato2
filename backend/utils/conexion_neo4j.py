@@ -20,7 +20,7 @@ class Neo4jConnection:
         if self._driver:
             self._driver.close()
 
-    def ejecutar_consulta(self, query, parameters=None, single=False):
+    def ejecutarConsulta(self, query, parameters=None, single=False):
         self.conectar()
         with self._driver.session() as session:
             result = session.run(query, parameters or {})

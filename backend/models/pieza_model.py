@@ -1,66 +1,109 @@
 from neo4j import GraphDatabase
 import csv
 import json
+
 class PiezaModel:
     def __init__(self, driver):
         self.driver = driver
 
-    def crear_pieza(self, pieza_data):
+    def crearPieza(self, piezaData):
         query = """
         CREATE (p:Pieza {
             id_pieza: $id_pieza,
             coordenada_x: $coordenada_x,
             coordenada_y: $coordenada_y,
-            cantidad_picos: $cantidad_picos,
-            cantidad_hendiduras: $cantidad_hendiduras,
+            picos: $picos,
+            hendiduras: $hendiduras,
             bordes: $bordes,
             estado: $estado,
             vecinos: $vecinos
         })
         """
 
-        pieza_data["bordes"] = pieza_data["bordes"].split(";") if pieza_data.get("bordes") else []
+        # Convertir enteros
+        piezaData["id_pieza"] = int(piezaData["id_pieza"])
+        piezaData["coordenada_x"] = int(piezaData["coordenada_x"])
+        piezaData["coordenada_y"] = int(piezaData["coordenada_y"])
 
-        if pieza_data.get("vecinos"):
-            vecinos_dict = dict(
-                item.split(":") for item in pieza_data["vecinos"].split(";") if ":" in item
-            )
-            vecinos_dict = {k: int(v) for k, v in vecinos_dict.items()}
-            pieza_data["vecinos"] = json.dumps(vecinos_dict)  # ← aquí va la conversión a string JSON
+        # Bordes a lista
+        if isinstance(piezaData.get("bordes"), str):
+            piezaData["bordes"] = piezaData["bordes"].split(";") if piezaData["bordes"] else []
+
+        # Vecinos
+        vecinos = piezaData.get("vecinos")
+        if isinstance(vecinos, dict):
+            piezaData["vecinos"] = json.dumps(vecinos)
+        elif isinstance(vecinos, str):
+            try:
+                if vecinos.strip().startswith("{"):
+                    piezaData["vecinos"] = json.dumps(json.loads(vecinos))  # JSON ya válido
+                else:
+                    vecinos_dict = dict(
+                        item.split(":") for item in vecinos.split(";") if ":" in item
+                    )
+                    vecinos_dict = {k: int(v) for k, v in vecinos_dict.items()}
+                    piezaData["vecinos"] = json.dumps(vecinos_dict)
+            except Exception:
+                piezaData["vecinos"] = json.dumps({})
         else:
-            pieza_data["vecinos"] = json.dumps({})
+            piezaData["vecinos"] = json.dumps({})
 
-        # Conversión de enteros
-        pieza_data["id_pieza"] = int(pieza_data["id_pieza"])
-        pieza_data["coordenada_x"] = int(pieza_data["coordenada_x"])
-        pieza_data["coordenada_y"] = int(pieza_data["coordenada_y"])
-        pieza_data["cantidad_picos"] = int(pieza_data["cantidad_picos"])
-        pieza_data["cantidad_hendiduras"] = int(pieza_data["cantidad_hendiduras"])
+        # Picos
+        picos = piezaData.get("picos", {})
+        if isinstance(picos, dict):
+            piezaData["picos"] = json.dumps(picos)
+        elif isinstance(picos, str):
+            try:
+                piezaData["picos"] = json.dumps(json.loads(picos))
+            except Exception:
+                piezaData["picos"] = json.dumps({})
+        else:
+            piezaData["picos"] = json.dumps({})
+
+        # Hendiduras
+        hendiduras = piezaData.get("hendiduras", {})
+        if isinstance(hendiduras, dict):
+            piezaData["hendiduras"] = json.dumps(hendiduras)
+        elif isinstance(hendiduras, str):
+            try:
+                piezaData["hendiduras"] = json.dumps(json.loads(hendiduras))
+            except Exception:
+                piezaData["hendiduras"] = json.dumps({})
+        else:
+            piezaData["hendiduras"] = json.dumps({})
 
         with self.driver.session() as session:
-            session.run(query, **pieza_data)
+            session.run(query, **piezaData)
 
-
-    def cargar_desde_csv(self, ruta_csv):
-        with open(ruta_csv, newline='', encoding='utf-8') as archivo:
+    def cargarDesdeCsv(self, rutaCsv):
+        with open(rutaCsv, newline='', encoding='utf-8') as archivo:
             lector = csv.DictReader(archivo)
             for fila in lector:
-                self.crear_pieza(fila)
+                try:
+                    self.crearPieza(fila)
+                except Exception as e:
+                    print(f"❌ Error en pieza ID {fila.get('id_pieza')}: {e}")
 
-    def obtener_pieza(self, id_pieza):
+    def obtenerPieza(self, idPieza):
         query = "MATCH (p:Pieza {id_pieza: $id_pieza}) RETURN p"
         with self.driver.session() as session:
-            result = session.run(query, id_pieza=id_pieza)
+            result = session.run(query, id_pieza=idPieza)
             return result.single()
 
-    def actualizar_pieza(self, id_pieza, nuevos_datos):
-        set_clause = ", ".join([f"p.{k} = ${k}" for k in nuevos_datos.keys()])
-        query = f"MATCH (p:Pieza {{id_pieza: $id_pieza}}) SET {set_clause} RETURN p"
+    def actualizarPieza(self, idPieza, nuevosDatos):
+        if "picos" in nuevosDatos:
+            nuevosDatos["picos"] = json.dumps(nuevosDatos["picos"])
+        if "hendiduras" in nuevosDatos:
+            nuevosDatos["hendiduras"] = json.dumps(nuevosDatos["hendiduras"])
+
+        setClause = ", ".join([f"p.{k} = ${k}" for k in nuevosDatos.keys()])
+        query = f"MATCH (p:Pieza {{id_pieza: $id_pieza}}) SET {setClause} RETURN p"
+
         with self.driver.session() as session:
-            result = session.run(query, id_pieza=id_pieza, **nuevos_datos)
+            result = session.run(query, id_pieza=idPieza, **nuevosDatos)
             return result.single()
 
-    def eliminar_pieza(self, id_pieza):
+    def eliminarPieza(self, idPieza):
         query = "MATCH (p:Pieza {id_pieza: $id_pieza}) DETACH DELETE p"
         with self.driver.session() as session:
-            session.run(query, id_pieza=id_pieza)
+            session.run(query, id_pieza=idPieza)

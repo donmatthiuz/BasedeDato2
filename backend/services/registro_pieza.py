@@ -1,5 +1,6 @@
 from models.pieza_model import PiezaModel
 from models.relacion_model import RelacionModel
+import json
 
 LADO_OPUESTO = {
     "top": "bottom",
@@ -8,69 +9,71 @@ LADO_OPUESTO = {
     "right": "left"
 }
 
-def registrar_pieza(driver, data):
+def registrarPieza(driver, data):
     pieza_model = PiezaModel(driver)
     relacion_model = RelacionModel(driver)
 
-    # Paso 1: Crear nodo
-    pieza_model.crear_pieza(data)
+    # Serializar campos complejos antes de guardar
+    data["picos"] = json.dumps(data.get("picos", {}))
+    data["hendiduras"] = json.dumps(data.get("hendiduras", {}))
+    data["bordes"] = json.dumps(data.get("bordes", []))
+    data["vecinos"] = json.dumps(data.get("vecinos", {}))
 
-    # Generar picos y hendiduras según cantidad
-    picos_disponibles = list(range(data["cantidad_picos"]))
-    hendiduras_disponibles = [chr(97 + i) for i in range(data["cantidad_hendiduras"])]
+    # Crear el nodo en la base de datos
+    pieza_model.crearPieza(data)
 
-    usados_picos = set()
-    usados_hendiduras = set()
+    # Restaurar estructuras para la lógica interna
+    picos = json.loads(data["picos"])
+    hendiduras = json.loads(data["hendiduras"])
+    vecinos = json.loads(data["vecinos"])
 
-    # Paso 2: Evaluar vecinos
-    vecinos = data.get("vecinos", {})
     for lado in ["top", "right", "bottom", "left"]:
-        if lado not in vecinos or lado in data.get("bordes", []):
+        if lado not in vecinos or lado in json.loads(data["bordes"]):
             continue
 
         vecino_id = vecinos[lado]
-
         with driver.session() as session:
             vecino_result = session.run(
                 "MATCH (p:Pieza {id_pieza: $id}) RETURN p", id=vecino_id
             ).single()
-            if not vecino_result:
-                continue
 
-            vecino = vecino_result["p"]
-            if vecino.get("estado") != "ensamblada":
-                continue
+        if not vecino_result:
+            continue
 
-            lado_vecino = LADO_OPUESTO[lado]
-            if lado_vecino in vecino.get("bordes", []):
-                continue
+        vecino = vecino_result["p"]
+        if vecino.get("estado") != "ensamblada":
+            continue
 
-            # Asignar pico y hendidura disponibles
-            pico = next((p for p in picos_disponibles if p not in usados_picos), None)
-            hendidura = next((h for h in hendiduras_disponibles if h not in usados_hendiduras), None)
+        lado_vecino = LADO_OPUESTO[lado]
+        if lado_vecino in json.loads(vecino.get("bordes", "[]")):
+            continue
 
-            if pico is None or hendidura is None:
-                continue
+        hendiduras_vecino = json.loads(vecino.get("hendiduras", "{}"))
+        hendidura_lado = hendiduras_vecino.get(lado_vecino, [])
+        hendidura = hendidura_lado[0] if hendidura_lado else None
 
-            relacion = {
-                "desde_lado": lado,
-                "hacia_lado": lado_vecino,
-                "pico_origen": pico,
-                "hendidura_destino": hendidura,
-                "valida": True
-            }
+        pico_lado = picos.get(lado, [])
+        pico = pico_lado[0] if pico_lado else None
 
-            relacion_model.crear_conexion(data["id_pieza"], vecino_id, relacion)
+        if pico is None or hendidura is None:
+            continue
 
-            # Crear relación inversa
-            relacion_inversa = {
-                "desde_lado": lado_vecino,
-                "hacia_lado": lado,
-                "pico_origen": pico,
-                "hendidura_destino": hendidura,
-                "valida": True
-            }
-            relacion_model.crear_conexion(vecino_id, data["id_pieza"], relacion_inversa)
+        relacion = {
+            "desde_lado": lado,
+            "hacia_lado": lado_vecino,
+            "pico_origen": pico,
+            "hendidura_destino": hendidura,
+            "valida": True
+        }
 
-            usados_picos.add(pico)
-            usados_hendiduras.add(hendidura)
+        relacion_model.crear_conexion(data["id_pieza"], vecino_id, relacion)
+
+        relacion_inversa = {
+            "desde_lado": lado_vecino,
+            "hacia_lado": lado,
+            "pico_origen": pico,
+            "hendidura_destino": hendidura,
+            "valida": True
+        }
+
+        relacion_model.crear_conexion(vecino_id, data["id_pieza"], relacion_inversa)

@@ -2,6 +2,7 @@ from models.pieza_model import PiezaModel
 from models.relacion_model import RelacionModel
 import json
 
+# Diccionario para obtener el lado opuesto de cada dirección
 LADO_OPUESTO = {
     "top": "bottom",
     "bottom": "top",
@@ -9,9 +10,13 @@ LADO_OPUESTO = {
     "right": "left"
 }
 
-def ensamblar_piezas(driver):
-    pieza_model = PiezaModel(driver)
-    relacion_model = RelacionModel(driver)
+def ensamblarPiezas(driver):
+    """
+    Recorre todas las piezas de la base de datos y genera relaciones CONECTA_CON
+    entre piezas que son vecinas y cumplen con las condiciones de ensamblaje.
+    """
+    piezaModel = PiezaModel(driver)
+    relacionModel = RelacionModel(driver)
 
     query = "MATCH (p:Pieza) RETURN p"
     with driver.session() as session:
@@ -21,82 +26,107 @@ def ensamblar_piezas(driver):
 
     for record in piezas:
         pieza = record["p"]
-        id_pieza = pieza["id_pieza"]
+        idPieza = pieza["id_pieza"]
         estado = pieza["estado"]
 
-        print(f"\n🔍 Procesando pieza {id_pieza} (estado: {estado})")
+        print(f"\n🔍 Procesando pieza {idPieza} (estado: {estado})")
 
         if estado not in ["libre", "ensamblada"]:
             print("⏩ Estado no válido para ensamblaje. Saltando.")
             continue
 
+        # Convertir campos si vienen como strings
         vecinos = pieza.get("vecinos", {})
         if isinstance(vecinos, str):
             vecinos = json.loads(vecinos)
-        picos = list(range(pieza["cantidad_picos"]))
-        usados_picos = set()
 
-        for lado, vecino_id in vecinos.items():
+        bordes = pieza.get("bordes", [])
+        if isinstance(bordes, str):
+            bordes = json.loads(bordes)
 
-            print(f"➡ Evaluando lado '{lado}' hacia vecino {vecino_id}")
+        picos = pieza.get("picos", {})
+        if isinstance(picos, str):
+            picos = json.loads(picos)
 
-            if lado in pieza.get("bordes", []):
+        hendiduras = pieza.get("hendiduras", {})
+        if isinstance(hendiduras, str):
+            hendiduras = json.loads(hendiduras)
+
+        for lado, vecinoId in vecinos.items():
+            print(f"➡ Evaluando lado '{lado}' hacia vecino {vecinoId}")
+
+            if lado in bordes:
                 print(f"⛔ Lado '{lado}' es borde. Saltando.")
                 continue
 
+            # Obtener vecino desde DB
             with driver.session() as session:
                 result = session.run(
-                    "MATCH (v:Pieza {id_pieza: $id}) RETURN v", id=vecino_id
+                    "MATCH (v:Pieza {id_pieza: $id}) RETURN v", id=vecinoId
                 ).single()
 
             if not result:
-                print(f"❌ Vecino {vecino_id} no encontrado en DB.")
+                print(f"❌ Vecino {vecinoId} no encontrado en DB.")
                 continue
 
             vecino = result["v"]
-            lado_opuesto = LADO_OPUESTO[lado]
 
-            if lado_opuesto in vecino.get("bordes", []):
-                print(f"⛔ Lado opuesto '{lado_opuesto}' del vecino es borde. Saltando.")
+            ladoOpuesto = LADO_OPUESTO[lado]
+
+            # Cargar datos del vecino
+            bordesVecino = vecino.get("bordes", [])
+            if isinstance(bordesVecino, str):
+                bordesVecino = json.loads(bordesVecino)
+
+            if ladoOpuesto in bordesVecino:
+                print(f"⛔ Lado opuesto '{ladoOpuesto}' del vecino es borde. Saltando.")
                 continue
 
+            picosVecino = vecino.get("picos", {})
+            if isinstance(picosVecino, str):
+                picosVecino = json.loads(picosVecino)
+
+            hendidurasVecino = vecino.get("hendiduras", {})
+            if isinstance(hendidurasVecino, str):
+                hendidurasVecino = json.loads(hendidurasVecino)
+
+            # Verificar si ya existe conexión
             with driver.session() as session:
                 existe = session.run("""
                     MATCH (a:Pieza {id_pieza: $ida})-[r:CONECTA_CON]->(b:Pieza {id_pieza: $idb})
                     RETURN r
-                """, ida=id_pieza, idb=vecino_id).single()
+                """, ida=idPieza, idb=vecinoId).single()
 
             if existe:
-                print(f"🔁 Relación ya existe entre {id_pieza} y {vecino_id}.")
+                print(f"🔁 Relación ya existe entre {idPieza} y {vecinoId}.")
                 continue
 
-            hendiduras = [chr(97 + i) for i in range(vecino["cantidad_hendiduras"])]
-            usados_hendiduras = set()
+            # Seleccionar pico del lado correspondiente de la pieza
+            picoDisponible = picos.get(lado, [])
+            hendiduraDisponible = hendidurasVecino.get(ladoOpuesto, [])
 
-            pico = next((p for p in picos if p not in usados_picos), None)
-            hendidura = next((h for h in hendiduras if h not in usados_hendiduras), None)
-
-            if pico is None or hendidura is None:
-                print("⚠️ No hay pico o hendidura disponibles. Saltando conexión.")
+            if not picoDisponible or not hendiduraDisponible:
+                print("⚠️ No hay pico o hendidura disponible en el lado correspondiente. Saltando conexión.")
                 continue
 
-            print(f"✅ Conectando {id_pieza} -> {vecino_id} usando pico {pico} y hendidura '{hendidura}'")
+            pico = picoDisponible[0]
+            hendidura = hendiduraDisponible[0]
 
-            relacion_model.crear_conexion(id_pieza, vecino_id, {
+            print(f"✅ Conectando {idPieza} -> {vecinoId} usando pico {pico} y hendidura '{hendidura}'")
+
+            # Crear relación en ambas direcciones
+            relacionModel.crearConexion(idPieza, vecinoId, {
                 "desde_lado": lado,
-                "hacia_lado": lado_opuesto,
+                "hacia_lado": ladoOpuesto,
                 "pico_origen": pico,
                 "hendidura_destino": hendidura,
                 "valida": True
             })
 
-            relacion_model.crear_conexion(vecino_id, id_pieza, {
-                "desde_lado": lado_opuesto,
+            relacionModel.crearConexion(vecinoId, idPieza, {
+                "desde_lado": ladoOpuesto,
                 "hacia_lado": lado,
                 "pico_origen": pico,
                 "hendidura_destino": hendidura,
                 "valida": True
             })
-
-            usados_picos.add(pico)
-            usados_hendiduras.add(hendidura)
