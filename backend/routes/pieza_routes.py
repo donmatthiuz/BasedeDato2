@@ -119,3 +119,28 @@ def borrarTodaLaBase():
         return {"mensaje": "Base de datos limpiada exitosamente"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al limpiar la base de datos: {e}")
+
+@router.post("/nuevo-rompecabezas")
+def iniciar_nuevo_rompecabezas():
+    """
+    Reinicia toda la base de datos para comenzar un nuevo rompecabezas.
+    Devuelve el ID del nuevo rompecabezas creado.
+    """
+    try:
+        with driver.session() as session:
+            #resetear
+            session.run("MATCH (n) DETACH DELETE n")
+            
+            #nuevo puzzle
+            result = session.run(
+                "CREATE (r:Rompecabezas {id: apoc.create.uuid(), creado_en: datetime()}) RETURN r.id as id"
+            )
+            
+            rompecabezas_id = result.single()["id"]
+            
+            return {
+                "mensaje": "Nuevo rompecabezas iniciado",
+                "rompecabezas_id": rompecabezas_id
+            }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
