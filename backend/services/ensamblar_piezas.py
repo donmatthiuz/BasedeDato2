@@ -39,26 +39,25 @@ def ensamblar_piezas(driver):
                 print(f"⛔ Lado '{lado}' es borde. Saltando.")
                 continue
 
-            result = session.run("MATCH (v:Pieza {id: $id}) RETURN v", id=vecino_id).single()
+            with driver.session() as session:
+                result = session.run("MATCH (v:Pieza {id: $id}) RETURN v", id=vecino_id).single()
+
             if not result:
                 print(f"❌ Vecino {vecino_id} no encontrado en DB.")
                 continue
 
             vecino = result["v"]
-            if vecino["estado"] != "ensamblada":
-                print(f"⛔ Vecino {vecino_id} no está ensamblado. Estado: {vecino['estado']}")
-                continue
 
             lado_opuesto = LADO_OPUESTO[lado]
             if lado_opuesto in vecino["bordes"]:
                 print(f"⛔ Lado opuesto '{lado_opuesto}' del vecino es borde. Saltando.")
                 continue
 
-            # Verificar si ya existe relación
-            existe = session.run("""
-                MATCH (a:Pieza {id: $ida})-[r:CONECTA_CON]->(b:Pieza {id: $idb})
-                RETURN r
-            """, ida=pieza["id"], idb=vecino_id).single()
+            with driver.session() as session:
+                existe = session.run("""
+                    MATCH (a:Pieza {id: $ida})-[r:CONECTA_CON]->(b:Pieza {id: $idb})
+                    RETURN r
+                """, ida=pieza["id"], idb=vecino_id).single()
 
             if existe:
                 print(f"🔁 Relación ya existe entre {pieza['id']} y {vecino_id}.")
@@ -83,6 +82,7 @@ def ensamblar_piezas(driver):
                 "hendidura_destino": hendidura,
                 "valida": True
             })
+
             relacion_model.crear_conexion(vecino_id, pieza["id"], {
                 "desde_lado": lado_opuesto,
                 "hacia_lado": lado,
