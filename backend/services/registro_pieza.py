@@ -28,7 +28,7 @@ def registrarPieza(driver, data):
     vecinos = json.loads(data["vecinos"])
 
     for lado in ["top", "right", "bottom", "left"]:
-        if lado not in vecinos or lado in json.loads(data["bordes"]):
+        if lado not in vecinos or lado in data.get("bordes", []):
             continue
 
         vecino_id = vecinos[lado]
