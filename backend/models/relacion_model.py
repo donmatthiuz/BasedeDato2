@@ -6,7 +6,7 @@ class RelacionModel:
 
     def crear_conexion(self, id_origen, id_destino, relacion):
         query = """
-        MATCH (a:Pieza {id: $id_origen}), (b:Pieza {id: $id_destino})
+        MATCH (a:Pieza {id_pieza: $id_origen}), (b:Pieza {id_pieza: $id_destino})
         CREATE (a)-[:CONECTA_CON {
             desde_lado: $desde_lado,
             hacia_lado: $hacia_lado,
@@ -21,16 +21,16 @@ class RelacionModel:
 
     def invalidar_conexiones_por_pieza(self, id_pieza):
         query = """
-        MATCH (a:Pieza {id: $id})-[r:CONECTA_CON]->(:Pieza)
+        MATCH (a:Pieza {id_pieza: $id_pieza})-[r:CONECTA_CON]->(:Pieza)
         SET r.valida = false
         """
         with self.driver.session() as session:
-            session.run(query, id=id_pieza)
+            session.run(query, id_pieza=id_pieza)
 
     def eliminar_conexiones(self, id_pieza):
         query = """
-        MATCH (a:Pieza {id: $id})-[r:CONECTA_CON]-(:Pieza)
+        MATCH (a:Pieza {id_pieza: $id_pieza})-[r:CONECTA_CON]-(:Pieza)
         DELETE r
         """
         with self.driver.session() as session:
-            session.run(query, id=id_pieza)
+            session.run(query, id_pieza=id_pieza)

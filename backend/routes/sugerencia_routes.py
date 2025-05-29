@@ -6,9 +6,9 @@ from utils.conexion_neo4j import Neo4jConnection
 router = APIRouter()
 driver = Neo4jConnection().conectar()
 
-@router.get("/sugerencia/{id}")
-def obtener_sugerencia(id: int):
-    sugerencia = sugerir_siguiente(driver, id)
+@router.get("/sugerencia/{id_pieza}")
+def obtener_sugerencia(id_pieza: int):
+    sugerencia = sugerir_siguiente(driver, id_pieza)
     
     if "error" in sugerencia:
         raise HTTPException(status_code=400, detail=sugerencia["error"])
@@ -21,19 +21,19 @@ def obtener_sugerencia(id: int):
     
     return sugerencia
 
-@router.post("/iniciar/{id}")
-def iniciar_ensamblaje(id: int):
+
+@router.post("/iniciar/{id_pieza}")
+def iniciar_ensamblaje(id_pieza: int):
     try:
-        cambiar_estado_pieza(driver, id, "ensamblada")
+        cambiar_estado_pieza(driver, id_pieza, "ensamblada")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"No se pudo iniciar con la pieza: {e}")
 
-    sugerencia = sugerir_siguiente(driver, id)
+    sugerencia = sugerir_siguiente(driver, id_pieza)
 
     if "error" in sugerencia:
         return {"mensaje": "Pieza inicial ensamblada, pero no hay sugerencias inmediatas"}
 
-    # Marcar la sugerida como ensamblada automáticamente
     if "pieza_siguiente" in sugerencia:
         try:
             cambiar_estado_pieza(driver, sugerencia["pieza_siguiente"], "ensamblada")

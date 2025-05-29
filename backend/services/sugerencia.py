@@ -1,7 +1,6 @@
 from models.pieza_model import PiezaModel
 from models.relacion_model import RelacionModel
 
-# Lados y sus opuestos
 LADOS = ["top", "right", "bottom", "left"]
 LADO_OPUESTO = {
     "top": "bottom",
@@ -10,11 +9,11 @@ LADO_OPUESTO = {
     "right": "left"
 }
 
-def sugerir_siguiente(driver, pieza_id):
+def sugerir_siguiente(driver, id_pieza):
     pieza_model = PiezaModel(driver)
     relacion_model = RelacionModel(driver)
 
-    pieza_actual = pieza_model.obtener_pieza(pieza_id)
+    pieza_actual = pieza_model.obtener_pieza(id_pieza)
     if not pieza_actual:
         return {"error": "Pieza no encontrada"}
 
@@ -34,7 +33,7 @@ def sugerir_siguiente(driver, pieza_id):
 
     with driver.session() as session:
         for lado in LADOS:
-            if lado in pieza["bordes"]:
+            if lado in pieza.get("bordes", []):
                 continue
 
             x, y = vecinos_pos[lado]
@@ -51,35 +50,29 @@ def sugerir_siguiente(driver, pieza_id):
                 continue
 
             lado_opuesto = LADO_OPUESTO[lado]
-            if lado_opuesto in vecino["bordes"]:
+            if lado_opuesto in vecino.get("bordes", []):
                 continue
 
-            
             # Picos en orden horario desde esquina superior izquierda
             total_picos = pieza["cantidad_picos"]
             picos_disponibles = list(range(total_picos))
-
-            # TODO: evitar usados si llevas registro
             pico = picos_disponibles[0]
-
 
             # Hendiduras en orden antihorario desde abajo-izquierda
             hendiduras = [chr(97 + i) for i in range(vecino["cantidad_hendiduras"])]
             hendidura = hendiduras[0] if hendiduras else "a"
 
-
             # Cambiar estado de la pieza sugerida
-            pieza_model.actualizar_pieza(vecino["id"], {"estado": "ensamblada"})
+            pieza_model.actualizar_pieza(vecino["id_pieza"], {"estado": "ensamblada"})
 
             return {
-                "pieza_actual": pieza["id"],
-                "pieza_siguiente": vecino["id"],
+                "pieza_actual": pieza["id_pieza"],
+                "pieza_siguiente": vecino["id_pieza"],
                 "lado_actual": lado,
                 "lado_vecino": lado_opuesto,
                 "pico": pico,
                 "hendidura": hendidura,
-                "instruccion": f"Conecta la pieza {vecino['id']} al lado {lado} de la pieza {pieza['id']} usando el pico {pico} y la hendidura '{hendidura}'"
+                "instruccion": f"Conecta la pieza {vecino['id_pieza']} al lado {lado} de la pieza {pieza['id_pieza']} usando el pico {pico} y la hendidura '{hendidura}'"
             }
-
 
     return {"mensaje": "No hay piezas disponibles para ensamblar desde esta ubicación"}

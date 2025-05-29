@@ -15,8 +15,8 @@ def piezas_ensambladas():
 def relaciones_activas():
     query = """
     MATCH (a:Pieza)-[r:CONECTA_CON {valida: true}]->(b:Pieza)
-    RETURN a.id AS origen, r.desde_lado AS desde, r.pico_origen AS pico,
-           b.id AS destino, r.hacia_lado AS hacia, r.hendidura_destino AS hendidura
+    RETURN a.id_pieza AS origen, r.desde_lado AS desde, r.pico_origen AS pico,
+           b.id_pieza AS destino, r.hacia_lado AS hacia, r.hendidura_destino AS hendidura
     """
     with driver.session() as session:
         result = session.run(query)

@@ -21,46 +21,53 @@ def ensamblar_piezas(driver):
 
     for record in piezas:
         pieza = record["p"]
-        print(f"\n🔍 Procesando pieza {pieza['id']} (estado: {pieza['estado']})")
+        id_pieza = pieza["id_pieza"]
+        estado = pieza["estado"]
 
-        if pieza["estado"] not in ["libre", "ensamblada"]:
+        print(f"\n🔍 Procesando pieza {id_pieza} (estado: {estado})")
+
+        if estado not in ["libre", "ensamblada"]:
             print("⏩ Estado no válido para ensamblaje. Saltando.")
             continue
 
-        vecinos_raw = pieza.get("vecinos", "{}")
-        vecinos = json.loads(vecinos_raw)
+        vecinos = pieza.get("vecinos", {})
+        if isinstance(vecinos, str):
+            vecinos = json.loads(vecinos)
         picos = list(range(pieza["cantidad_picos"]))
         usados_picos = set()
 
         for lado, vecino_id in vecinos.items():
+
             print(f"➡ Evaluando lado '{lado}' hacia vecino {vecino_id}")
 
-            if lado in pieza["bordes"]:
+            if lado in pieza.get("bordes", []):
                 print(f"⛔ Lado '{lado}' es borde. Saltando.")
                 continue
 
             with driver.session() as session:
-                result = session.run("MATCH (v:Pieza {id: $id}) RETURN v", id=vecino_id).single()
+                result = session.run(
+                    "MATCH (v:Pieza {id_pieza: $id}) RETURN v", id=vecino_id
+                ).single()
 
             if not result:
                 print(f"❌ Vecino {vecino_id} no encontrado en DB.")
                 continue
 
             vecino = result["v"]
-
             lado_opuesto = LADO_OPUESTO[lado]
-            if lado_opuesto in vecino["bordes"]:
+
+            if lado_opuesto in vecino.get("bordes", []):
                 print(f"⛔ Lado opuesto '{lado_opuesto}' del vecino es borde. Saltando.")
                 continue
 
             with driver.session() as session:
                 existe = session.run("""
-                    MATCH (a:Pieza {id: $ida})-[r:CONECTA_CON]->(b:Pieza {id: $idb})
+                    MATCH (a:Pieza {id_pieza: $ida})-[r:CONECTA_CON]->(b:Pieza {id_pieza: $idb})
                     RETURN r
-                """, ida=pieza["id"], idb=vecino_id).single()
+                """, ida=id_pieza, idb=vecino_id).single()
 
             if existe:
-                print(f"🔁 Relación ya existe entre {pieza['id']} y {vecino_id}.")
+                print(f"🔁 Relación ya existe entre {id_pieza} y {vecino_id}.")
                 continue
 
             hendiduras = [chr(97 + i) for i in range(vecino["cantidad_hendiduras"])]
@@ -73,9 +80,9 @@ def ensamblar_piezas(driver):
                 print("⚠️ No hay pico o hendidura disponibles. Saltando conexión.")
                 continue
 
-            print(f"✅ Conectando {pieza['id']} -> {vecino_id} usando pico {pico} y hendidura '{hendidura}'")
+            print(f"✅ Conectando {id_pieza} -> {vecino_id} usando pico {pico} y hendidura '{hendidura}'")
 
-            relacion_model.crear_conexion(pieza["id"], vecino_id, {
+            relacion_model.crear_conexion(id_pieza, vecino_id, {
                 "desde_lado": lado,
                 "hacia_lado": lado_opuesto,
                 "pico_origen": pico,
@@ -83,7 +90,7 @@ def ensamblar_piezas(driver):
                 "valida": True
             })
 
-            relacion_model.crear_conexion(vecino_id, pieza["id"], {
+            relacion_model.crear_conexion(vecino_id, id_pieza, {
                 "desde_lado": lado_opuesto,
                 "hacia_lado": lado,
                 "pico_origen": pico,

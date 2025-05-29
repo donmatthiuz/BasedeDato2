@@ -1,7 +1,6 @@
 from models.pieza_model import PiezaModel
 from models.relacion_model import RelacionModel
 
-# Diccionario para obtener el lado opuesto
 LADO_OPUESTO = {
     "top": "bottom",
     "bottom": "top",
@@ -26,22 +25,24 @@ def registrar_pieza(driver, data):
     # Paso 2: Evaluar vecinos
     vecinos = data.get("vecinos", {})
     for lado in ["top", "right", "bottom", "left"]:
-        if lado not in vecinos or lado in data["bordes"]:
+        if lado not in vecinos or lado in data.get("bordes", []):
             continue
 
         vecino_id = vecinos[lado]
 
         with driver.session() as session:
-            vecino_result = session.run("MATCH (p:Pieza {id: $id}) RETURN p", id=vecino_id).single()
+            vecino_result = session.run(
+                "MATCH (p:Pieza {id_pieza: $id}) RETURN p", id=vecino_id
+            ).single()
             if not vecino_result:
                 continue
 
             vecino = vecino_result["p"]
-            if vecino["estado"] != "ensamblada":
+            if vecino.get("estado") != "ensamblada":
                 continue
 
             lado_vecino = LADO_OPUESTO[lado]
-            if lado_vecino in vecino["bordes"]:
+            if lado_vecino in vecino.get("bordes", []):
                 continue
 
             # Asignar pico y hendidura disponibles
@@ -59,7 +60,7 @@ def registrar_pieza(driver, data):
                 "valida": True
             }
 
-            relacion_model.crear_conexion(data["id"], vecino_id, relacion)
+            relacion_model.crear_conexion(data["id_pieza"], vecino_id, relacion)
 
             # Crear relación inversa
             relacion_inversa = {
@@ -69,7 +70,7 @@ def registrar_pieza(driver, data):
                 "hendidura_destino": hendidura,
                 "valida": True
             }
-            relacion_model.crear_conexion(vecino_id, data["id"], relacion_inversa)
+            relacion_model.crear_conexion(vecino_id, data["id_pieza"], relacion_inversa)
 
             usados_picos.add(pico)
             usados_hendiduras.add(hendidura)
