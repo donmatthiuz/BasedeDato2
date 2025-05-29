@@ -39,7 +39,7 @@ def obtener_pieza(pieza_id):
     relaciones = RelacionModel.obtenerRelacionesPieza(pieza_id)
     if not pieza:
         return jsonify({"error": "Pieza no encontrada"}), 404
-    pieza_data = pieza['p'] if 'p' in pieza else pieza
+    pieza_data = dict(pieza['p']) if 'p' in pieza else dict(pieza)
     pieza_data['relaciones'] = relaciones
     return jsonify(pieza_data)
 
