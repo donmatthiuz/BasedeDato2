@@ -6,6 +6,12 @@ Para instalar lo del fronted deberan usar yarn
 yarn install
 ```
 
+# Distribucion de trabajo
+
+- Algoritmo | Mathew 
+- Piece managment | Gaby 
+- Puzzle managment | Abby
+
 # LLamado a api 
 
 Para ello deberan usar en /hooks/useApi.tsx que es un hook personalizado de React para realizar llamadas `fetch` a una API con diferentes configuraciones de headers, métodos HTTP, cuerpos, y archivos.
