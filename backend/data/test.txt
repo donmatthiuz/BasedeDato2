@@ -1,0 +1,242 @@
+[
+  {
+    "id_pieza": 1,
+    "coordenada_x": 0,
+    "coordenada_y": 0,
+    "picos": { "right": [0] },
+    "hendiduras": { "top": ["a"] },
+    "bordes": ["left", "bottom"],
+    "vecinos": { "top": 7, "right": 2 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 2,
+    "coordenada_x": 1,
+    "coordenada_y": 0,
+    "picos": { "top": [0] },
+    "hendiduras": { "left": ["b"], "right": ["a"] },
+    "bordes": ["bottom"],
+    "vecinos": { "left": 1, "top": 8, "right": 3 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 3,
+    "coordenada_x": 2,
+    "coordenada_y": 0,
+    "picos": { "left": [0], "right": [1] },
+    "hendiduras": { "top": ["a"] },
+    "bordes": ["bottom"],
+    "vecinos": { "left": 2, "top": 9, "right": 4 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 4,
+    "coordenada_x": 3,
+    "coordenada_y": 0,
+    "picos": { "top": [0] },
+    "hendiduras": { "left": ["b"], "right": ["a"] },
+    "bordes": ["bottom"],
+    "vecinos": { "left": 3, "top": 10, "right": 5 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 5,
+    "coordenada_x": 4,
+    "coordenada_y": 0,
+    "picos": { "right": [0], "left": [1] },
+    "hendiduras": { "top": ["a"] },
+    "bordes": ["bottom"],
+    "vecinos": { "left": 4, "top": 11, "right": 6 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 6,
+    "coordenada_x": 5,
+    "coordenada_y": 0,
+    "picos": { "top": [0] },
+    "hendiduras": { "left": ["a"] },
+    "bordes": ["bottom", "right"],
+    "vecinos": { "left": 5, "top": 12 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 7,
+    "coordenada_x": 0,
+    "coordenada_y": 1,
+    "picos": { "top": [0], "bottom": [1] },
+    "hendiduras": { "right": ["a"] },
+    "bordes": ["left"],
+    "vecinos": { "top": 13, "right": 8, "bottom": 1 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 8,
+    "coordenada_x": 1,
+    "coordenada_y": 1,
+    "picos": { "right": [0], "left": [1] },
+    "hendiduras": { "bottom": ["a"], "top": ["b"] },
+    "bordes": [],
+    "vecinos": { "top": 14, "right": 9, "bottom": 2, "left": 7 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 9,
+    "coordenada_x": 2,
+    "coordenada_y": 1,
+    "picos": { "top": [0], "bottom": [1] },
+    "hendiduras": { "left": ["b"], "right": ["a"] },
+    "bordes": [],
+    "vecinos": { "top": 15, "right": 10, "bottom": 3, "left": 8 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 10,
+    "coordenada_x": 3,
+    "coordenada_y": 1,
+    "picos": { "right": [0], "left": [1] },
+    "hendiduras": { "bottom": ["b"], "top": ["a"] },
+    "bordes": [],
+    "vecinos": { "top": 16, "right": 11, "bottom": 4, "left": 9 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 11,
+    "coordenada_x": 4,
+    "coordenada_y": 1,
+    "picos": { "top": [0], "bottom": [1] },
+    "hendiduras": { "left": ["b"], "right": ["a"] },
+    "bordes": [],
+    "vecinos": { "top": 17, "right": 12, "bottom": 5, "left": 10 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 12,
+    "coordenada_x": 5,
+    "coordenada_y": 1,
+    "picos": { "left": [0] },
+    "hendiduras": { "bottom": ["a"], "top": ["b"] },
+    "bordes": ["right"],
+    "vecinos": { "top": 18, "bottom": 6, "left": 11 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 13,
+    "coordenada_x": 0,
+    "coordenada_y": 2,
+    "picos": { "right": [0] },
+    "hendiduras": { "bottom": ["a"], "top": ["b"] },
+    "bordes": ["left"],
+    "vecinos": { "top": 19, "bottom": 7, "right": 14 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 14,
+    "coordenada_x": 1,
+    "coordenada_y": 2,
+    "picos": { "top": [0], "bottom": [1] },
+    "hendiduras": { "left": ["b"], "right": ["a"] },
+    "bordes": [],
+    "vecinos": { "top": 20, "bottom": 8, "right": 15, "left": 13 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 15,
+    "coordenada_x": 2,
+    "coordenada_y": 2,
+    "picos": { "right": [0], "left": [1] },
+    "hendiduras": { "bottom": ["a"], "top": ["b"] },
+    "bordes": [],
+    "vecinos": { "top": 21, "bottom": 9, "right": 16, "left": 14 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 16,
+    "coordenada_x": 3,
+    "coordenada_y": 2,
+    "picos": { "top": [0], "bottom": [1] },
+    "hendiduras": { "left": ["b"], "right": ["a"] },
+    "bordes": [],
+    "vecinos": { "top": 22, "bottom": 10, "right": 17, "left": 15 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 17,
+    "coordenada_x": 4,
+    "coordenada_y": 2,
+    "picos": { "right": [0], "left": [1] },
+    "hendiduras": { "bottom": ["a"], "top": ["b"] },
+    "bordes": [],
+    "vecinos": { "top": 23, "bottom": 11, "right": 18, "left": 16 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 18,
+    "coordenada_x": 5,
+    "coordenada_y": 2,
+    "picos": { "top": [0], "bottom": [1] },
+    "hendiduras": { "left": ["a"] },
+    "bordes": ["right"],
+    "vecinos": { "top": 24, "bottom": 12, "left": 17 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 19,
+    "coordenada_x": 0,
+    "coordenada_y": 3,
+    "picos": { "bottom": [0] },
+    "hendiduras": { "right": ["a"] },
+    "bordes": ["left", "top"],
+    "vecinos": { "bottom": 13, "right": 20 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 20,
+    "coordenada_x": 1,
+    "coordenada_y": 3,
+    "picos": { "right": [0], "left": [1] },
+    "hendiduras": { "bottom": ["a"] },
+    "bordes": ["top"],
+    "vecinos": { "bottom": 14, "right": 21, "left": 19 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 21,
+    "coordenada_x": 2,
+    "coordenada_y": 3,
+    "picos": { "bottom": [0] },
+    "hendiduras": { "left": ["b"], "right": ["a"] },
+    "bordes": ["top"],
+    "vecinos": { "bottom": 15, "right": 22, "left": 20 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 22,
+    "coordenada_x": 3,
+    "coordenada_y": 3,
+    "picos": { "right": [0], "left": [1] },
+    "hendiduras": { "bottom": ["a"] },
+    "bordes": ["top"],
+    "vecinos": { "bottom": 16, "right": 23, "left": 21 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 23,
+    "coordenada_x": 4,
+    "coordenada_y": 3,
+    "picos": { "bottom": [0] },
+    "hendiduras": { "left": ["b"], "right": ["a"] },
+    "bordes": ["top"],
+    "vecinos": { "bottom": 17, "right": 24, "left": 22 },
+    "estado": "libre"
+  },
+  {
+    "id_pieza": 24,
+    "coordenada_x": 5,
+    "coordenada_y": 3,
+    "picos": { "left": [0] },
+    "hendiduras": { "bottom": ["a"] },
+    "bordes": ["top", "right"],
+    "vecinos": { "bottom": 18, "left": 23 },
+    "estado": "libre"
+  }
+]

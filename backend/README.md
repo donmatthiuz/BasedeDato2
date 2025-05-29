@@ -62,3 +62,9 @@ backend/
 * [ ] Crear `pieza_routes.py`: POST, PATCH, GET, DELETE.
 * [ ] Crear `sugerencia_routes.py`: GET /sugerencia/{id}.
 * [ ] Crear `resumen_routes.py`: GET /ensamblado, GET /relaciones.
+
+## Comando de ejecución
+
+```bash
+ uvicorn main:app --reload
+```

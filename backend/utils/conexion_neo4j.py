@@ -9,24 +9,19 @@ class Neo4jConnection:
         self._driver = None
 
     def conectar(self):
-        if self._driver is None:
+        if not self._driver:
             self._driver = GraphDatabase.driver(
-                self._uri, auth=(self._user, self._password)
+                self._uri,
+                auth=(self._user, self._password)
             )
+        return self._driver 
 
     def cerrar(self):
         if self._driver:
             self._driver.close()
 
-    def session(self):
-        self.conectar()
-        return self._driver.session()
-
-    def ejecutar_consulta(self, query, parameters=None, single=False):
+    def ejecutarConsulta(self, query, parameters=None, single=False):
         self.conectar()
         with self._driver.session() as session:
             result = session.run(query, parameters or {})
             return result.single() if single else result.data()
-    
-    def executeQuery(self, query, parameters=None, single=False):
-        return self.ejecutar_consulta(query, parameters, single)

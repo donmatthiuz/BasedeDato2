@@ -1,106 +1,109 @@
-from utils.conexion_neo4j import Neo4jConnection
+from neo4j import GraphDatabase
+import csv
+import json
 
 class PiezaModel:
-    """
-    Modelo encargado de gestionar los nodos de tipo Pieza en la base de datos Neo4j.
-    """
+    def __init__(self, driver):
+        self.driver = driver
 
-    @staticmethod
-    def crearPieza(data):
-        """
-        Crea una nueva pieza en la base de datos.
-
-        Parámetros:
-            data (dict): Diccionario con las claves:
-                - id (int)
-                - coordenada_x (int)
-                - coordenada_y (int)
-                - cantidad_picos (int)
-                - cantidad_hendiduras (int)
-                - bordes (list[str]) - lados donde no hay conexión: "top", "right", "bottom", "left"
-                - estado (str): "libre", "ensamblada" u "omitida"
-
-        Retorna:
-            dict: Nodo creado con sus atributos.
-        """
+    def crearPieza(self, piezaData):
         query = """
         CREATE (p:Pieza {
-            id: $id,
+            id_pieza: $id_pieza,
             coordenada_x: $coordenada_x,
             coordenada_y: $coordenada_y,
-            cantidad_picos: $cantidad_picos,
-            cantidad_hendiduras: $cantidad_hendiduras,
+            picos: $picos,
+            hendiduras: $hendiduras,
             bordes: $bordes,
-            estado: $estado
+            estado: $estado,
+            vecinos: $vecinos
         })
-        RETURN p
         """
-        conn = Neo4jConnection()
-        result = conn.executeQuery(query, data, single=True)
-        conn.cerrar()
-        return result
 
-    @staticmethod
-    def obtenerPiezaId(pieza_id):
-        """
-        Obtiene una pieza según su ID.
+        # Convertir enteros
+        piezaData["id_pieza"] = int(piezaData["id_pieza"])
+        piezaData["coordenada_x"] = int(piezaData["coordenada_x"])
+        piezaData["coordenada_y"] = int(piezaData["coordenada_y"])
 
-        Parámetros:
-            pieza_id (int): Identificador de la pieza.
+        # Bordes a lista
+        if isinstance(piezaData.get("bordes"), str):
+            piezaData["bordes"] = piezaData["bordes"].split(";") if piezaData["bordes"] else []
 
-        Retorna:
-            dict: Datos del nodo de la pieza (si existe), o None.
-        """
-        query = """
-        MATCH (p:Pieza {id: $id})
-        RETURN p
-        """
-        conn = Neo4jConnection()
-        result = conn.executeQuery(query, {"id": pieza_id}, single=True)
-        conn.cerrar()
-        return result
+        # Vecinos
+        vecinos = piezaData.get("vecinos")
+        if isinstance(vecinos, dict):
+            piezaData["vecinos"] = json.dumps(vecinos)
+        elif isinstance(vecinos, str):
+            try:
+                if vecinos.strip().startswith("{"):
+                    piezaData["vecinos"] = json.dumps(json.loads(vecinos))  # JSON ya válido
+                else:
+                    vecinos_dict = dict(
+                        item.split(":") for item in vecinos.split(";") if ":" in item
+                    )
+                    vecinos_dict = {k: int(v) for k, v in vecinos_dict.items()}
+                    piezaData["vecinos"] = json.dumps(vecinos_dict)
+            except Exception:
+                piezaData["vecinos"] = json.dumps({})
+        else:
+            piezaData["vecinos"] = json.dumps({})
 
-    @staticmethod
-    def actualizarEstado(pieza_id, nuevo_estado):
-        """
-        Actualiza el estado de una pieza (ensamblada, libre u omitida).
+        # Picos
+        picos = piezaData.get("picos", {})
+        if isinstance(picos, dict):
+            piezaData["picos"] = json.dumps(picos)
+        elif isinstance(picos, str):
+            try:
+                piezaData["picos"] = json.dumps(json.loads(picos))
+            except Exception:
+                piezaData["picos"] = json.dumps({})
+        else:
+            piezaData["picos"] = json.dumps({})
 
-        Parámetros:
-            pieza_id (int): Identificador de la pieza.
-            nuevo_estado (str): Nuevo estado a asignar.
+        # Hendiduras
+        hendiduras = piezaData.get("hendiduras", {})
+        if isinstance(hendiduras, dict):
+            piezaData["hendiduras"] = json.dumps(hendiduras)
+        elif isinstance(hendiduras, str):
+            try:
+                piezaData["hendiduras"] = json.dumps(json.loads(hendiduras))
+            except Exception:
+                piezaData["hendiduras"] = json.dumps({})
+        else:
+            piezaData["hendiduras"] = json.dumps({})
 
-        Retorna:
-            dict: Pieza actualizada con el nuevo estado.
-        """
-        query = """
-        MATCH (p:Pieza {id: $id})
-        SET p.estado = $estado
-        RETURN p
-        """
-        conn = Neo4jConnection()
-        result = conn.executeQuery(query, {
-            "id": pieza_id,
-            "estado": nuevo_estado
-        }, single=True)
-        conn.cerrar()
-        return result
+        with self.driver.session() as session:
+            session.run(query, **piezaData)
 
-    @staticmethod
-    def eliminarPieza(pieza_id):
-        """
-        Elimina una pieza junto con todas sus relaciones.
+    def cargarDesdeCsv(self, rutaCsv):
+        with open(rutaCsv, newline='', encoding='utf-8') as archivo:
+            lector = csv.DictReader(archivo)
+            for fila in lector:
+                try:
+                    self.crearPieza(fila)
+                except Exception as e:
+                    print(f"❌ Error en pieza ID {fila.get('id_pieza')}: {e}")
 
-        Parámetros:
-            pieza_id (int): Identificador de la pieza.
+    def obtenerPieza(self, idPieza):
+        query = "MATCH (p:Pieza {id_pieza: $id_pieza}) RETURN p"
+        with self.driver.session() as session:
+            result = session.run(query, id_pieza=idPieza)
+            return result.single()
 
-        Retorna:
-            dict: Mensaje de confirmación.
-        """
-        query = """
-        MATCH (p:Pieza {id: $id})
-        DETACH DELETE p
-        """
-        conn = Neo4jConnection()
-        conn.executeQuery(query, {"id": pieza_id})
-        conn.cerrar()
-        return {"mensaje": f"Pieza {pieza_id} eliminada correctamente"}
+    def actualizarPieza(self, idPieza, nuevosDatos):
+        if "picos" in nuevosDatos:
+            nuevosDatos["picos"] = json.dumps(nuevosDatos["picos"])
+        if "hendiduras" in nuevosDatos:
+            nuevosDatos["hendiduras"] = json.dumps(nuevosDatos["hendiduras"])
+
+        setClause = ", ".join([f"p.{k} = ${k}" for k in nuevosDatos.keys()])
+        query = f"MATCH (p:Pieza {{id_pieza: $id_pieza}}) SET {setClause} RETURN p"
+
+        with self.driver.session() as session:
+            result = session.run(query, id_pieza=idPieza, **nuevosDatos)
+            return result.single()
+
+    def eliminarPieza(self, idPieza):
+        query = "MATCH (p:Pieza {id_pieza: $id_pieza}) DETACH DELETE p"
+        with self.driver.session() as session:
+            session.run(query, id_pieza=idPieza)

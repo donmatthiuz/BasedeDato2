@@ -1,28 +1,43 @@
-from flask import Blueprint, jsonify
+from fastapi import APIRouter
 from utils.conexion_neo4j import Neo4jConnection
 
-resumen_bp = Blueprint('resumen_bp', __name__)
+router = APIRouter()
+driver = Neo4jConnection().conectar()
 
-@resumen_bp.route('/ensamblado', methods=['GET'])
-def resumen_ensamblado():
-    query = """
-    MATCH (p:Pieza)
-    RETURN p.id AS id, p.estado AS estado, p.coordenada_x AS coordenada_x, p.coordenada_y AS coordenada_y
-    ORDER BY p.id
+@router.get("/ensamblado")
+def obtenerPiezasEnsambladas():
     """
-    conn = Neo4jConnection()
-    piezas = conn.ejecutar_consulta(query)
-    conn.cerrar()
-    return jsonify(piezas)
+    Retorna todas las piezas que actualmente están en estado 'ensamblada'.
 
-@resumen_bp.route('/relaciones', methods=['GET'])
-def relaciones_actuales():
-    query = """
-    MATCH (p1:Pieza)-[r:CONECTA_CON]->(p2:Pieza)
-    RETURN p1.id AS pieza_origen, p2.id AS pieza_destino, r.desde_lado, r.hacia_lado, r.pico_origen AS pico, r.hendidura_destino AS hendidura, r.valida
-    ORDER BY pieza_origen, pieza_destino
+    Returns:
+        List[dict]: Lista de nodos Pieza ensamblados.
     """
-    conn = Neo4jConnection()
-    relaciones = conn.ejecutar_consulta(query)
-    conn.cerrar()
-    return jsonify(relaciones)
+    query = "MATCH (p:Pieza {estado: 'ensamblada'}) RETURN p"
+    with driver.session() as session:
+        result = session.run(query)
+        return [record["p"] for record in result]
+
+
+@router.get("/relaciones")
+def obtenerRelacionesActivas():
+    """
+    Retorna todas las relaciones válidas (valida = true) de tipo CONECTA_CON entre piezas.
+    Cada relación incluye la información sobre el origen, destino, lados conectados,
+    y el pico y la hendidura usados.
+
+    Returns:
+        List[dict]: Lista de relaciones activas con detalle.
+    """
+    query = """
+    MATCH (a:Pieza)-[r:CONECTA_CON {valida: true}]->(b:Pieza)
+    RETURN 
+        a.id_pieza AS origen, 
+        r.desde_lado AS desde, 
+        r.pico_origen AS pico,
+        b.id_pieza AS destino, 
+        r.hacia_lado AS hacia, 
+        r.hendidura_destino AS hendidura
+    """
+    with driver.session() as session:
+        result = session.run(query)
+        return [record.data() for record in result]

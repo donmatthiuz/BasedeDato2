@@ -1,119 +1,72 @@
-from utils.conexion_neo4j import Neo4jConnection
+from neo4j import GraphDatabase
 
 class RelacionModel:
-  
     """
-    Modelo encargado de gestionar las relaciones CONECTA_CON entre piezas del rompecabezas.
+    Modelo encargado de gestionar las relaciones CONECTA_CON entre nodos de tipo Pieza en la base de datos Neo4j.
     """
 
-    @staticmethod
-    def crearConexion(origen_id, destino_id, desde_lado, hacia_lado, pico_origen, hendidura_destino, valida=True):
+    def __init__(self, driver):
         """
-        Crea o actualiza una relación CONECTA_CON entre dos piezas.
+        Inicializa el modelo con el driver de conexión a Neo4j.
+        """
+        self.driver = driver
+
+    def crearConexion(self, idOrigen, idDestino, relacion):
+        """
+        Crea una relación CONECTA_CON entre dos piezas.
 
         Parámetros:
-            origen_id (int): ID de la pieza de origen.
-            destino_id (int): ID de la pieza destino.
-            desde_lado (str): Lado desde el cual parte la conexión (top, right, bottom, left).
-            hacia_lado (str): Lado en el que la pieza destino recibe la conexión.
-            pico_origen (int): Índice del pico usado en la pieza de origen.
-            hendidura_destino (str): Letra de la hendidura usada en la pieza destino.
-            valida (bool): Indica si la relación es válida activamente.
-
-        Retorna:
-            dict: Objeto con la relación creada o actualizada.
+            idOrigen (int): ID de la pieza de origen.
+            idDestino (int): ID de la pieza de destino.
+            relacion (dict): Atributos de la relación:
+                - desde_lado (str)
+                - hacia_lado (str)
+                - pico_origen (int)
+                - hendidura_destino (str)
+                - valida (bool)
         """
         query = """
-        MATCH (a:Pieza {id: $origen_id}), (b:Pieza {id: $destino_id})
-        MERGE (a)-[r:CONECTA_CON {
+        MATCH (a:Pieza {id_pieza: $id_origen}), (b:Pieza {id_pieza: $id_destino})
+        CREATE (a)-[:CONECTA_CON {
             desde_lado: $desde_lado,
-            hacia_lado: $hacia_lado
+            hacia_lado: $hacia_lado,
+            pico_origen: $pico_origen,
+            hendidura_destino: $hendidura_destino,
+            valida: $valida
         }]->(b)
-        SET r.pico_origen = $pico_origen,
-            r.hendidura_destino = $hendidura_destino,
-            r.valida = $valida
-        RETURN r
         """
-        conn = Neo4jConnection()
-        result = conn.executeQuery(query, {
-            "origen_id": origen_id,
-            "destino_id": destino_id,
-            "desde_lado": desde_lado,
-            "hacia_lado": hacia_lado,
-            "pico_origen": pico_origen,
-            "hendidura_destino": hendidura_destino,
-            "valida": valida
-        }, single=True)
-        conn.cerrar()
-        return result
+        params = {
+            "id_origen": idOrigen,
+            "id_destino": idDestino,
+            **relacion
+        }
+        with self.driver.session() as session:
+            session.run(query, **params)
 
-    @staticmethod
-    def invalidarRelacionesPieza(pieza_id):
+    def invalidarConexionesPorPieza(self, idPieza):
         """
-        Invalida todas las relaciones CONECTA_CON de una pieza (salientes y entrantes).
+        Marca como inválidas todas las relaciones CONECTA_CON salientes de una pieza.
 
         Parámetros:
-            pieza_id (int): ID de la pieza afectada.
-
-        Retorna:
-            int: Número de relaciones salientes invalidadas (las entrantes también se invalidan).
+            idPieza (int): ID de la pieza cuya relaciones se desean invalidar.
         """
         query = """
-        MATCH (a:Pieza {id: $id})-[r:CONECTA_CON]->()
+        MATCH (a:Pieza {id_pieza: $id_pieza})-[r:CONECTA_CON]->(:Pieza)
         SET r.valida = false
-        RETURN count(r) AS invalidadas
         """
-        conn = Neo4jConnection()
-        result = conn.executeQuery(query, {"id": pieza_id}, single=True)
-        conn.executeQuery("""
-        MATCH ()-[r:CONECTA_CON]->(a:Pieza {id: $id})
-        SET r.valida = false
-        """, {"id": pieza_id})
-        conn.cerrar()
-        return result["invalidadas"]
+        with self.driver.session() as session:
+            session.run(query, id_pieza=idPieza)
 
-    @staticmethod
-    def obtenerRelacionesPieza(pieza_id):
+    def eliminarConexiones(self, idPieza):
         """
-        Obtiene todas las relaciones salientes CONECTA_CON desde una pieza.
+        Elimina todas las relaciones CONECTA_CON asociadas a una pieza (entrantes y salientes).
 
         Parámetros:
-            pieza_id (int): ID de la pieza de origen.
-
-        Retorna:
-            list[dict]: Lista de relaciones con atributos relevantes.
+            idPieza (int): ID de la pieza cuyas relaciones serán eliminadas.
         """
         query = """
-        MATCH (a:Pieza {id: $id})-[r:CONECTA_CON]->(b:Pieza)
-        RETURN b.id AS con_pieza, r.desde_lado, r.hacia_lado,
-               r.pico_origen, r.hendidura_destino, r.valida
-        ORDER BY con_pieza
-        """
-        conn = Neo4jConnection()
-        result = conn.executeQuery(query, {"id": pieza_id})
-        conn.cerrar()
-        return result
-
-    @staticmethod
-    def eliminarRelacionesPieza(pieza_id):
-        """
-        Elimina completamente todas las relaciones CONECTA_CON (entrantes y salientes) de una pieza.
-
-        Parámetros:
-            pieza_id (int): ID de la pieza objetivo.
-
-        Retorna:
-            dict: Mensaje de confirmación.
-        """
-        query = """
-        MATCH (a:Pieza {id: $id})-[r:CONECTA_CON]->()
+        MATCH (a:Pieza {id_pieza: $id_pieza})-[r:CONECTA_CON]-(:Pieza)
         DELETE r
         """
-        conn = Neo4jConnection()
-        conn.executeQuery(query, {"id": pieza_id})
-        conn.executeQuery("""
-        MATCH ()-[r:CONECTA_CON]->(a:Pieza {id: $id})
-        DELETE r
-        """, {"id": pieza_id})
-        conn.cerrar()
-        return {"mensaje": f"Relaciones de la pieza {pieza_id} eliminadas"}
+        with self.driver.session() as session:
+            session.run(query, id_pieza=idPieza)
