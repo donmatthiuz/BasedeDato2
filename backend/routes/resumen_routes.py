@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify
 from utils.conexion_neo4j import Neo4jConnection
-from neo4j import Session
 
 resumen_bp = Blueprint('resumen_bp', __name__)
 
@@ -12,7 +11,7 @@ def resumen_ensamblado():
     ORDER BY p.id
     """
     conn = Neo4jConnection()
-    piezas = conn.executeQuery(query)
+    piezas = conn.ejecutar_consulta(query)
     conn.cerrar()
     return jsonify(piezas)
 
@@ -24,6 +23,6 @@ def relaciones_actuales():
     ORDER BY pieza_origen, pieza_destino
     """
     conn = Neo4jConnection()
-    relaciones = conn.executeQuery(query)
+    relaciones = conn.ejecutar_consulta(query)
     conn.cerrar()
     return jsonify(relaciones)
