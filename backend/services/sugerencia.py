@@ -82,7 +82,7 @@ def sugerirSiguiente(driver, idPieza):
                     f"Conecta la pieza {vecino['id_pieza']} al lado '{lado}' de la pieza {pieza['id_pieza']}.\n"
                     f"Usa el pico #{pico} del lado '{lado}' de la pieza {pieza['id_pieza']} y "
                     f"la hendidura #{hendidura} del lado '{ladoOpuesto}' de la pieza {vecino['id_pieza']}.\n"
-                    f"Asegúrate de que ambos lados no sean bordes y que el orden sea "
+                    f"El orden es: "
                     f"{'horario' if lado in ['top', 'right'] else 'antihorario'} para picos y "
                     f"{'antihorario' if ladoOpuesto in ['bottom', 'left'] else 'horario'} para hendiduras."
                 )
