@@ -229,3 +229,24 @@ const useID = () => {
 
 export default useID;
 ```
+## Uso
+
+
+```tsx
+import useID from './hooks/useID';
+
+const PuzzleComponent = () => {
+  const { userID, setUserID } = useID();
+
+  const startPuzzle = () => {
+    setUserID("puzzle-1234");
+  };
+
+  return (
+    <div>
+      <p>Tu ID de puzzle es: {userID}</p>
+      <button onClick={startPuzzle}>Iniciar Puzzle</button>
+    </div>
+  );
+};
+```
